@@ -128,3 +128,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# 11ty
+_site/
+
+# 11ty cache
+.11tycache/

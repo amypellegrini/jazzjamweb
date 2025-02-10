@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }} - Jazz Jam Studio</title>
+    <style>
+      /* Base styles matching your app theme */
+      :root {
+        --primary-color: #2563eb;
+        --text-color: #1f2937;
+        --background-color: #ffffff;
+        --secondary-background: #f3f4f6;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          sans-serif;
+        line-height: 1.6;
+        color: var(--text-color);
+      }
+
+      .markdown-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+        line-height: 1.6;
+      }
+
+      /* Typography */
+      .markdown-content h1 {
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        color: var(--text-color);
+      }
+
+      .markdown-content h2 {
+        font-size: 1.8rem;
+        margin: 2rem 0 1rem;
+        color: var(--text-color);
+      }
+
+      .markdown-content h3 {
+        font-size: 1.4rem;
+        margin: 1.5rem 0 1rem;
+        color: var(--text-color);
+      }
+
+      .markdown-content p {
+        margin-bottom: 1.2rem;
+        color: #4b5563;
+      }
+
+      .markdown-content ul,
+      .markdown-content ol {
+        margin: 1rem 0;
+        padding-left: 2rem;
+      }
+
+      .markdown-content li {
+        margin-bottom: 0.5rem;
+        color: #4b5563;
+      }
+
+      /* Code blocks */
+      .markdown-content pre {
+        background: var(--secondary-background);
+        padding: 1rem;
+        border-radius: 4px;
+        overflow-x: auto;
+        margin: 1.5rem 0;
+      }
+
+      .markdown-content code {
+        font-family: monospace;
+        background: var(--secondary-background);
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+      }
+
+      /* Links */
+      .markdown-content a {
+        color: var(--primary-color);
+        text-decoration: none;
+      }
+
+      .markdown-content a:hover {
+        text-decoration: underline;
+      }
+
+      /* Tables */
+      .markdown-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1.5rem 0;
+      }
+
+      .markdown-content th,
+      .markdown-content td {
+        padding: 0.75rem;
+        border: 1px solid #e5e7eb;
+        text-align: left;
+      }
+
+      .markdown-content th {
+        background: var(--secondary-background);
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .markdown-content {
+          padding: 1.5rem 1rem;
+        }
+
+        .markdown-content h1 {
+          font-size: 2rem;
+        }
+
+        .markdown-content h2 {
+          font-size: 1.5rem;
+        }
+
+        .markdown-content h3 {
+          font-size: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="markdown-content">
+      {{ content | safe }}
+    </main>
+  </body>
+</html>

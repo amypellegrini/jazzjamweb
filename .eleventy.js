@@ -6,6 +6,15 @@ module.exports = function (eleventyConfig) {
   // Watch for CSS changes
   eleventyConfig.addWatchTarget("./src/css/");
 
+  let markdownIt = require("markdown-it");
+  let markdownItOptions = {
+    html: true,
+    breaks: true,
+    linkify: true,
+  };
+
+  eleventyConfig.setLibrary("md", markdownIt(markdownItOptions));
+
   return {
     dir: {
       input: "src",

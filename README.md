@@ -1,6 +1,6 @@
 # Jazz Jam Web
 
-This is the web site for Jazz Jam Studio and the Jazz Jam app.
+This is the web site for Jazz Jam Studio.
 
 ## Development
 

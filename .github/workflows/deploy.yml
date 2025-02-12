@@ -5,10 +5,13 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   deploy:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,17 +27,15 @@ jobs:
 
       - name: Build site
         run: npm run build
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
-      - name: Check build output
-        run: |
-          echo "Contents of _site directory:"
-          ls -la _site
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./_site
 
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_site
-          enable_jekyll: false
-          full_commit_message: ${{ github.event.head_commit.message }}
-          force_orphan: true
+          id: deployment
+          uses: actions/deploy-pages@v4

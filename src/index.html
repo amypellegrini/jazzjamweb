@@ -324,6 +324,10 @@
         text-decoration: underline;
       }
 
+      .md-hidden {
+        display: none;
+      }
+
       /* Responsive Design */
       @media (max-width: 768px) {
         br {
@@ -367,6 +371,14 @@
           display: none;
         }
 
+        .md-hidden {
+          display: block;
+        }
+
+        span.md-hidden {
+          display: inline;
+        }
+
         .beta-signup .form-container {
           width: 100%;
         }
@@ -393,11 +405,15 @@
                 <path
                   d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
                 /></svg
-              >Designed by musicians and software experts
+              ><span class="sm-hidden"
+                >Designed by musicians and software experts</span
+              >
+              <span class="md-hidden"> Designed by musicians </span>
             </p>
-            <h1>
+            <h1 class="sm-hidden">
               Improvise Jazz like a pro with <br />hassle-free backing tracks
             </h1>
+            <h1 class="md-hidden">Make Jazz practice effortless</h1>
             <p class="tagline">
               Select a chord progression. Adjust tempo, key, repeats, <br />and
               more. Play along with a virtual band. Make <br />practice sessions

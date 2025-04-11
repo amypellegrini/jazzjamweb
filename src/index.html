@@ -102,6 +102,10 @@
         justify-content: center;
       }
 
+      .align-items-center {
+        align-items: center;
+      }
+
       .hero-image-container {
         max-width: 1200px;
         margin: 0 auto;
@@ -177,6 +181,7 @@
         font-weight: 700;
         font-size: 1rem;
         transition: background-color 0.2s;
+        text-align: center;
       }
 
       .hero .secondary-cta {
@@ -189,6 +194,7 @@
         font-weight: 700;
         font-size: 1rem;
         transition: background-color 0.2s;
+        text-align: center;
       }
 
       .hero .primary-cta:hover {
@@ -320,6 +326,10 @@
 
       /* Responsive Design */
       @media (max-width: 768px) {
+        br {
+          display: none;
+        }
+
         .hero {
           padding: 2rem 0;
         }
@@ -332,6 +342,10 @@
           font-size: 1.125rem;
         }
 
+        .hero-image {
+          opacity: 0.5;
+        }
+
         .beta-signup-overlay {
           position: relative;
           transform: none;
@@ -339,6 +353,22 @@
           left: auto;
           margin: 2rem auto;
           max-width: 100%;
+        }
+
+        .beta-signup-content {
+          max-width: 400px;
+        }
+
+        .sm-flex-column {
+          flex-direction: column;
+        }
+
+        .sm-hidden {
+          display: none;
+        }
+
+        .beta-signup .form-container {
+          width: 100%;
         }
       }
     </style>
@@ -366,11 +396,11 @@
               >Designed by musicians and software experts
             </p>
             <h1>
-              Improvise Jazz like a pro with<br />hassle-free backing tracks
+              Improvise Jazz like a pro with <br />hassle-free backing tracks
             </h1>
             <p class="tagline">
-              Select a chord progression. Adjust tempo, key, repeats,<br />and
-              more. Play along with a virtual band. Make<br />practice sessions
+              Select a chord progression. Adjust tempo, key, repeats, <br />and
+              more. Play along with a virtual band. Make <br />practice sessions
               productive and fun!
             </p>
             <img
@@ -378,7 +408,7 @@
               src="assets/GetItOnGooglePlay_Badge_Web_color_English.png"
               alt="Available on Android"
             />
-            <div class="cta-block">
+            <div class="cta-block sm-flex-column">
               <a href="#beta-program" class="primary-cta">Join our beta</a>
               <a href="#learn-more" class="secondary-cta">Learn more</a>
             </div>
@@ -415,7 +445,9 @@
       </section>
 
       <section class="beta-signup" id="beta-program">
-        <div class="container flex-row justify-center">
+        <div
+          class="container flex-row justify-center sm-flex-column align-items-center"
+        >
           <div class="beta-signup-content">
             <h2>Get the app before it's launched!</h2>
             <p>
@@ -437,7 +469,7 @@
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 448 512"
-                class="beta-signup-arrow"
+                class="beta-signup-arrow sm-hidden"
               >
                 <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                 <path

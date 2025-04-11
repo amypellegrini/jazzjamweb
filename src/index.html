@@ -6,6 +6,47 @@
     <title>Jazz Jam Studio - Your Personal Jazz Practice Companion</title>
     <style>
       :root {
+        --primary-color-1000: hsl(285, 61%, 5%);
+        --primary-color-900: hsl(285, 61%, 10%);
+        --primary-color-800: hsl(285, 61%, 20%);
+        --primary-color-700: hsl(285, 61%, 30%);
+        --primary-color-600: hsl(285, 61%, 40%);
+        --primary-color-500: hsl(285, 61%, 50%);
+        --primary-color-400: hsl(285, 61%, 62%);
+        --primary-color-300: hsl(285, 61%, 75%);
+        --primary-color-200: hsl(285, 61%, 92%);
+        --primary-color-100: hsl(285, 61%, 97%);
+
+        --neutral-color-1000: hsl(210, 40%, 5%);
+        --neutral-color-900: hsl(210, 40%, 10%);
+        --neutral-color-800: hsl(210, 40%, 20%);
+        --neutral-color-700: hsl(210, 40%, 30%);
+        --neutral-color-600: hsl(210, 40%, 40%);
+        --neutral-color-500: hsl(210, 40%, 50%);
+        --neutral-color-400: hsl(210, 40%, 62%);
+        --neutral-color-300: hsl(210, 40%, 75%);
+        --neutral-color-200: hsl(210, 40%, 92%);
+        --neutral-color-100: hsl(210, 40%, 97%);
+
+        --primary-text-light: var(--primary-color-100);
+        --primary-text-dark: var(--primary-color-1000);
+        --primary-text-dark-900: var(--primary-color-900);
+        --primary-text-dark-800: var(--primary-color-800);
+        --primary-text-dark-700: var(--primary-color-700);
+        --primary-text-dark-600: var(--primary-color-600);
+
+        --neutral-text-light: var(--neutral-color-100);
+        --neutral-text-light-200: var(--neutral-color-200);
+        --neutral-text-light-300: var(--neutral-color-300);
+        --neutral-text-light-400: var(--neutral-color-400);
+        --neutral-text-light-500: var(--neutral-color-500);
+
+        --neutral-text-dark: var(--neutral-color-1000);
+        --neutral-text-dark-900: var(--neutral-color-900);
+        --neutral-text-dark-800: var(--neutral-color-800);
+        --neutral-text-dark-700: var(--neutral-color-700);
+        --neutral-text-dark-600: var(--neutral-color-600);
+
         --primary-color: #334e68;
         --text-color: #1f2937;
         --background-color: #ffffff;
@@ -33,17 +74,46 @@
         flex: 1 0 auto;
       }
 
+      h3 {
+        color: var(--neutral-text-dark);
+      }
+
+      .text-light {
+        color: var(--neutral-text-light);
+      }
+
+      .text-dark {
+        color: var(--neutral-text-dark);
+      }
+
       .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 1.5rem;
       }
 
+      .flex-row {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+      }
+
+      .justify-center {
+        justify-content: center;
+      }
+
+      .hero-image-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: row-reverse;
+        padding: 0 1.5rem;
+      }
+
       /* Hero Section */
       .hero {
-        background: var(--secondary-background);
+        background: hsl(285, 61%, 5%);
         padding: 3rem 0;
-        text-align: center;
         position: relative;
       }
 
@@ -51,57 +121,90 @@
         position: relative;
       }
 
+      .hero .hero-image {
+        top: 0;
+        position: absolute;
+        height: 100%;
+        mask-image: linear-gradient(to right, transparent, hsl(285, 61%, 5%));
+      }
+
       .hero h1 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
+        color: var(--neutral-text-light);
+        font-size: 2.6rem;
+        margin-bottom: 2rem;
+        line-height: 1.2;
       }
 
       .hero p {
-        font-size: 1.25rem;
-        color: #4b5563;
+        font-size: 1.2rem;
+        color: var(--neutral-text-light-200);
         margin-bottom: 2rem;
         max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
       }
 
-      .hero .h2 {
-        font-size: 2rem;
-        font-weight: bold;
-      }
-
-      .hero-image-container {
-        position: relative;
-        max-width: 800px;
-        margin: 3rem auto 0;
-      }
-
-      .hero-image {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-
-      /* Overlay Form */
-      .beta-signup-overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(255, 255, 255, 0.95);
-        padding: 2rem;
-        border-radius: 8px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        max-width: 450px;
-        width: 90%;
-        text-align: center;
-      }
-
-      .beta-signup-overlay h2 {
-        color: var(--text-color);
+      .hero .tagline {
         margin-bottom: 1rem;
-        font-size: 1.5rem;
+      }
+
+      .hero .kicker {
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        letter-spacing: 0.1rem;
+      }
+
+      .hero .kicker-icon {
+        width: 1.2rem;
+        height: 1.2rem;
+        margin-right: 0.5rem;
+        margin-bottom: -0.25rem;
+      }
+
+      .hero .cta-block {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .hero .primary-cta {
+        background: hsl(232, 61%, 40%);
+        color: white;
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+      }
+
+      .hero .secondary-cta {
+        border: 2px solid #dddddd;
+        color: #dddddd;
+        padding: 0.75rem 2rem;
+        border-radius: 4px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1rem;
+        transition: background-color 0.2s;
+      }
+
+      .hero .primary-cta:hover {
+        background: hsl(232, 61%, 30%);
+        text-decoration: underline;
+      }
+
+      .hero .secondary-cta:hover {
+        text-decoration: underline;
+      }
+
+      .hero .google-play-badge {
+        width: 150px;
+        height: auto;
+        display: block;
+        margin-bottom: 3rem;
       }
 
       /* Beta Benefit */
@@ -140,34 +243,62 @@
 
       .feature-card h3 {
         margin-bottom: 1rem;
-        color: var(--primary-color);
+        color: var(--neutral-text-dark-800);
       }
 
-      /* Form Elements */
-      .email-input {
-        width: 100%;
-        padding: 0.75rem;
+      .beta-signup {
+        padding: 2rem 0;
+      }
+
+      .beta-signup-content {
+        padding-top: 28px;
+        max-width: 400px;
+      }
+
+      .beta-signup-content h2 {
+        margin-bottom: 7px;
+      }
+
+      .beta-signup-steps {
+        margin-top: 1rem;
+        counter-reset: step-counter;
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .beta-signup-steps li {
+        position: relative;
+        padding-left: 2.5rem;
         margin-bottom: 1rem;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        font-size: 1rem;
+        counter-increment: step-counter;
       }
 
-      .submit-button {
-        width: 100%;
-        background: var(--primary-color);
+      .beta-signup-steps li::before {
+        content: counter(step-counter);
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.5rem;
+        height: 1.5rem;
+        background-color: hsl(0, 80%, 55%);
         color: white;
-        border: none;
-        padding: 0.75rem 2rem;
-        border-radius: 4px;
-        cursor: pointer;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         font-weight: bold;
-        font-size: 1rem;
-        transition: background-color 0.2s;
+        font-size: 0.875rem;
       }
 
-      .submit-button:hover {
-        background: #1d4ed8;
+      .beta-signup-steps li p {
+        margin: 0;
+        color: var(--text-color);
+      }
+
+      .beta-signup-arrow {
+        width: 3rem;
+        fill: hsl(0, 80%, 55%);
       }
 
       /* Footer */
@@ -215,87 +346,54 @@
   <body>
     <main>
       <section class="hero">
+        <div class="hero-image-container">
+          <img src="assets/hero.jpg" alt="Hero Image" class="hero-image" />
+          <!-- <div class="hero-image-overlay"></div> -->
+        </div>
         <div class="container">
           <div class="hero-content">
-            <h1>Welcome to Jazz Jam Studio</h1>
-            <p>
-              Your personal jazz practice companion. Master chord progressions,
-              practice with a virtual band, and improve your jazz skills at your
-              own pace.
+            <p class="kicker">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                fill="#ffffff"
+                class="kicker-icon"
+              >
+                <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                <path
+                  d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                /></svg
+              >Designed by musicians and software experts
             </p>
-            <p class="h2">Coming soon!</p>
-
-            <!-- <div class="hero-image-container">
-              <img
-                src="/api/placeholder/800/450"
-                alt="Jazz Jam Studio App Preview"
-                class="hero-image"
-              />
-
-              <div class="beta-signup-overlay">
-                <h2>Join Our Beta Program</h2>
-                <div class="beta-benefit">
-                  <strong>🎵 Early Access Benefit:</strong> Beta users get
-                  lifetime free access!
-                </div>
-                <p style="font-size: 0.9rem; margin-bottom: 1rem">
-                  Regular pricing will apply after the beta period ends.
-                </p>
-
-                <div id="mc_embed_signup">
-                  <form
-                    action="https://[YOUR-MAILCHIMP-FORM-URL]"
-                    method="post"
-                    id="mc-embedded-subscribe-form"
-                    name="mc-embedded-subscribe-form"
-                    class="validate"
-                    target="_blank"
-                  >
-                    <div id="mc_embed_signup_scroll">
-                      <input
-                        type="email"
-                        name="EMAIL"
-                        class="email-input"
-                        id="mce-EMAIL"
-                        placeholder="Your email address"
-                        required
-                      />
-                      <div
-                        style="position: absolute; left: -5000px"
-                        aria-hidden="true"
-                      >
-                        <input
-                          type="text"
-                          name="b_[YOUR-MAILCHIMP-U-VALUE]"
-                          tabindex="-1"
-                          value=""
-                        />
-                      </div>
-                      <button
-                        type="submit"
-                        name="subscribe"
-                        id="mc-embedded-subscribe"
-                        class="submit-button"
-                      >
-                        Get Free Lifetime Access
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div> -->
+            <h1>
+              Improvise Jazz like a pro with<br />hassle-free backing tracks
+            </h1>
+            <p class="tagline">
+              Select a chord progression. Adjust tempo, key, repeats,<br />and
+              more. Play along with a virtual band. Make<br />practice sessions
+              productive and fun!
+            </p>
+            <img
+              class="google-play-badge"
+              src="assets/GetItOnGooglePlay_Badge_Web_color_English.png"
+              alt="Available on Android"
+            />
+            <div class="cta-block">
+              <a href="#beta-program" class="primary-cta">Join our beta</a>
+              <a href="#learn-more" class="secondary-cta">Learn more</a>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="features">
+      <section class="features" id="learn-more">
         <div class="container">
           <div class="features-grid">
             <div class="feature-card">
               <h3>Virtual Band Practice</h3>
               <p>
-                Practice with a professional rhythm section anytime. Customize
-                arrangements to match your skill level.
+                Practice with a professional rhythm section anytime. Our backing
+                tracks are designed to sound organic and authentic.
               </p>
             </div>
             <div class="feature-card">
@@ -312,6 +410,1434 @@
                 enhance your practice sessions.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="beta-signup" id="beta-program">
+        <div class="container flex-row justify-center">
+          <div class="beta-signup-content">
+            <h2>Get the app before it's launched!</h2>
+            <p>
+              Join the waitlist to get early access to the Jazz Jam app and help
+              us shape the future of jazz practice.
+            </p>
+            <div class="flex-row">
+              <ol class="beta-signup-steps">
+                <li>
+                  <p>Provide an email address</p>
+                </li>
+                <li>
+                  <p>Hit subscribe</p>
+                </li>
+                <li>
+                  <p>Check your email for instructions</p>
+                </li>
+              </ol>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                class="beta-signup-arrow"
+              >
+                <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                <path
+                  d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="form-container">
+            <style type="text/css">
+              @import url("https://assets.mlcdn.com/fonts.css?version=1744283");
+            </style>
+            <style type="text/css">
+              /* LOADER */
+              .ml-form-embedSubmitLoad {
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+              }
+
+              .g-recaptcha {
+                transform: scale(1);
+                -webkit-transform: scale(1);
+                transform-origin: 0 0;
+                -webkit-transform-origin: 0 0;
+                height: ;
+              }
+
+              .sr-only {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                border: 0;
+              }
+
+              .ml-form-embedSubmitLoad:after {
+                content: " ";
+                display: block;
+                width: 11px;
+                height: 11px;
+                margin: 1px;
+                border-radius: 50%;
+                border: 4px solid #fff;
+                border-color: #ffffff #ffffff #ffffff transparent;
+                animation: ml-form-embedSubmitLoad 1.2s linear infinite;
+              }
+              @keyframes ml-form-embedSubmitLoad {
+                0% {
+                  transform: rotate(0deg);
+                }
+                100% {
+                  transform: rotate(360deg);
+                }
+              }
+              #mlb2-24603864.ml-form-embedContainer {
+                box-sizing: border-box;
+                display: table;
+                margin: 0 auto;
+                position: static;
+                width: 100% !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer h4,
+              #mlb2-24603864.ml-form-embedContainer p,
+              #mlb2-24603864.ml-form-embedContainer span,
+              #mlb2-24603864.ml-form-embedContainer button {
+                text-transform: none !important;
+                letter-spacing: normal !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer .ml-form-embedWrapper {
+                background-color: #f6f6f6;
+
+                border-width: 0px;
+                border-color: transparent;
+                border-radius: 4px;
+                border-style: solid;
+                box-sizing: border-box;
+                display: inline-block !important;
+                margin: 0;
+                padding: 0;
+                position: relative;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper.embedPopup,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper.embedDefault {
+                width: 400px;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper.embedForm {
+                max-width: 400px;
+                width: 100%;
+              }
+              #mlb2-24603864.ml-form-embedContainer .ml-form-align-left {
+                text-align: left;
+              }
+              #mlb2-24603864.ml-form-embedContainer .ml-form-align-center {
+                text-align: center;
+              }
+              #mlb2-24603864.ml-form-embedContainer .ml-form-align-default {
+                display: table-cell !important;
+                vertical-align: middle !important;
+                text-align: center !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer .ml-form-align-right {
+                text-align: right;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedHeader
+                img {
+                border-top-left-radius: 4px;
+                border-top-right-radius: 4px;
+                height: auto;
+                margin: 0 auto !important;
+                max-width: 100%;
+                width: undefinedpx;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody {
+                padding: 20px 20px 0 20px;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody.ml-form-embedBodyHorizontal {
+                padding-bottom: 0;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent {
+                text-align: left;
+                margin: 0 0 20px 0;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                h4,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                h4 {
+                color: #000000;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 30px;
+                font-weight: 400;
+                margin: 0 0 10px 0;
+                text-align: left;
+                word-break: break-word;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                p,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                p {
+                color: #000000;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px;
+                font-weight: 400;
+                line-height: 20px;
+                margin: 0 0 10px 0;
+                text-align: left;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                ul,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                ol,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                ul,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                ol {
+                color: #000000;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                ol
+                ol,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                ol
+                ol {
+                list-style-type: lower-alpha;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                ol
+                ol
+                ol,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                ol
+                ol
+                ol {
+                list-style-type: lower-roman;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                p
+                a,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                p
+                a {
+                color: #000000;
+                text-decoration: underline;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-block-form
+                .ml-field-group {
+                text-align: left !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-block-form
+                .ml-field-group
+                label {
+                margin-bottom: 5px;
+                color: #333333;
+                font-size: 14px;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-weight: bold;
+                font-style: normal;
+                text-decoration: none;
+                display: inline-block;
+                line-height: 20px;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedContent
+                p:last-child,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-successBody
+                .ml-form-successContent
+                p:last-child {
+                margin: 0;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                form {
+                margin: 0;
+                width: 100%;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-formContent,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow {
+                margin: 0 0 20px 0;
+                width: 100%;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow {
+                float: left;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-formContent.horozintalForm {
+                margin: 0;
+                padding: 0 0 20px 0;
+                width: 100%;
+                height: auto;
+                float: left;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow {
+                margin: 0 0 10px 0;
+                width: 100%;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow.ml-last-item {
+                margin: 0;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow.ml-formfieldHorizintal {
+                margin: 0;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                input {
+                background-color: #ffffff !important;
+                color: #333333 !important;
+                border-color: #cccccc;
+                border-radius: 4px !important;
+                border-style: solid !important;
+                border-width: 1px !important;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px !important;
+                height: auto;
+                line-height: 21px !important;
+                margin-bottom: 0;
+                margin-top: 0;
+                margin-left: 0;
+                margin-right: 0;
+                padding: 10px 10px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                max-width: 100% !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                input::-webkit-input-placeholder,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                input::-webkit-input-placeholder {
+                color: #333333;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                input::-moz-placeholder,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                input::-moz-placeholder {
+                color: #333333;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                input:-ms-input-placeholder,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                input:-ms-input-placeholder {
+                color: #333333;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                input:-moz-placeholder,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                input:-moz-placeholder {
+                color: #333333;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                textarea,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                textarea {
+                background-color: #ffffff !important;
+                color: #333333 !important;
+                border-color: #cccccc;
+                border-radius: 4px !important;
+                border-style: solid !important;
+                border-width: 1px !important;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px !important;
+                height: auto;
+                line-height: 21px !important;
+                margin-bottom: 0;
+                margin-top: 0;
+                padding: 10px 10px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                max-width: 100% !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-radio
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::before {
+                border-color: #cccccc !important;
+                background-color: #ffffff !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                input.custom-control-input[type="checkbox"] {
+                box-sizing: border-box;
+                padding: 0;
+                position: absolute;
+                z-index: -1;
+                opacity: 0;
+                margin-top: 5px;
+                margin-left: -1.5rem;
+                overflow: visible;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::before {
+                border-radius: 4px !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                input[type="checkbox"]:checked
+                ~ .label-description::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                input[type="checkbox"]:checked
+                ~ .label-description::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-input:checked
+                ~ .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-input:checked
+                ~ .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                input[type="checkbox"]:checked
+                ~ .label-description::after {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23fff' d='M6.564.75l-3.59 3.612-1.538-1.55L0 4.26 2.974 7.25 8 2.193z'/%3e%3c/svg%3e");
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-input:checked
+                ~ .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-input:checked
+                ~ .custom-control-label::after {
+                background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-input:checked
+                ~ .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-radio
+                .custom-control-input:checked
+                ~ .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-input:checked
+                ~ .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-input:checked
+                ~ .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                input[type="checkbox"]:checked
+                ~ .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                input[type="checkbox"]:checked
+                ~ .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                input[type="checkbox"]:checked
+                ~ .label-description::before {
+                border-color: #000000 !important;
+                background-color: #000000 !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-radio
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-radio
+                .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-label::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-label::after {
+                top: 2px;
+                box-sizing: border-box;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::after {
+                top: 0px !important;
+                box-sizing: border-box !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::after {
+                top: 0px !important;
+                box-sizing: border-box !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                .label-description::after {
+                top: 0px !important;
+                box-sizing: border-box !important;
+                position: absolute;
+                left: -1.5rem;
+                display: block;
+                width: 1rem;
+                height: 1rem;
+                content: "";
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                .label-description::before {
+                top: 0px !important;
+                box-sizing: border-box !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .custom-control-label::before {
+                position: absolute;
+                top: 4px;
+                left: -1.5rem;
+                display: block;
+                width: 16px;
+                height: 16px;
+                pointer-events: none;
+                content: "";
+                background-color: #ffffff;
+                border: #adb5bd solid 1px;
+                border-radius: 50%;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .custom-control-label::after {
+                position: absolute;
+                top: 2px !important;
+                left: -1.5rem;
+                display: block;
+                width: 1rem;
+                height: 1rem;
+                content: "";
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                .label-description::before,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::before {
+                position: absolute;
+                top: 4px;
+                left: -1.5rem;
+                display: block;
+                width: 16px;
+                height: 16px;
+                pointer-events: none;
+                content: "";
+                background-color: #ffffff;
+                border: #adb5bd solid 1px;
+                border-radius: 50%;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::after {
+                position: absolute;
+                top: 0px !important;
+                left: -1.5rem;
+                display: block;
+                width: 1rem;
+                height: 1rem;
+                content: "";
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::after {
+                position: absolute;
+                top: 0px !important;
+                left: -1.5rem;
+                display: block;
+                width: 1rem;
+                height: 1rem;
+                content: "";
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .custom-radio
+                .custom-control-label::after {
+                background: no-repeat 50%/50% 50%;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .custom-checkbox
+                .custom-control-label::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedPermissions
+                .ml-form-embedPermissionsOptionsCheckbox
+                .label-description::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-interestGroupsRow
+                .ml-form-interestGroupsRowCheckbox
+                .label-description::after,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description::after {
+                background: no-repeat 50%/50% 50%;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-control,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-control {
+                position: relative;
+                display: block;
+                min-height: 1.5rem;
+                padding-left: 1.5rem;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-input,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-radio
+                .custom-control-input,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-input,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-input {
+                position: absolute;
+                z-index: -1;
+                opacity: 0;
+                box-sizing: border-box;
+                padding: 0;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-radio
+                .custom-control-label,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-radio
+                .custom-control-label,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-checkbox
+                .custom-control-label,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-checkbox
+                .custom-control-label {
+                color: #000000;
+                font-size: 12px !important;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                line-height: 22px;
+                margin-bottom: 0;
+                position: relative;
+                vertical-align: top;
+                font-style: normal;
+                font-weight: 700;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-fieldRow
+                .custom-select,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                .custom-select {
+                background-color: #ffffff !important;
+                color: #333333 !important;
+                border-color: #cccccc;
+                border-radius: 4px !important;
+                border-style: solid !important;
+                border-width: 1px !important;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px !important;
+                line-height: 20px !important;
+                margin-bottom: 0;
+                margin-top: 0;
+                padding: 10px 28px 10px 12px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                max-width: 100% !important;
+                height: auto;
+                display: inline-block;
+                vertical-align: middle;
+                background: url("https://assets.mlcdn.com/ml/images/default/dropdown.svg")
+                  no-repeat right 0.75rem center/8px 10px;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                appearance: none;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow {
+                height: auto;
+                width: 100%;
+                float: left;
+              }
+              .ml-form-formContent.horozintalForm
+                .ml-form-horizontalRow
+                .ml-input-horizontal {
+                width: 70%;
+                float: left;
+              }
+              .ml-form-formContent.horozintalForm
+                .ml-form-horizontalRow
+                .ml-button-horizontal {
+                width: 30%;
+                float: left;
+              }
+              .ml-form-formContent.horozintalForm
+                .ml-form-horizontalRow
+                .ml-button-horizontal.labelsOn {
+                padding-top: 25px;
+              }
+              .ml-form-formContent.horozintalForm
+                .ml-form-horizontalRow
+                .horizontal-fields {
+                box-sizing: border-box;
+                float: left;
+                padding-right: 10px;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                input {
+                background-color: #ffffff;
+                color: #333333;
+                border-color: #cccccc;
+                border-radius: 4px;
+                border-style: solid;
+                border-width: 1px;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px;
+                line-height: 20px;
+                margin-bottom: 0;
+                margin-top: 0;
+                padding: 10px 10px;
+                width: 100%;
+                box-sizing: border-box;
+                overflow-y: initial;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                button {
+                background-color: #2838a4 !important;
+                border-color: #2838a4;
+                border-style: solid;
+                border-width: 1px;
+                border-radius: 4px;
+                box-shadow: none;
+                color: #ffffff !important;
+                cursor: pointer;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 14px !important;
+                font-weight: 700;
+                line-height: 20px;
+                margin: 0 !important;
+                padding: 10px !important;
+                width: 100%;
+                height: auto;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-horizontalRow
+                button:hover {
+                background-color: #1e2a7b !important;
+                border-color: #1e2a7b !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                input[type="checkbox"] {
+                box-sizing: border-box;
+                padding: 0;
+                position: absolute;
+                z-index: -1;
+                opacity: 0;
+                margin-top: 5px;
+                margin-left: -1.5rem;
+                overflow: visible;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                .label-description {
+                color: #000000;
+                display: block;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif;
+                font-size: 12px;
+                text-align: left;
+                margin-bottom: 0;
+                position: relative;
+                vertical-align: top;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                label {
+                font-weight: normal;
+                margin: 0;
+                padding: 0;
+                position: relative;
+                display: block;
+                min-height: 24px;
+                padding-left: 24px;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                label
+                a {
+                color: #000000;
+                text-decoration: underline;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                label
+                p {
+                color: #000000 !important;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
+                font-size: 12px !important;
+                font-weight: normal !important;
+                line-height: 18px !important;
+                padding: 0 !important;
+                margin: 0 5px 0 0 !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow
+                label
+                p:last-child {
+                margin: 0;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedSubmit {
+                margin: 0 0 20px 0;
+                float: left;
+                width: 100%;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedSubmit
+                button {
+                background-color: #2838a4 !important;
+                border: none !important;
+                border-radius: 4px !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
+                cursor: pointer;
+                font-family: "Open Sans", Arial, Helvetica, sans-serif !important;
+                font-size: 14px !important;
+                font-weight: 700 !important;
+                line-height: 21px !important;
+                height: auto;
+                padding: 10px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedSubmit
+                button.loading {
+                display: none;
+              }
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-embedSubmit
+                button:hover {
+                background-color: #1e2a7b !important;
+              }
+              .ml-subscribe-close {
+                width: 30px;
+                height: 30px;
+                background: url("https://assets.mlcdn.com/ml/images/default/modal_close.png")
+                  no-repeat;
+                background-size: 30px;
+                cursor: pointer;
+                margin-top: -10px;
+                margin-right: -10px;
+                position: absolute;
+                top: 0;
+                right: 0;
+              }
+              .ml-error input,
+              .ml-error textarea,
+              .ml-error select {
+                border-color: red !important;
+              }
+
+              .ml-error .custom-checkbox-radio-list {
+                border: 1px solid red !important;
+                border-radius: 4px;
+                padding: 10px;
+              }
+
+              .ml-error .label-description,
+              .ml-error .label-description p,
+              .ml-error .label-description p a,
+              .ml-error label:first-child {
+                color: #ff0000 !important;
+              }
+
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow.ml-error
+                .label-description
+                p,
+              #mlb2-24603864.ml-form-embedContainer
+                .ml-form-embedWrapper
+                .ml-form-embedBody
+                .ml-form-checkboxRow.ml-error
+                .label-description
+                p:first-letter {
+                color: #ff0000 !important;
+              }
+              @media only screen and (max-width: 400px) {
+                .ml-form-embedWrapper.embedDefault,
+                .ml-form-embedWrapper.embedPopup {
+                  width: 100% !important;
+                }
+                .ml-form-formContent.horozintalForm {
+                  float: left !important;
+                }
+                .ml-form-formContent.horozintalForm .ml-form-horizontalRow {
+                  height: auto !important;
+                  width: 100% !important;
+                  float: left !important;
+                }
+                .ml-form-formContent.horozintalForm
+                  .ml-form-horizontalRow
+                  .ml-input-horizontal {
+                  width: 100% !important;
+                }
+                .ml-form-formContent.horozintalForm
+                  .ml-form-horizontalRow
+                  .ml-input-horizontal
+                  > div {
+                  padding-right: 0px !important;
+                  padding-bottom: 10px;
+                }
+                .ml-form-formContent.horozintalForm .ml-button-horizontal {
+                  width: 100% !important;
+                }
+                .ml-form-formContent.horozintalForm
+                  .ml-button-horizontal.labelsOn {
+                  padding-top: 0px !important;
+                }
+              }
+            </style>
+
+            <div
+              id="mlb2-24603864"
+              class="ml-form-embedContainer ml-subscribe-form ml-subscribe-form-24603864"
+            >
+              <div class="ml-form-align-center">
+                <div class="ml-form-embedWrapper embedForm">
+                  <div
+                    class="ml-form-embedBody ml-form-embedBodyDefault row-form"
+                  >
+                    <div class="ml-form-embedContent" style="">
+                      <h4>Join our beta</h4>
+                      <p>We'll send instructions to your email.</p>
+                    </div>
+
+                    <form
+                      class="ml-block-form"
+                      action="https://assets.mailerlite.com/jsonp/1439006/forms/151125911451731083/subscribe"
+                      data-code=""
+                      method="post"
+                      target="_blank"
+                    >
+                      <div class="ml-form-formContent">
+                        <div class="ml-form-fieldRow ml-last-item">
+                          <div
+                            class="ml-field-group ml-field-email ml-validate-email ml-validate-required"
+                          >
+                            <!-- input -->
+                            <input
+                              aria-label="email"
+                              aria-required="true"
+                              type="email"
+                              class="form-control"
+                              data-inputmask=""
+                              name="fields[email]"
+                              placeholder="Email"
+                              autocomplete="email"
+                            />
+                            <!-- /input -->
+
+                            <!-- textarea -->
+
+                            <!-- /textarea -->
+
+                            <!-- select -->
+
+                            <!-- /select -->
+
+                            <!-- checkboxes -->
+
+                            <!-- /checkboxes -->
+
+                            <!-- radio -->
+
+                            <!-- /radio -->
+
+                            <!-- countries -->
+
+                            <!-- /countries -->
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Privacy policy -->
+
+                      <!-- /Privacy policy -->
+
+                      <div class="ml-form-checkboxRow ml-validate-required">
+                        <label class="checkbox">
+                          <input type="checkbox" />
+                          <div class="label-description">
+                            <p>Opt in to receive news and updates.</p>
+                          </div>
+                        </label>
+                      </div>
+
+                      <input type="hidden" name="ml-submit" value="1" />
+
+                      <div class="ml-form-embedSubmit">
+                        <button type="submit" class="primary">Subscribe</button>
+
+                        <button
+                          disabled="disabled"
+                          style="display: none"
+                          type="button"
+                          class="loading"
+                        >
+                          <div class="ml-form-embedSubmitLoad"></div>
+                          <span class="sr-only">Loading...</span>
+                        </button>
+                      </div>
+
+                      <input type="hidden" name="anticsrf" value="true" />
+                    </form>
+                  </div>
+
+                  <div
+                    class="ml-form-successBody row-success"
+                    style="display: none"
+                  >
+                    <div class="ml-form-successContent">
+                      <h4>Thank you!</h4>
+
+                      <p>You have successfully joined our subscriber list.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <script>
+              function ml_webform_success_24603864() {
+                var $ = ml_jQuery || jQuery;
+                $(".ml-subscribe-form-24603864 .row-success").show();
+                $(".ml-subscribe-form-24603864 .row-form").hide();
+              }
+            </script>
+
+            <script
+              src="https://groot.mailerlite.com/js/w/webforms.min.js?v176e10baa5e7ed80d35ae235be3d5024"
+              type="text/javascript"
+            ></script>
+            <script>
+              fetch(
+                "https://assets.mailerlite.com/jsonp/1439006/forms/151125911451731083/takel"
+              );
+            </script>
           </div>
         </div>
       </section>

@@ -35,7 +35,7 @@ Welcome to Jazz Jam Studio. We respect your privacy and are committed to protect
 
 We use your email address for:
 
-- Sending you information about the beta program through Mailchimp
+- Sending you information about the beta program through MailerLite
 - Providing access to beta releases through Google Play Store
 - Communicating important updates about the app
 
@@ -43,7 +43,7 @@ We use your email address for:
 
 We use the following third-party services:
 
-- **Mailchimp**: Manages our email communications. When you provide your email, it will be processed according to Mailchimp's privacy policy.
+- **MailerLite**: Manages our email communications. When you provide your email, it will be processed according to MailerLite's privacy policy.
 - **Google Play Store**: Handles beta testing distribution and manages app downloads. Your interaction with the Play Store is governed by Google's privacy policy.
 
 ## Data Storage and Security

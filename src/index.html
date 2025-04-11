@@ -86,16 +86,55 @@
         color: var(--neutral-text-dark);
       }
 
+      .text-center {
+        text-align: center;
+      }
+
       .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 1.5rem;
       }
 
+      .mb-1 {
+        margin-bottom: 1rem;
+      }
+
+      .mb-2 {
+        margin-bottom: 2rem;
+      }
+
       .flex-row {
         display: flex;
         flex-direction: row;
         gap: 2rem;
+      }
+
+      .flex-row > div img {
+        max-width: 40%;
+      }
+
+      .phone-image {
+        border-radius: 15px;
+        border: 10px solid var(--neutral-text-dark-800);
+        border-bottom-width: 40px;
+      }
+
+      .max-w-400 {
+        max-width: 400px;
+      }
+
+      .margin-auto {
+        margin: 0 auto;
+      }
+
+      .flex-column {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .flex-row > div {
+        flex: 1;
       }
 
       .justify-center {
@@ -254,11 +293,6 @@
 
       .beta-signup {
         padding: 2rem 0;
-      }
-
-      .beta-signup-content {
-        padding-top: 28px;
-        max-width: 400px;
       }
 
       .beta-signup-content h2 {
@@ -433,7 +467,7 @@
       </section>
 
       <section class="features" id="learn-more">
-        <div class="container">
+        <div class="container mb-2">
           <div class="features-grid">
             <div class="feature-card">
               <h3>Virtual Band Practice</h3>
@@ -458,6 +492,28 @@
             </div>
           </div>
         </div>
+        <div class="container">
+          <div class="flex-row sm-flex-column">
+            <div class="text-center">
+              <img
+                src="assets/screenshot-4.png"
+                alt="Jazz Jam App"
+                class="phone-image"
+              />
+            </div>
+            <div class="flex-column justify-center">
+              <div class="max-w-400 margin-auto">
+                <h2 class="mb-1">The Jazz Jam App</h2>
+                <p class="mb-1">
+                  Designed with simplicity in mind, the Jazz Jam App is an
+                  essential practice tool for any Jazz musician. Having the Jazz
+                  Jam app is like having a dedicated rhythm section in your
+                  pocket.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="beta-signup" id="beta-program">
@@ -465,33 +521,35 @@
           class="container flex-row justify-center sm-flex-column align-items-center"
         >
           <div class="beta-signup-content">
-            <h2>Get the app before it's launched!</h2>
-            <p>
-              Join the waitlist to get early access to the Jazz Jam app and help
-              us shape the future of jazz practice.
-            </p>
-            <div class="flex-row">
-              <ol class="beta-signup-steps">
-                <li>
-                  <p>Provide an email address</p>
-                </li>
-                <li>
-                  <p>Hit subscribe</p>
-                </li>
-                <li>
-                  <p>Check your email for instructions</p>
-                </li>
-              </ol>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 448 512"
-                class="beta-signup-arrow sm-hidden"
-              >
-                <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
-                <path
-                  d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
-                />
-              </svg>
+            <div class="max-w-400 margin-auto">
+              <h2>Get the app before it's launched!</h2>
+              <p>
+                Join the waitlist to get early access to the Jazz Jam app and
+                help us shape the future of jazz practice.
+              </p>
+              <div class="flex-row">
+                <ol class="beta-signup-steps">
+                  <li>
+                    <p>Provide an email address</p>
+                  </li>
+                  <li>
+                    <p>Hit subscribe</p>
+                  </li>
+                  <li>
+                    <p>Check your email for instructions</p>
+                  </li>
+                </ol>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                  class="beta-signup-arrow sm-hidden"
+                >
+                  <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+                  <path
+                    d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
           <div class="form-container">
@@ -704,22 +762,6 @@
                 ol
                 ol {
                 list-style-type: lower-alpha;
-              }
-              #mlb2-24603864.ml-form-embedContainer
-                .ml-form-embedWrapper
-                .ml-form-embedBody
-                .ml-form-embedContent
-                ol
-                ol
-                ol,
-              #mlb2-24603864.ml-form-embedContainer
-                .ml-form-embedWrapper
-                .ml-form-successBody
-                .ml-form-successContent
-                ol
-                ol
-                ol {
-                list-style-type: lower-roman;
               }
               #mlb2-24603864.ml-form-embedContainer
                 .ml-form-embedWrapper

@@ -90,10 +90,18 @@
         text-align: center;
       }
 
+      .text-bold {
+        font-weight: bold;
+      }
+
       .container {
         max-width: 1200px;
         margin: 0 auto;
         padding: 0 1.5rem;
+      }
+
+      .mt-2 {
+        margin-top: 2rem;
       }
 
       .mb-1 {
@@ -122,6 +130,10 @@
 
       .max-w-400 {
         max-width: 400px;
+      }
+
+      .max-w-600 {
+        max-width: 600px;
       }
 
       .margin-auto {
@@ -515,6 +527,22 @@
         </div>
       </section>
 
+      <section class="video mt-2 mb-2">
+        <div class="container max-w-600 margin-auto">
+          <h2 class="mb-1">See it in action</h2>
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/nlHMpRl5pRc?si=A9hRCHOz7Hsdm6RM"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
       <section class="beta-signup" id="beta-program">
         <div
           class="container flex-row justify-center sm-flex-column align-items-center"
@@ -522,9 +550,12 @@
           <div class="beta-signup-content">
             <div class="max-w-400 margin-auto">
               <h2>Get the app before it's launched!</h2>
-              <p>
+              <p class="mb-1">
                 Join the waitlist to get early access to the Jazz Jam app and
                 help us shape the future of jazz practice.
+              </p>
+              <p class="text-bold">
+                Available on Android, other plaforms coming soon!
               </p>
               <div class="flex-row">
                 <ol class="beta-signup-steps">

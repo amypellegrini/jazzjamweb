@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 test.describe("Privacy Policy", () => {
-  test("displays the page heading", async ({ page }) => {
+  test.beforeEach(async ({ page }) => {
     await page.goto("/privacy-policy/");
+  });
+
+  test("displays the page heading", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Privacy Policy for Jazz Jam Studio" })
     ).toBeVisible();
@@ -11,7 +14,6 @@ test.describe("Privacy Policy", () => {
   test("discloses Sentry crash reporting in data collection", async ({
     page,
   }) => {
-    await page.goto("/privacy-policy/");
     await expect(page.locator("body")).toContainText(
       "Crash Reporting via Sentry"
     );
@@ -23,7 +25,6 @@ test.describe("Privacy Policy", () => {
   test("states no PII is intentionally collected via Sentry", async ({
     page,
   }) => {
-    await page.goto("/privacy-policy/");
     await expect(page.locator("body")).toContainText(
       "No personally identifiable information is intentionally collected"
     );
@@ -32,7 +33,6 @@ test.describe("Privacy Policy", () => {
   test("lists Sentry in third-party services with privacy policy link", async ({
     page,
   }) => {
-    await page.goto("/privacy-policy/");
     const sentryLink = page.getByRole("link", {
       name: /sentry.*privacy policy/i,
     });
@@ -44,14 +44,12 @@ test.describe("Privacy Policy", () => {
   });
 
   test("lists all third-party services", async ({ page }) => {
-    await page.goto("/privacy-policy/");
     for (const service of ["MailerLite", "Google Play Store", "Sentry"]) {
       await expect(page.locator("body")).toContainText(service);
     }
   });
 
   test("explains Sentry data is used for bug fixing", async ({ page }) => {
-    await page.goto("/privacy-policy/");
     await expect(page.locator("body")).toContainText(
       "identify and fix bugs and improve app stability"
     );

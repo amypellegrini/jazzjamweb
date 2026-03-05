@@ -5,7 +5,7 @@ title: Privacy Policy
 
 # Privacy Policy for Jazz Jam Studio
 
-Last Updated: February 10, 2025
+Last Updated: March 5, 2026
 
 ## Introduction
 
@@ -16,7 +16,7 @@ Welcome to Jazz Jam Studio. We respect your privacy and are committed to protect
 ### Through the App
 
 - **Local Storage Data**: The app stores your preferences, settings, and practice data locally on your device. This data never leaves your device and we cannot access it.
-- **Optional Crash Reporting**: In future versions, you may be given the option to share crash reports to help improve the app. This will always be opt-in, and you'll be able to enable or disable it at any time.
+- **Crash Reporting via Sentry**: The app uses Sentry, a third-party error tracking service, to automatically collect crash reports and error data. This may include device information (device model, OS version), app state at the time of the error, and stack traces. No personally identifiable information is intentionally collected through Sentry.
 
 ### Through the Website
 
@@ -28,8 +28,8 @@ Welcome to Jazz Jam Studio. We respect your privacy and are committed to protect
 ### App Data
 
 - All app settings and user preferences are stored locally on your device
-- We do not collect, transmit, or store any personal data from the app on our servers
-- If crash reporting is implemented in the future, this data will only be collected with your explicit consent
+- We do not collect, transmit, or store any personal data from the app on our servers, except for crash and error data collected by Sentry
+- Crash and error data collected by Sentry is used solely to identify and fix bugs and improve app stability
 
 ### Website Data
 
@@ -45,6 +45,7 @@ We use the following third-party services:
 
 - **MailerLite**: Manages our email communications. When you provide your email, it will be processed according to MailerLite's privacy policy.
 - **Google Play Store**: Handles beta testing distribution and manages app downloads. Your interaction with the Play Store is governed by Google's privacy policy.
+- **Sentry**: Provides crash reporting and error tracking for the app. Sentry collects crash reports, device information (device model, OS version), and app state at the time of an error. This data is used to identify and fix bugs and improve app stability. No personally identifiable information is intentionally collected. For more details, see [Sentry's Privacy Policy](https://sentry.io/privacy/).
 
 ## Data Storage and Security
 

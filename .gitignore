@@ -134,3 +134,7 @@ _site/
 
 # 11ty cache
 .11tycache/
+
+# Playwright
+test-results/
+playwright-report/

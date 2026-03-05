@@ -5,12 +5,16 @@
   "main": ".eleventy.js",
   "scripts": {
     "build": "eleventy",
-    "start": "eleventy --serve"
+    "start": "eleventy --serve",
+    "test": "playwright test"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@11ty/eleventy": "^3.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
   }
 }

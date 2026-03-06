@@ -562,6 +562,21 @@
         filter: brightness(1.1);
       }
 
+      .form-message {
+        font-family: "Outfit", sans-serif;
+        font-size: 0.85rem;
+        margin-top: 0.75rem;
+        text-align: center;
+      }
+
+      .form-message-success {
+        color: #2e7d32;
+      }
+
+      .form-message-error {
+        color: #c62828;
+      }
+
       /* Footer */
       footer {
         background: var(--bg-deep);
@@ -770,12 +785,7 @@
             <p class="form-description">
               We'll send instructions to your email.
             </p>
-            <form
-              action="https://assets.mailerlite.com/jsonp/1439006/forms/151125911451731083/subscribe"
-              data-code=""
-              method="post"
-              target="_blank"
-            >
+            <form id="beta-signup-form">
               <input
                 type="email"
                 placeholder="Email"
@@ -783,15 +793,59 @@
                 aria-label="email"
                 aria-required="true"
                 autocomplete="email"
+                required
               />
               <div class="checkbox-row">
                 <input type="checkbox" id="opt-in" />
                 <label for="opt-in">Opt in to receive news and updates.</label>
               </div>
-              <input type="hidden" name="ml-submit" value="1" />
-              <input type="hidden" name="anticsrf" value="true" />
               <button type="submit">Subscribe</button>
+              <p class="form-message" role="status" aria-live="polite"></p>
             </form>
+            <script>
+              document
+                .getElementById("beta-signup-form")
+                .addEventListener("submit", async function (e) {
+                  e.preventDefault();
+                  const form = e.target;
+                  const email = form.querySelector('[name="fields[email]"]').value;
+                  const msg = form.querySelector(".form-message");
+                  const btn = form.querySelector('button[type="submit"]');
+
+                  btn.disabled = true;
+                  btn.textContent = "Subscribing...";
+                  msg.textContent = "";
+                  msg.className = "form-message";
+
+                  try {
+                    const body = new FormData();
+                    body.append("fields[email]", email);
+                    body.append("ml-submit", "1");
+                    body.append("anticsrf", "true");
+
+                    const res = await fetch(
+                      "https://assets.mailerlite.com/jsonp/1439006/forms/151125911451731083/subscribe",
+                      { method: "POST", body }
+                    );
+                    const data = await res.json();
+
+                    if (data.success) {
+                      msg.textContent = "Thanks for subscribing! Check your email (and spam folder).";
+                      msg.classList.add("form-message-success");
+                      form.reset();
+                    } else {
+                      msg.textContent = data.msg || "Something went wrong. Please try again.";
+                      msg.classList.add("form-message-error");
+                    }
+                  } catch {
+                    msg.textContent = "Something went wrong. Please try again.";
+                    msg.classList.add("form-message-error");
+                  }
+
+                  btn.disabled = false;
+                  btn.textContent = "Subscribe";
+                });
+            </script>
           </div>
           <div class="beta-signup-content">
             <div class="max-w-400 margin-auto">

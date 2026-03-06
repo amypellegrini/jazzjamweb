@@ -1,0 +1,17 @@
+# Jazz Jam Studio
+
+> Practice sessions that matter
+
+Jazz Jam Studio is a mobile app for jazz musicians to practice improvisation with a virtual band. Available on Android.
+
+## Features
+
+- Virtual Band Practice: Play along with a realistic rhythm section (piano, bass, drums) that follows standard jazz conventions.
+- Chord Progression Library: Access a curated collection of jazz standards and common chord progressions to practice with.
+- Flexible Practice Tools: Adjust tempo, choose different keys, and customize your practice sessions to focus on what matters most.
+
+## Links
+
+- Website: https://jazzjam.app
+- Privacy Policy: https://jazzjam.app/privacy-policy/
+- License: https://jazzjam.app/license/

@@ -316,11 +316,25 @@
         margin: 0 auto;
       }
 
+      .app-showcase-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: var(--light-bg-white);
+        padding: 2rem 0;
+      }
+
+      .app-showcase-section > .container {
+        width: 100%;
+      }
+
       .phone-image {
         border-radius: 15px;
         border: 10px solid var(--light-text-secondary);
         border-bottom-width: 40px;
         max-width: 100%;
+        max-height: 70vh;
+        object-fit: contain;
       }
 
       .app-showcase h2 {
@@ -615,9 +629,9 @@
         </div>
       </section>
 
-      <section class="features" id="learn-more">
-        <div class="container app-showcase mb-2">
-          <div class="flex-row sm-flex-column">
+      <section class="app-showcase-section" id="learn-more">
+        <div class="container app-showcase">
+          <div class="flex-row sm-flex-column align-items-center">
             <div class="text-center">
               <img
                 src="../src/assets/screenshot-4.png"
@@ -637,6 +651,9 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="features">
         <div class="container">
           <div class="features-grid">
             <div class="feature-card">

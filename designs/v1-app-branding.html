@@ -1,0 +1,765 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jazz Jam Studio - Practice sessions that matter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* App Dark Theme Colors */
+        --bg-deep: #0a1420;
+        --bg-primary: #0b1628;
+        --bg-panel: #101e30;
+
+        /* Blue Palette */
+        --blue-dark: #4e6a85;
+        --blue-deep: #3670a0;
+        --blue-slate: #4c6882;
+        --blue-steel: #5a7a9a;
+        --blue-muted: #5a7fa3;
+        --blue-medium: #6a8faa;
+        --blue-pale: #7fa5c0;
+        --blue-light: #8eafc8;
+        --blue-accent: #4a90c4;
+        --blue-chord: #c4d8ea;
+
+        /* Functional */
+        --text-primary: #ffffff;
+        --text-secondary: #c4d8ea;
+        --text-muted: #8eafc8;
+        --text-subtle: #6a8faa;
+
+        /* Accents */
+        --gradient-start: #4a90c4;
+        --gradient-end: #3670a0;
+        --card-bg: rgba(74, 144, 196, 0.04);
+        --card-border: rgba(74, 144, 196, 0.1);
+        --card-hover: rgba(74, 144, 196, 0.08);
+        --control-bg: rgba(74, 144, 196, 0.05);
+        --control-border: rgba(74, 144, 196, 0.15);
+
+        /* Light Theme Colors */
+        --light-bg: #f3f2ef;
+        --light-bg-white: #ffffff;
+        --light-text-primary: #0a0a0c;
+        --light-text-secondary: #1c1c1e;
+        --light-text-muted: #4a4a50;
+        --light-text-subtle: #6a6a70;
+        --light-card-bg: rgba(0, 0, 0, 0.04);
+        --light-card-border: rgba(0, 0, 0, 0.12);
+        --light-card-hover: rgba(0, 0, 0, 0.06);
+        --light-blue-dark: #1e5a8a;
+        --light-blue-steel: #2a6fa8;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Outfit",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        line-height: 1.6;
+        color: var(--text-primary);
+        background: var(--bg-primary);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1 0 auto;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      .mt-2 {
+        margin-top: 2rem;
+      }
+
+      .mb-1 {
+        margin-bottom: 1rem;
+      }
+
+      .mb-2 {
+        margin-bottom: 2rem;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      /* Hero Section */
+      .hero {
+        background: var(--bg-deep);
+        padding: 3rem 0;
+        position: relative;
+      }
+
+      .hero-image-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: row-reverse;
+        padding: 0 1.5rem;
+      }
+
+      .hero .hero-image {
+        top: 0;
+        position: absolute;
+        height: 100%;
+        mask-image: linear-gradient(to right, transparent, var(--bg-deep));
+      }
+
+      .hero-content {
+        position: relative;
+      }
+
+      .hero .kicker {
+        font-family: "Outfit", sans-serif;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15rem;
+        color: var(--blue-accent);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .hero .kicker-icon {
+        width: 1.2rem;
+        height: 1.2rem;
+      }
+
+      .hero h1 {
+        font-family: "Outfit", sans-serif;
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1.5rem;
+        line-height: 1.15;
+      }
+
+      .hero p.tagline {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 400;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+        max-width: 560px;
+        line-height: 1.7;
+      }
+
+      .hero .google-play-badge {
+        width: 150px;
+        height: auto;
+        display: block;
+        margin-bottom: 2.5rem;
+      }
+
+      .hero .cta-block {
+        display: flex;
+        gap: 0.75rem;
+      }
+
+      .hero .primary-cta {
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        color: white;
+        border: none;
+        padding: 0.85rem 2.25rem;
+        border-radius: 6px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-family: "Outfit", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.05rem;
+        transition: all 0.2s;
+        text-align: center;
+      }
+
+      .hero .primary-cta:hover {
+        filter: brightness(1.1);
+        text-decoration: underline;
+      }
+
+      .hero .secondary-cta {
+        border: 2px solid var(--blue-slate);
+        color: var(--blue-light);
+        padding: 0.85rem 2.25rem;
+        border-radius: 6px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-family: "Outfit", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.05rem;
+        transition: all 0.2s;
+        text-align: center;
+      }
+
+      .hero .secondary-cta:hover {
+        border-color: var(--blue-light);
+        text-decoration: underline;
+      }
+
+      /* Features Section - Light Theme */
+      .features {
+        padding: 3rem 0;
+        background: var(--light-bg-white);
+      }
+
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .feature-card {
+        padding: 1.75rem;
+        border-radius: 10px;
+        background: var(--light-bg);
+        border: 1px solid var(--light-card-border);
+        transition: background 0.2s;
+      }
+
+      .feature-card:hover {
+        background: var(--light-card-hover);
+      }
+
+      .feature-card h3 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--light-text-primary);
+        margin-bottom: 0.75rem;
+      }
+
+      .feature-card p {
+        font-family: "Outfit", sans-serif;
+        color: var(--light-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      /* App showcase */
+      .flex-row {
+        display: flex;
+        flex-direction: row;
+        gap: 2rem;
+      }
+
+      .flex-row > div {
+        flex: 1;
+      }
+
+      .flex-column {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .justify-center {
+        justify-content: center;
+      }
+
+      .align-items-center {
+        align-items: center;
+      }
+
+      .max-w-400 {
+        max-width: 400px;
+      }
+
+      .max-w-600 {
+        max-width: 600px;
+      }
+
+      .margin-auto {
+        margin: 0 auto;
+      }
+
+      .phone-image {
+        border-radius: 15px;
+        border: 10px solid var(--light-text-secondary);
+        border-bottom-width: 40px;
+        max-width: 100%;
+      }
+
+      .app-showcase h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--light-text-primary);
+      }
+
+      .app-showcase p {
+        font-family: "Outfit", sans-serif;
+        color: var(--light-text-muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      /* Video Section - Light Theme */
+      .video {
+        padding: 2rem 0;
+        background: var(--light-bg-white);
+      }
+
+      .video h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--light-text-primary);
+      }
+
+      .video iframe {
+        border-radius: 8px;
+        border: 1px solid var(--light-card-border);
+      }
+
+      /* Beta Signup Section */
+      .beta-signup {
+        padding: 3rem 0;
+        background: var(--bg-deep);
+      }
+
+      .beta-signup-content h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .beta-signup-content p {
+        font-family: "Outfit", sans-serif;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.6;
+      }
+
+      .beta-signup-content .text-bold {
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .beta-signup-steps {
+        margin-top: 1rem;
+        counter-reset: step-counter;
+        list-style: none;
+        padding-left: 0;
+      }
+
+      .beta-signup-steps li {
+        position: relative;
+        padding-left: 2.5rem;
+        margin-bottom: 1rem;
+        counter-increment: step-counter;
+      }
+
+      .beta-signup-steps li::before {
+        content: counter(step-counter);
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 1.5rem;
+        height: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+
+      .beta-signup-steps li p {
+        margin: 0;
+        color: var(--text-muted);
+        font-family: "Outfit", sans-serif;
+      }
+
+      .beta-signup-arrow {
+        width: 3rem;
+        fill: var(--blue-accent);
+      }
+
+      /* Form Embed Override Styles */
+      .form-container {
+        background: var(--bg-panel);
+        border: 1px solid var(--card-border);
+        border-radius: 10px;
+        padding: 1.75rem;
+        max-width: 400px;
+      }
+
+      .form-container h4 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+      }
+
+      .form-container .form-description {
+        font-family: "Outfit", sans-serif;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .form-container input[type="email"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background: var(--bg-deep);
+        border: 1px solid var(--control-border);
+        border-radius: 6px;
+        color: var(--text-primary);
+        font-family: "Outfit", sans-serif;
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      .form-container input[type="email"]:focus {
+        border-color: var(--blue-accent);
+      }
+
+      .form-container input[type="email"]::placeholder {
+        color: var(--text-subtle);
+      }
+
+      .form-container .checkbox-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .form-container .checkbox-row input[type="checkbox"] {
+        margin-top: 0.25rem;
+        accent-color: var(--blue-accent);
+      }
+
+      .form-container .checkbox-row label {
+        font-family: "Outfit", sans-serif;
+        font-size: 0.8rem;
+        color: var(--text-subtle);
+      }
+
+      .form-container button[type="submit"] {
+        width: 100%;
+        padding: 0.75rem;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-family: "Outfit", sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: filter 0.2s;
+      }
+
+      .form-container button[type="submit"]:hover {
+        filter: brightness(1.1);
+      }
+
+      /* Footer */
+      footer {
+        background: var(--bg-deep);
+        border-top: 1px solid var(--card-border);
+        padding: 2rem 0;
+        text-align: center;
+      }
+
+      footer a {
+        font-family: "Outfit", sans-serif;
+        color: var(--text-subtle);
+        text-decoration: none;
+        margin: 0 1rem;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+
+      footer a:hover {
+        color: var(--text-secondary);
+        text-decoration: underline;
+      }
+
+      .md-hidden {
+        display: none;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        br {
+          display: none;
+        }
+
+        .hero {
+          padding: 2rem 0;
+        }
+
+        .hero h1 {
+          font-size: 2.25rem;
+        }
+
+        .hero p.tagline {
+          font-size: 1.05rem;
+        }
+
+        .hero-image {
+          opacity: 0.4;
+        }
+
+        .sm-flex-column {
+          flex-direction: column;
+        }
+
+        .sm-hidden {
+          display: none;
+        }
+
+        .md-hidden {
+          display: block;
+        }
+
+        span.md-hidden {
+          display: inline;
+        }
+
+        .form-container {
+          width: 100%;
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div class="hero-image-container">
+          <img
+            src="../src/assets/hero.jpg"
+            alt="Hero Image"
+            class="hero-image"
+          />
+        </div>
+        <div class="container">
+          <div class="hero-content">
+            <p class="kicker">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                fill="currentColor"
+                class="kicker-icon"
+              >
+                <path
+                  d="M64 80c-8.8 0-16 7.2-16 16l0 320c0 8.8 7.2 16 16 16l320 0c8.8 0 16-7.2 16-16l0-320c0-8.8-7.2-16-16-16L64 80zM0 96C0 60.7 28.7 32 64 32l320 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM337 209L209 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L303 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"
+                />
+              </svg>
+              <span class="sm-hidden"
+                >Designed by musicians and software experts</span
+              >
+              <span class="md-hidden">Designed by musicians</span>
+            </p>
+            <h1 class="sm-hidden">
+              Improvise Jazz like a pro with <br />hassle-free backing tracks
+            </h1>
+            <h1 class="md-hidden">Make Jazz practice effortless</h1>
+            <p class="tagline">
+              Select a chord progression. Adjust tempo, key, repeats, <br />and
+              more. Play along with a virtual band. Make <br />practice sessions
+              productive and fun!
+            </p>
+            <img
+              class="google-play-badge"
+              src="../src/assets/GetItOnGooglePlay_Badge_Web_color_English.png"
+              alt="Available on Android"
+            />
+            <div class="cta-block sm-flex-column">
+              <a href="#beta-program" class="primary-cta">Join our beta</a>
+              <a href="#learn-more" class="secondary-cta">Learn more</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="features" id="learn-more">
+        <div class="container mb-2">
+          <div class="features-grid">
+            <div class="feature-card">
+              <h3>Virtual Band Practice</h3>
+              <p>
+                Practice with a professional rhythm section anytime. Our backing
+                tracks are designed to sound organic and authentic.
+              </p>
+            </div>
+            <div class="feature-card">
+              <h3>Chord Progression Library</h3>
+              <p>
+                Access a curated collection of essential jazz chord
+                progressions. Perfect for learning and mastering jazz harmony.
+              </p>
+            </div>
+            <div class="feature-card">
+              <h3>Flexible Practice Tools</h3>
+              <p>
+                Adjust tempo, transpose keys, and use visualization tools to
+                enhance your practice sessions.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="container app-showcase">
+          <div class="flex-row sm-flex-column">
+            <div class="text-center">
+              <img
+                src="../src/assets/screenshot-4.png"
+                alt="Jazz Jam App"
+                class="phone-image"
+              />
+            </div>
+            <div class="flex-column justify-center">
+              <div class="max-w-400 margin-auto">
+                <h2 class="mb-1">The Jazz Jam App</h2>
+                <p class="mb-1">
+                  Designed with simplicity in mind, the Jazz Jam App is an
+                  essential practice tool for any Jazz musician. Having this app
+                  is like having a dedicated rhythm section in your pocket.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="video mt-2 mb-2">
+        <div class="container max-w-600 margin-auto">
+          <h2 class="mb-1">See it in action</h2>
+          <iframe
+            width="560"
+            height="315"
+            src="https://www.youtube.com/embed/nlHMpRl5pRc?si=A9hRCHOz7Hsdm6RM"
+            title="YouTube video player"
+            frameborder="0"
+            allow="
+              accelerometer;
+              autoplay;
+              clipboard-write;
+              encrypted-media;
+              gyroscope;
+              picture-in-picture;
+              web-share;
+            "
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+
+      <section class="beta-signup" id="beta-program">
+        <div
+          class="container flex-row justify-center sm-flex-column align-items-center"
+          style="gap: 2rem"
+        >
+          <div class="beta-signup-content">
+            <div class="max-w-400 margin-auto">
+              <h2>Get the app before it's launched!</h2>
+              <p class="mb-1">
+                Join the waitlist to get early access to the Jazz Jam app and
+                help us shape the future of jazz practice.
+              </p>
+              <p class="text-bold">
+                Available on Android, other platforms coming soon!
+              </p>
+              <div class="flex-row">
+                <ol class="beta-signup-steps">
+                  <li>
+                    <p>Give us an email and hit subscribe</p>
+                  </li>
+                  <li>
+                    <p>Check your email for instructions</p>
+                  </li>
+                  <li>
+                    <p>Don't forget to check your spam folder!</p>
+                  </li>
+                </ol>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 448 512"
+                  class="beta-signup-arrow sm-hidden"
+                >
+                  <path
+                    d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div class="form-container">
+            <h4>Join our beta</h4>
+            <p class="form-description">
+              We'll send instructions to your email.
+            </p>
+            <form>
+              <input
+                type="email"
+                placeholder="Email"
+                aria-label="email"
+                aria-required="true"
+              />
+              <div class="checkbox-row">
+                <input type="checkbox" id="opt-in" />
+                <label for="opt-in">Opt in to receive news and updates.</label>
+              </div>
+              <button type="submit">Subscribe</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/license">License</a>
+      </div>
+    </footer>
+  </body>
+</html>

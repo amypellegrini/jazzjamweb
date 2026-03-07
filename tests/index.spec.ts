@@ -103,6 +103,18 @@ test.describe("Home page", () => {
       expect(Math.abs(badgeCenter - blockCenter)).toBeLessThan(5);
     });
 
+    test("beta signup CTA appears before form on mobile", async ({ page }) => {
+      await page.goto("/");
+      const form = page.locator(".form-container");
+      const ctaContent = page.locator(".beta-signup-content");
+
+      const formBox = await form.boundingBox();
+      const ctaBox = await ctaContent.boundingBox();
+
+      // CTA content should appear above the form
+      expect(ctaBox!.y).toBeLessThan(formBox!.y);
+    });
+
     test("beta signup form is full width on mobile", async ({ page }) => {
       await page.goto("/");
       const form = page.locator(".form-container");

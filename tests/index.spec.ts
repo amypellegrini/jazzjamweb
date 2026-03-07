@@ -61,8 +61,11 @@ test.describe("Home page", () => {
   test.describe("mobile layout", () => {
     test.use({ viewport: { width: 375, height: 812 } });
 
-    test("hero text is centered and CTA is at the bottom", async ({ page }) => {
+    test.beforeEach(async ({ page }) => {
       await page.goto("/");
+    });
+
+    test("hero text is centered and CTA is at the bottom", async ({ page }) => {
       const hero = page.locator(".hero");
       const heading = page.locator(".hero-content h1:visible");
       const ctaBlock = page.locator(".cta-block");
@@ -83,7 +86,6 @@ test.describe("Home page", () => {
     });
 
     test("CTA buttons are full width on mobile", async ({ page }) => {
-      await page.goto("/");
       const ctaBlock = page.locator(".cta-block");
       const ctaBlockBox = await ctaBlock.boundingBox();
 
@@ -99,7 +101,6 @@ test.describe("Home page", () => {
     });
 
     test("CTA buttons are stacked vertically with primary at bottom on mobile", async ({ page }) => {
-      await page.goto("/");
       const primaryCta = page.locator(".primary-cta");
       const secondaryCta = page.locator(".secondary-cta");
       const badge = page.locator(".google-play-badge");
@@ -115,7 +116,6 @@ test.describe("Home page", () => {
     });
 
     test("Google Play badge is centered on mobile", async ({ page }) => {
-      await page.goto("/");
       const badge = page.locator(".google-play-badge");
       const ctaBlock = page.locator(".cta-block");
 
@@ -129,7 +129,6 @@ test.describe("Home page", () => {
     });
 
     test("beta signup CTA appears before form on mobile", async ({ page }) => {
-      await page.goto("/");
       const form = page.locator(".form-container");
       const ctaContent = page.locator(".beta-signup-content");
 
@@ -141,7 +140,6 @@ test.describe("Home page", () => {
     });
 
     test("beta signup form is full width on mobile", async ({ page }) => {
-      await page.goto("/");
       const form = page.locator(".form-container");
 
       const formBox = await form.boundingBox();

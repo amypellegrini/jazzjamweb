@@ -77,16 +77,20 @@ test.describe("Home page", () => {
       expect(secondaryBox!.width).toBeCloseTo(ctaBlockBox!.width, 0);
     });
 
-    test("CTA buttons are stacked vertically on mobile", async ({ page }) => {
+    test("CTA buttons are stacked vertically with primary at bottom on mobile", async ({ page }) => {
       await page.goto("/");
       const primaryCta = page.locator(".primary-cta");
       const secondaryCta = page.locator(".secondary-cta");
+      const badge = page.locator(".google-play-badge");
 
       const primaryBox = await primaryCta.boundingBox();
       const secondaryBox = await secondaryCta.boundingBox();
+      const badgeBox = await badge.boundingBox();
 
-      // Secondary button should be below primary button
-      expect(secondaryBox!.y).toBeGreaterThan(primaryBox!.y + primaryBox!.height - 1);
+      // Primary CTA (Join our beta) should be below secondary CTA (Learn more)
+      expect(primaryBox!.y).toBeGreaterThan(secondaryBox!.y);
+      // Badge should be above the buttons
+      expect(badgeBox!.y).toBeLessThan(secondaryBox!.y);
     });
 
     test("Google Play badge is centered on mobile", async ({ page }) => {

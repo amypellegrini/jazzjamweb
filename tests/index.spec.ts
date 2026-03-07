@@ -58,6 +58,63 @@ test.describe("Home page", () => {
     await expect(licenseLink).toHaveAttribute("href", /license/);
   });
 
+  test.describe("mobile layout", () => {
+    test.use({ viewport: { width: 375, height: 812 } });
+
+    test("CTA buttons are full width on mobile", async ({ page }) => {
+      await page.goto("/");
+      const ctaBlock = page.locator(".cta-block");
+      const ctaBlockBox = await ctaBlock.boundingBox();
+
+      const primaryCta = page.locator(".primary-cta");
+      const secondaryCta = page.locator(".secondary-cta");
+
+      const primaryBox = await primaryCta.boundingBox();
+      const secondaryBox = await secondaryCta.boundingBox();
+
+      // Buttons should stretch to fill the CTA block width
+      expect(primaryBox!.width).toBeCloseTo(ctaBlockBox!.width, 0);
+      expect(secondaryBox!.width).toBeCloseTo(ctaBlockBox!.width, 0);
+    });
+
+    test("CTA buttons are stacked vertically on mobile", async ({ page }) => {
+      await page.goto("/");
+      const primaryCta = page.locator(".primary-cta");
+      const secondaryCta = page.locator(".secondary-cta");
+
+      const primaryBox = await primaryCta.boundingBox();
+      const secondaryBox = await secondaryCta.boundingBox();
+
+      // Secondary button should be below primary button
+      expect(secondaryBox!.y).toBeGreaterThan(primaryBox!.y + primaryBox!.height - 1);
+    });
+
+    test("Google Play badge is centered on mobile", async ({ page }) => {
+      await page.goto("/");
+      const badge = page.locator(".google-play-badge");
+      const ctaBlock = page.locator(".cta-block");
+
+      const badgeBox = await badge.boundingBox();
+      const ctaBlockBox = await ctaBlock.boundingBox();
+
+      // Badge should be roughly centered within the CTA block
+      const badgeCenter = badgeBox!.x + badgeBox!.width / 2;
+      const blockCenter = ctaBlockBox!.x + ctaBlockBox!.width / 2;
+      expect(Math.abs(badgeCenter - blockCenter)).toBeLessThan(5);
+    });
+
+    test("beta signup form is full width on mobile", async ({ page }) => {
+      await page.goto("/");
+      const form = page.locator(".form-container");
+
+      const formBox = await form.boundingBox();
+      const viewportWidth = 375;
+
+      // Form should span nearly the full viewport width (minus container padding)
+      expect(formBox!.width).toBeGreaterThan(viewportWidth * 0.8);
+    });
+  });
+
   test("has SEO meta tags", async ({ page }) => {
     const description = page.locator('meta[name="description"]');
     await expect(description).toHaveAttribute("content", /jazz/i);

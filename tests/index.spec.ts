@@ -128,6 +128,15 @@ test.describe("Home page", () => {
       expect(Math.abs(badgeCenter - blockCenter)).toBeLessThan(5);
     });
 
+    test("Learn More section is shorter than 100vh to avoid Android browser controls overlap", async ({ page }) => {
+      const section = page.locator(".app-showcase-section");
+      const sectionBox = await section.boundingBox();
+      const viewportHeight = 812;
+
+      // Section should be less than 100vh so content isn't clipped by device controls
+      expect(sectionBox!.height).toBeLessThan(viewportHeight);
+    });
+
     test("beta signup CTA appears before form on mobile", async ({ page }) => {
       const form = page.locator(".form-container");
       const ctaContent = page.locator(".beta-signup-content");

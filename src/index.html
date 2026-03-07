@@ -125,6 +125,10 @@
         padding: 0 1.5rem;
       }
 
+      .mt-1 {
+        margin-top: 1rem;
+      }
+
       .mt-2 {
         margin-top: 2rem;
       }
@@ -175,6 +179,7 @@
         right: 0;
         height: 100%;
         width: auto;
+        -webkit-mask-image: linear-gradient(to right, transparent 0%, var(--bg-deep) 70%);
         mask-image: linear-gradient(to right, transparent 0%, var(--bg-deep) 70%);
       }
 
@@ -603,7 +608,18 @@
         display: none;
       }
 
-      /* Responsive */
+      /* Tablet */
+      @media (max-width: 1024px) {
+        .hero .hero-image {
+          opacity: 0.5;
+        }
+
+        .hero::after {
+          background: linear-gradient(to right, var(--bg-deep) 0%, transparent 100%);
+        }
+      }
+
+      /* Mobile */
       @media (max-width: 768px) {
         br {
           display: none;
@@ -611,6 +627,26 @@
 
         .hero {
           padding: 2rem 0;
+          align-items: stretch;
+        }
+
+        .hero > .container {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .hero-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .hero .kicker {
+          margin-top: auto;
+        }
+
+        .hero p.tagline {
+          margin-bottom: auto;
         }
 
         .hero h1 {
@@ -621,8 +657,13 @@
           font-size: 1.05rem;
         }
 
-        .hero-image {
+        .hero .hero-image {
           opacity: 0.4;
+          right: -50%;
+        }
+
+        .hero::after {
+          background: rgba(10, 20, 32, 0.4);
         }
 
         .sm-flex-column {
@@ -631,6 +672,19 @@
 
         .sm-hidden {
           display: none;
+        }
+
+        .cta-block.sm-flex-column {
+          align-items: stretch;
+          flex-direction: column-reverse;
+        }
+
+        .cta-block.sm-flex-column .google-play-badge {
+          align-self: center;
+        }
+
+        .beta-signup .sm-flex-column {
+          flex-direction: column-reverse;
         }
 
         .md-hidden {
@@ -854,9 +908,6 @@
                 Join the waitlist to get early access to the Jazz Jam app and
                 help us shape the future of jazz practice.
               </p>
-              <p class="text-bold">
-                Available on Android, other platforms coming soon!
-              </p>
               <div class="flex-row">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -880,6 +931,9 @@
                   </li>
                 </ol>
               </div>
+              <p class="text-bold mt-1">
+                Available on Android.
+              </p>
             </div>
           </div>
         </div>

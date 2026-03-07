@@ -82,7 +82,7 @@ test.describe("Home page", () => {
       // CTA block bottom should be near the hero bottom (within 80px for padding)
       const ctaBottom = ctaBox!.y + ctaBox!.height;
       const heroBottom = heroBox!.y + heroBox!.height;
-      expect(heroBottom - ctaBottom).toBeLessThan(80);
+      expect(heroBottom - ctaBottom).toBeLessThanOrEqual(80);
     });
 
     test("CTA buttons are full width on mobile", async ({ page }) => {

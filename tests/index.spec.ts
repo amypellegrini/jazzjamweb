@@ -61,26 +61,25 @@ test.describe("Home page", () => {
   test.describe("mobile layout", () => {
     test.use({ viewport: { width: 375, height: 812 } });
 
-    test("hero content stretches with text at top and CTA at bottom", async ({ page }) => {
+    test("hero text is centered and CTA is at the bottom", async ({ page }) => {
       await page.goto("/");
       const hero = page.locator(".hero");
-      const heroContent = page.locator(".hero-content");
+      const heading = page.locator(".hero-content h1:visible");
       const ctaBlock = page.locator(".cta-block");
 
       const heroBox = await hero.boundingBox();
-      const heroContentBox = await heroContent.boundingBox();
+      const headingBox = await heading.boundingBox();
       const ctaBox = await ctaBlock.boundingBox();
 
-      // Hero content should stretch most of the hero height
-      expect(heroContentBox!.height).toBeGreaterThan(heroBox!.height * 0.8);
+      // Heading should be roughly vertically centered in the hero
+      const heroCenter = heroBox!.y + heroBox!.height / 2;
+      const headingCenter = headingBox!.y + headingBox!.height / 2;
+      expect(Math.abs(headingCenter - heroCenter)).toBeLessThan(heroBox!.height * 0.2);
 
       // CTA block bottom should be near the hero bottom (within 80px for padding)
       const ctaBottom = ctaBox!.y + ctaBox!.height;
       const heroBottom = heroBox!.y + heroBox!.height;
       expect(heroBottom - ctaBottom).toBeLessThan(80);
-
-      // Text should start near the top of the hero
-      expect(heroContentBox!.y - heroBox!.y).toBeLessThan(80);
     });
 
     test("CTA buttons are full width on mobile", async ({ page }) => {

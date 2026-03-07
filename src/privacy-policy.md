@@ -5,7 +5,7 @@ title: Privacy Policy
 
 # Privacy Policy for Jazz Jam Studio
 
-Last Updated: March 5, 2026
+Last Updated: March 7, 2026
 
 ## Introduction
 
@@ -21,7 +21,7 @@ Welcome to Jazz Jam Studio. We respect your privacy and are committed to protect
 ### Through the Website
 
 - **Contact Information**: Email address when you sign up for our beta program or newsletter
-- **Technical Data**: Basic website analytics including IP address and browser information
+- **Website Analytics via Plausible Analytics**: The website uses Plausible Analytics, a privacy-friendly analytics service. Plausible does not use cookies and no personally identifiable information is collected. It collects only aggregate data such as page views, referral sources, and browser/device type.
 
 ## How We Use Your Information
 
@@ -46,6 +46,7 @@ We use the following third-party services:
 - **MailerLite**: Manages our email communications. When you provide your email, it will be processed according to MailerLite's privacy policy.
 - **Google Play Store**: Handles beta testing distribution and manages app downloads. Your interaction with the Play Store is governed by Google's privacy policy.
 - **Sentry**: Provides crash reporting and error tracking for the app. Sentry collects crash reports, device information (device model, OS version), and app state at the time of an error. This data is used to identify and fix bugs and improve app stability. No personally identifiable information is intentionally collected. For more details, see [Sentry's Privacy Policy](https://sentry.io/privacy/).
+- **Plausible Analytics**: Provides privacy-friendly website analytics. Plausible does not use cookies, does not track users across sites, and does not collect personally identifiable information. All data is aggregated and no individual visitor profiles are created. For more details, see [Plausible's Privacy Policy](https://plausible.io/privacy).
 
 ## Data Storage and Security
 

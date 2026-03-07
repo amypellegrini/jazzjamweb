@@ -611,6 +611,23 @@
 
         .hero {
           padding: 2rem 0;
+          align-items: stretch;
+        }
+
+        .hero > .container {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .hero-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .hero p.tagline {
+          flex: 1;
+          margin-bottom: 1.5rem;
         }
 
         .hero h1 {

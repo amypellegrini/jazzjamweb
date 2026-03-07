@@ -61,6 +61,28 @@ test.describe("Home page", () => {
   test.describe("mobile layout", () => {
     test.use({ viewport: { width: 375, height: 812 } });
 
+    test("hero content stretches with text at top and CTA at bottom", async ({ page }) => {
+      await page.goto("/");
+      const hero = page.locator(".hero");
+      const heroContent = page.locator(".hero-content");
+      const ctaBlock = page.locator(".cta-block");
+
+      const heroBox = await hero.boundingBox();
+      const heroContentBox = await heroContent.boundingBox();
+      const ctaBox = await ctaBlock.boundingBox();
+
+      // Hero content should stretch most of the hero height
+      expect(heroContentBox!.height).toBeGreaterThan(heroBox!.height * 0.8);
+
+      // CTA block bottom should be near the hero bottom (within 80px for padding)
+      const ctaBottom = ctaBox!.y + ctaBox!.height;
+      const heroBottom = heroBox!.y + heroBox!.height;
+      expect(heroBottom - ctaBottom).toBeLessThan(80);
+
+      // Text should start near the top of the hero
+      expect(heroContentBox!.y - heroBox!.y).toBeLessThan(80);
+    });
+
     test("CTA buttons are full width on mobile", async ({ page }) => {
       await page.goto("/");
       const ctaBlock = page.locator(".cta-block");

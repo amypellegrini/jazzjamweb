@@ -1,0 +1,43 @@
+{
+  "platforms": [
+    "claude-code"
+  ],
+  "skills": [
+    "commit",
+    "assess-test-pyramid",
+    "assess-ci",
+    "assess-pre-commit",
+    "qa-assessment",
+    "tdd",
+    "open-pr",
+    "address-pr-comments",
+    "check-ci",
+    "pickup-issue",
+    "commit-and-push",
+    "close-issue",
+    "business-analyst",
+    "dev",
+    "qa-test",
+    "qa",
+    "onboard-dev",
+    "onboard-qa",
+    "onboard-ba",
+    "assess-repo",
+    "jira",
+    "assess-ai-governance",
+    "assess-architecture",
+    "assess-ci-cd",
+    "assess-code-quality",
+    "assess-dependency-health",
+    "assess-documentation",
+    "assess-observability",
+    "assess-security",
+    "assess-test-quality",
+    "regenerate-dashboard"
+  ],
+  "agents": [
+    "dev",
+    "qa"
+  ],
+  "issueTracker": "github"
+}

@@ -44,9 +44,54 @@ test.describe("Privacy Policy", () => {
   });
 
   test("lists all third-party services", async ({ page }) => {
-    for (const service of ["MailerLite", "Google Play Store", "Sentry", "Plausible"]) {
+    for (const service of [
+      "MailerLite",
+      "Google Play Store",
+      "Sentry",
+      "Plausible",
+      "RevenueCat",
+    ]) {
       await expect(page.locator("body")).toContainText(service);
     }
+  });
+
+  test("discloses RevenueCat in-app purchase data collection", async ({
+    page,
+  }) => {
+    await expect(page.locator("body")).toContainText(
+      "In-App Purchases via RevenueCat"
+    );
+    await expect(page.locator("body")).toContainText("purchase receipts");
+    await expect(page.locator("body")).toContainText("anonymous app user ID");
+  });
+
+  test("lists RevenueCat in third-party services with privacy policy link", async ({
+    page,
+  }) => {
+    const revenueCatLink = page.getByRole("link", {
+      name: /revenuecat.*privacy policy/i,
+    });
+    await expect(revenueCatLink).toBeVisible();
+    await expect(revenueCatLink).toHaveAttribute(
+      "href",
+      "https://www.revenuecat.com/privacy/"
+    );
+  });
+
+  test("covers GDPR rights for EU users with a contact route", async ({
+    page,
+  }) => {
+    await expect(page.locator("body")).toContainText(
+      "Your Rights Under the GDPR"
+    );
+    for (const right of [
+      "Right of access",
+      "Right to rectification",
+      "Right to erasure",
+    ]) {
+      await expect(page.locator("body")).toContainText(right);
+    }
+    await expect(page.locator("body")).toContainText("support@jazzjam.app");
   });
 
   test("discloses Plausible analytics on the website", async ({ page }) => {

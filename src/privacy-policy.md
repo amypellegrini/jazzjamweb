@@ -5,7 +5,7 @@ title: Privacy Policy
 
 # Privacy Policy for Jazz Jam Studio
 
-Last Updated: March 7, 2026
+Last Updated: June 14, 2026
 
 ## Introduction
 
@@ -17,6 +17,7 @@ Welcome to Jazz Jam Studio. We respect your privacy and are committed to protect
 
 - **Local Storage Data**: The app stores your preferences, settings, and practice data locally on your device. This data never leaves your device and we cannot access it.
 - **Crash Reporting via Sentry**: The app uses Sentry, a third-party error tracking service, to automatically collect crash reports and error data. This may include device information (device model, OS version), app state at the time of the error, and stack traces. No personally identifiable information is intentionally collected through Sentry.
+- **In-App Purchases via RevenueCat**: When you make an in-app purchase (such as the Pro Unlock), the app uses RevenueCat, a third-party purchase-management service, to validate and manage your purchase. RevenueCat processes purchase receipts, an anonymous app user ID, and device data (such as platform, device model, and country) needed to verify entitlements and restore purchases. We use this data solely to grant and restore access to purchased features. We do not receive your payment card details — those are handled by the app store (Google Play or Apple App Store).
 
 ### Through the Website
 
@@ -46,12 +47,13 @@ We use the following third-party services:
 - **MailerLite**: Manages our email communications. When you provide your email, it will be processed according to MailerLite's privacy policy.
 - **Google Play Store**: Handles beta testing distribution and manages app downloads. Your interaction with the Play Store is governed by Google's privacy policy.
 - **Sentry**: Provides crash reporting and error tracking for the app. Sentry collects crash reports, device information (device model, OS version), and app state at the time of an error. This data is used to identify and fix bugs and improve app stability. No personally identifiable information is intentionally collected. For more details, see [Sentry's Privacy Policy](https://sentry.io/privacy/).
+- **RevenueCat**: Manages in-app purchases and subscriptions for the app. RevenueCat collects purchase receipts, an anonymous app user ID, and device data used to validate purchases and restore entitlements. This data is used solely to deliver and restore the features you have purchased. For more details, see [RevenueCat's Privacy Policy](https://www.revenuecat.com/privacy/).
 - **Plausible Analytics**: Provides privacy-friendly website analytics. Plausible does not use cookies, does not track users across sites, and does not collect personally identifiable information. All data is aggregated and no individual visitor profiles are created. For more details, see [Plausible's Privacy Policy](https://plausible.io/privacy).
 
 ## Data Storage and Security
 
 - App data is stored locally on your device
-- Website data (email addresses) is stored securely by our third-party providers (Mailchimp and Google)
+- Website data (email addresses) is stored securely by our third-party providers (MailerLite and Google)
 - We do not maintain any databases with user information
 
 ## Your Rights
@@ -62,6 +64,18 @@ You have the right to:
 - Request deletion of your email address from our mailing list
 - Manage your beta testing participation through Google Play Store
 - Control app permissions through your device settings
+
+### Your Rights Under the GDPR (EU/EEA Users)
+
+If you are located in the European Union or European Economic Area, the General Data Protection Regulation (GDPR) grants you the following rights over your personal data:
+
+- **Right of access**: request confirmation of whether we process your personal data and a copy of that data
+- **Right to rectification**: request correction of inaccurate or incomplete personal data
+- **Right to erasure ("right to be forgotten")**: request deletion of your personal data
+- **Right to restrict or object to processing**: request that we limit or stop processing your personal data
+- **Right to data portability**: request a copy of your data in a portable format
+
+Because most app data is stored locally on your device and we do not maintain user databases, the personal data we can act on is limited to your email address (for website/beta communications) and purchase records held by our purchase provider. To exercise any of these rights, contact us at support@jazzjam.app and we will respond within the timeframes required by law.
 
 ## Children's Privacy
 

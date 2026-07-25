@@ -500,6 +500,35 @@ Record `onboard-me` in `.sensible-harness/manifest.json` under the `generated` a
 
 ---
 
+## Phase 17 — Refresh AGENTS.md from findings
+
+Replace the content of `AGENTS.md`'s three descriptive sections with the findings from this run — the same material Phase 16 already gathered for onboard-me's "Project purpose", "Tech stack summary", and "Directory tour". Skip this phase only if `AGENTS.md` doesn't exist.
+
+This must be idempotent across re-runs. Whether a section still carries the scaffold placeholder (the ones Sensible Harness ships in `templates/AGENTS.md`) or already carries content from a prior assessment, treat whatever is currently in it as stale relative to this run's findings — never skip a section because it's already populated. Replace that stale content in place with the current findings; do not append the new material alongside the old. Re-running `/assess-repo` on a repo whose `AGENTS.md` is already populated must refresh these three sections, not duplicate their content or leave stale findings behind.
+
+Rewrite these three sections in place:
+
+| `AGENTS.md` section | Source |
+|---|---|
+| `## Project overview` | Same finding used for onboard-me's "Project purpose" |
+| `## Tech stack` | Same finding used for onboard-me's "Tech stack summary" (Phase 1) |
+| `## Directory layout` | Same finding used for onboard-me's "Directory tour" (Phase 5) |
+
+Do not touch these sections — leave them exactly as they are:
+
+- `## Conventions`
+- `## Agent behaviour rules`
+- `## Installed Sensible Harness skills`
+
+Then remove the scaffold placeholder banner — it appears in two places in `templates/AGENTS.md` (and, before this phase runs, in the repo's own `AGENTS.md`):
+
+- The blockquote line directly under the `# AGENTS.md` title (`templates/AGENTS.md:3`): `> Scaffolded by Sensible Harness. Run \`/assess-repo\` to replace these placeholders with findings from a live assessment.`
+- The closing line at the bottom of the file, after the final `---` (`templates/AGENTS.md:71`): `Run \`/assess-repo\` to replace these placeholders with findings from a live assessment.`
+
+Delete both occurrences of the placeholder banner. The file now reads as a real, populated AGENTS.md rather than a scaffold.
+
+---
+
 ## Completion
 
 After all phases complete, print a summary:

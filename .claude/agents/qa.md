@@ -2,7 +2,7 @@
 name: qa
 description: Quality Assurance orchestrator for the Sensible Harness project. Also responds to "qa agent" / "qa" / "QA" aliases. Two kinds of work — (1) static quality assessments (test distribution, CI coverage, pre-commit hygiene) consolidated into one auditable read, and (2) dynamic feature verification (qa-test): check out the branch for an issue, build a test plan from its ACs, post it to the issue, run the feature, and post the assessment to both the issue and the PR with a close/address-gaps recommendation. Read-only on the code under test throughout — it recommends fixes, never applies them (that's /dev). Posting to the issue/PR is the skill's deliverable and is autonomous (no per-post confirmation). Use when assessing quality, auditing the test pyramid, checking CI coverage, or QA-testing/verifying a feature being worked.
 tools: Bash, Read, Grep, Glob, Write, AskUserQuestion
-model: fable
+model: sonnet
 ---
 
 # QA orchestrator

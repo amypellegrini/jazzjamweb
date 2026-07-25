@@ -10,6 +10,8 @@ Apply these steps whenever invoked to start work on an issue. The skill reads `.
 
 The `/dev` orchestrator invokes this as its first composed step; humans can also invoke it directly.
 
+Ticket pickup never triggers a repository-wide assessment — assessment is onboarding-only, run explicitly by a human when warranted, never as a side effect of picking up a single issue.
+
 ## Step 0 — detect the issue tracker
 
 ```bash

@@ -29,4 +29,10 @@ Once an issue is filed and sequenced, the dev team picks it up with `/dev #N`. T
 
 ## Next step
 
-Run `/assess-repo` to score this repo across 9 dimensions and produce the initial gap report. The assessment output is a plain-English report you can hand directly to `/business-analyst` to convert each finding into a Jira issue and build the initial backlog.
+If `.sensible-harness/assessment.json` is absent, run `/assess-repo` to score this repo across 9 dimensions and produce the initial gap report. The assessment output is a plain-English report you can hand directly to `/business-analyst` to convert each finding into a Jira issue and build the initial backlog.
+
+If `.sensible-harness/assessment.json` already exists, skip `/assess-repo` — assessment already run, see `.sensible-harness/assessment-summary.html` for the existing report.
+
+## The assessment sentinel
+
+`.sensible-harness/assessment.json` is the sentinel: `/assess-repo` writes it as the last step of a full sweep (its Phase 13), and its presence is the only signal onboarding uses to decide whether to recommend `/assess-repo` again. Onboarding never invokes `/assess-repo` automatically — it only conditionally recommends running it, gated on the sentinel above. Once the sentinel exists, onboarding drops the recommendation entirely and points at the existing report instead.

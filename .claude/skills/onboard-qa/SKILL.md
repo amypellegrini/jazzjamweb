@@ -45,4 +45,10 @@ Every assessment writes an auditable report to `.sensible-harness/reports/`. Aft
 
 ## Next step
 
-Run `/assess-repo` to score this repo across 9 dimensions and establish the initial quality baseline. The assessment output includes a plain-English BA handoff report under `.sensible-harness/reports/` that you can hand directly to `/business-analyst` to convert any gaps into Jira issues.
+If `.sensible-harness/assessment.json` is absent, run `/assess-repo` to score this repo across 9 dimensions and establish the initial quality baseline. The assessment output includes a plain-English BA handoff report under `.sensible-harness/reports/` that you can hand directly to `/business-analyst` to convert any gaps into Jira issues.
+
+If `.sensible-harness/assessment.json` already exists, skip `/assess-repo` — assessment already run, see `.sensible-harness/assessment-summary.html` for the existing report.
+
+## The assessment sentinel
+
+`.sensible-harness/assessment.json` is the sentinel: `/assess-repo` writes it as the last step of a full sweep (its Phase 13), and its presence is the only signal onboarding uses to decide whether to recommend `/assess-repo` again. Onboarding never invokes `/assess-repo` automatically — it only conditionally recommends running it, gated on the sentinel above. Once the sentinel exists, onboarding drops the recommendation entirely and points at the existing report instead.

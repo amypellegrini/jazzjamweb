@@ -61,6 +61,15 @@ test.describe("Home page", () => {
     );
   });
 
+  test("Google Play badge is a clickable link to the store listing", async ({ page }) => {
+    const badgeLink = page.locator("a.google-play-badge");
+    await expect(badgeLink).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
+    );
+    await expect(badgeLink.locator("img")).toBeVisible();
+  });
+
   test("contains link to privacy policy", async ({ page }) => {
     const privacyLink = page.getByRole("link", { name: /privacy policy/i });
     await expect(privacyLink).toBeVisible();

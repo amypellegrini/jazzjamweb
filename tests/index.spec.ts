@@ -53,6 +53,14 @@ test.describe("Home page", () => {
     expect(bodyText).not.toMatch(/waitlist/i);
   });
 
+  test("hero primary CTA links to the live store listing", async ({ page }) => {
+    const primaryCta = page.locator(".primary-cta");
+    await expect(primaryCta).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
+    );
+  });
+
   test("contains link to privacy policy", async ({ page }) => {
     const privacyLink = page.getByRole("link", { name: /privacy policy/i });
     await expect(privacyLink).toBeVisible();

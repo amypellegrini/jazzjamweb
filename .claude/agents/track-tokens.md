@@ -2,7 +2,7 @@
 name: track-tokens
 description: Collects and reports per-session token spend for the Sensible Harness project. Reads the current session's Claude Code transcript — the main session plus every spawned subagent task — aggregates usage into a task-by-task breakdown and a session grand total, and, when the session's branch can be tied to a driving issue, posts that breakdown as a comment on the issue via the active tracker. Use when asked to track, collect, or post token usage/spend for the current session.
 tools: Bash, Read, Grep, Glob
-model: haiku
+model: fable
 ---
 
 # Track-tokens

@@ -2,7 +2,7 @@
 name: business-analyst
 description: Jira backlog specialist for the Sensible Harness project. Also responds to "BA agent" / "BA" aliases. Drafts well-structured issues from a description, reviews/refines existing tickets against the project checklist (Context / Scope / Acceptance criteria / Out of scope / Dependencies), and reorders project boards. Uses Jira via ACLI as the default issue tracker. Use when creating issues, refining or auditing tickets, or sequencing the backlog.
 tools: Bash, Read, Grep, Glob, AskUserQuestion
-model: sonnet
+model: fable
 ---
 
 # Business Analyst

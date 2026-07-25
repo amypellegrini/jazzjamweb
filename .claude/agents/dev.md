@@ -2,7 +2,7 @@
 name: dev
 description: Developer planning orchestrator for the Sensible Harness project. Also responds to "dev agent" / "dev" aliases. Plans a feature for delivery — picks up the issue, validates it, branches, and drafts an implementation plan decomposed into atomised-skill steps. The main agent gates the plan's approval with the human directly and resumes this agent to save the approved plan to the driving issue as the handoff artifact. Execution belongs to the main agent, which runs each planned step under the skill's own pinned model. Use when picking up an issue to deliver, or when driving a feature from a free-text description.
 tools: Bash, Read, Grep, Glob, AskUserQuestion
-model: sonnet
+model: fable
 ---
 
 # Dev orchestrator (planning half)

@@ -53,6 +53,16 @@ test.describe("Home page", () => {
     expect(bodyText).not.toMatch(/waitlist/i);
   });
 
+  test("subscribe form copy reflects a news/updates confirmation flow, not waitlist instructions", async ({ page }) => {
+    await expect(page.locator(".form-description")).toHaveText(
+      "We'll send a confirmation link to your email."
+    );
+
+    const steps = page.locator(".beta-signup-steps");
+    await expect(steps).toContainText("Check your email to confirm");
+    await expect(steps).not.toContainText(/instructions/i);
+  });
+
   test("hero primary CTA links to the live store listing", async ({ page }) => {
     const primaryCta = page.locator(".primary-cta");
     await expect(primaryCta).toHaveAttribute(

@@ -38,12 +38,46 @@ test.describe("Home page", () => {
 
   test("displays beta signup section", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "Join our beta" })
+      page.getByRole("heading", { name: "Stay in the loop" })
     ).toBeVisible();
     await expect(page.getByLabel("email")).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Subscribe" })
     ).toBeVisible();
+  });
+
+  test("no pre-launch beta/waitlist copy remains", async ({ page }) => {
+    const bodyText = await page.locator("body").innerText();
+    expect(bodyText).not.toMatch(/join our beta/i);
+    expect(bodyText).not.toMatch(/get the app before it'?s launched/i);
+    expect(bodyText).not.toMatch(/waitlist/i);
+  });
+
+  test("subscribe form copy reflects a news/updates confirmation flow, not waitlist instructions", async ({ page }) => {
+    await expect(page.locator(".form-description")).toHaveText(
+      "We'll send a confirmation link to your email."
+    );
+
+    const steps = page.locator(".beta-signup-steps");
+    await expect(steps).toContainText("Check your email to confirm");
+    await expect(steps).not.toContainText(/instructions/i);
+  });
+
+  test("hero primary CTA links to the live store listing", async ({ page }) => {
+    const primaryCta = page.locator(".primary-cta");
+    await expect(primaryCta).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
+    );
+  });
+
+  test("Google Play badge is a clickable link to the store listing", async ({ page }) => {
+    const badgeLink = page.locator("a.google-play-badge");
+    await expect(badgeLink).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
+    );
+    await expect(badgeLink.locator("img")).toBeVisible();
   });
 
   test("contains link to privacy policy", async ({ page }) => {

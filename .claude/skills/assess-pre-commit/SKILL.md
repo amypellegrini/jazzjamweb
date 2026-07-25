@@ -1,6 +1,7 @@
 ---
 name: assess-pre-commit
 description: Use whenever the user asks to check whether pre-commit hooks are configured, audit what local quality gates are enforced before a commit lands, or assess whether those gates can be bypassed. Detects hook frameworks (pre-commit, husky, lefthook, lint-staged), classifies what each hook enforces, checks for bypassability, and writes a plain-language markdown report at .sensible-harness/reports/assess-pre-commit-<timestamp>.md.
+model: sonnet
 ---
 
 # Assess pre-commit hygiene

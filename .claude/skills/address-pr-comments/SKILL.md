@@ -1,6 +1,7 @@
 ---
 name: address-pr-comments
 description: Use whenever the user asks to address, triage, or respond to review comments on an open pull request. Fetches every PR comment (review threads, line-level, general), classifies each (bug-fix / scope-aligned / out-of-scope / style-only / unclear), decides a resolution per comment under four guardrails, implements applied items as atomic commits, and drafts a reply for every comment — applied and rejected.
+model: sonnet
 ---
 
 # Address PR comments

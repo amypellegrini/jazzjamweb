@@ -1,6 +1,7 @@
 ---
 name: assess-test-pyramid
 description: Use whenever the user asks to assess the test pyramid, audit test distribution, check for ice-cream-cone or hourglass anti-patterns, or generate a static report on the unit/integration/e2e balance. First locates the project's own test-pyramid definition (TESTING.md, CONTRIBUTING.md testing section, ADR, etc.) — recommends creating one if absent. Then classifies each test against the project's layer definitions, computes percentages, and emits a self-contained HTML report at .sensible-harness/reports/test-pyramid-<timestamp>.html with an auditable per-test classification table and threshold-driven recommendations.
+model: sonnet
 ---
 
 # Assess test pyramid
@@ -91,6 +92,166 @@ The report **must contain** these sections, in this order:
 4. **Per-test classification table** — every test, with columns: file path, test name, classified layer, signal that triggered the classification (e.g. "doc: `tests/integration/` rule", "path: /e2e/", "framework: @playwright/test", "user: confirmed", "fallback: default"). This is the auditable artifact; do not omit it.
 
 The HTML must be self-contained: inline `<style>`, no external scripts, no CDN dependencies. It should open correctly via `file://` in any modern browser.
+
+### HTML design system
+
+The report must use the Sensible Harness brand palette and feel polished enough to share with a team. Apply the following design system exactly — do not use generic Bootstrap-style greys or flat colours.
+
+**Brand palette (from `src/banner.ts` — do not deviate):**
+
+| Token | Hex | Role |
+|-------|-----|------|
+| Talc | `#FFFFFF` | Page background, card surface |
+| Mist | `#EEF2F5` | Page canvas, alternating rows |
+| Onyx | `#050505` | Body text |
+| Wave | `#003049` | Hero / header background, primary brand anchor |
+| Sapphire | `#2E8B9A` | Primary interactive colour, unit layer bar |
+| Jade | `#5F9B73` | Success / healthy state |
+| Amethyst | `#5B4080` | Integration layer bar, secondary accent |
+| Turmeric | `#CF8A0E` | Warning (ice-cream cone, hourglass) |
+| Flamingo | `#F05273` | Danger / critical (thin foundation), E2E layer bar |
+
+**CSS variables to declare in `:root`:**
+
+```css
+:root {
+  --bg:          #EEF2F5;
+  --surface:     #FFFFFF;
+  --border:      #d0dae3;
+  --brand:       #003049;
+  --brand-light: rgba(0,48,73,0.06);
+  --sapphire:    #2E8B9A;
+  --jade:        #5F9B73;
+  --amethyst:    #5B4080;
+  --turmeric:    #CF8A0E;
+  --flamingo:    #F05273;
+  --text:        #050505;
+  --text-muted:  #4a6070;
+  --text-dim:    #7a8f9e;
+  --text-on-brand: #FFFFFF;
+  --success:     #5F9B73;
+  --warning:     #CF8A0E;
+  --danger:      #F05273;
+  --font-mono:   'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
+  --font-sans:   -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+```
+
+**Page shell:**
+
+- `body`: `background: var(--bg); color: var(--text); font-family: var(--font-sans); margin: 0; padding: 0; -webkit-font-smoothing: antialiased;`
+- Content wrapper: `max-width: 960px; margin: 0 auto; padding: 0 1.5rem 3rem;`
+
+**Header / hero:**
+
+Full-width hero strip with `background: var(--brand); color: var(--text-on-brand); padding: 2.5rem 1.5rem 2rem;`
+
+Inside the hero (centred within the `max-width` wrapper):
+- Wordmark: `"SENSIBLE HARNESS"` in `font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.55; margin-bottom: 0.75rem;`
+- Report title `<h1>`: `font-size: 2rem; font-weight: 700; margin: 0 0 1rem; line-height: 1.2;` in white
+- Metadata chips row (project name · timestamp · total tests · definition source) — each chip: `display: inline-block; background: rgba(255,255,255,0.12); border-radius: 4px; padding: 0.2rem 0.6rem; font-family: var(--font-mono); font-size: 0.72rem; margin-right: 0.4rem; margin-bottom: 0.4rem;` in white
+
+**Section cards:**
+
+Each major section (Distribution, Recommendations, Classification table) lives in a card:
+```css
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,48,73,0.06);
+}
+.card h2 {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--brand-light);
+}
+```
+
+**Distribution bars:**
+
+Each layer gets a labelled horizontal bar coloured by role in the pyramid:
+- Unit (base layer): `background: var(--sapphire);`
+- Integration (mid layer): `background: var(--amethyst);`
+- E2E / top layer: `background: var(--flamingo);`
+
+```css
+.bar-row   { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.9rem; }
+.bar-label { font-family: var(--font-mono); font-size: 0.82rem; width: 130px; color: var(--text-muted); }
+.bar-track { background: var(--bg); border-radius: 6px; height: 18px; overflow: hidden; flex: 1; }
+.bar-fill  { height: 100%; border-radius: 6px; }
+.bar-pct   { font-family: var(--font-mono); font-size: 0.82rem; width: 46px; text-align: right; font-weight: 600; color: var(--text); }
+```
+
+**Recommendations:**
+
+Each diagnosis is a left-bordered callout. Colour signals severity:
+- Healthy: `border-left: 4px solid var(--jade); background: rgba(95,155,115,0.07);`
+- Warning (ice-cream cone, hourglass): `border-left: 4px solid var(--turmeric); background: rgba(207,138,14,0.07);`
+- Critical (thin foundation): `border-left: 4px solid var(--flamingo); background: rgba(240,82,115,0.07);`
+
+```css
+.callout       { padding: 1rem 1.25rem; border-radius: 0 6px 6px 0; margin-bottom: 0.75rem; }
+.callout-title { font-weight: 700; font-size: 0.9rem; margin: 0 0 0.3rem; }
+.callout-body  { font-size: 0.85rem; color: var(--text-muted); margin: 0; line-height: 1.55; }
+```
+
+**Classification table:**
+
+```css
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+thead th {
+  background: var(--brand);
+  color: rgba(255,255,255,0.75);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--bg); }
+tbody tr:hover            { background: rgba(0,48,73,0.04); }
+tbody td {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  color: var(--text);
+}
+```
+
+Layer badge (inline `<span>` in the Classified Layer column):
+```css
+.badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge-unit        { background: rgba(46,139,154,0.12); color: var(--sapphire); }
+.badge-integration { background: rgba(91,64,128,0.12);  color: var(--amethyst); }
+.badge-e2e         { background: rgba(240,82,115,0.12); color: var(--flamingo); }
+.badge-fallback    { background: rgba(74,96,112,0.10);  color: var(--text-muted); }
+```
+
+Signal source column: `font-family: var(--font-mono); font-size: 0.73rem; color: var(--text-dim);`
+
+**Footer:**
+
+`font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border);`
+Include: "Generated by Sensible Harness assess-test-pyramid on `<timestamp>`"
 
 ## 6. Apply the recommendation thresholds
 

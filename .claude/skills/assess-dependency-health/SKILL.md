@@ -1,6 +1,7 @@
 ---
 name: assess-dependency-health
 description: Re-assess the Dependency Health dimension and update the score. Run after updating dependencies, committing a lockfile, or updating the runtime version.
+model: sonnet
 ---
 
 # Assess dependency health

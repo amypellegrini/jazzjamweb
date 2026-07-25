@@ -1,6 +1,7 @@
 ---
 name: qa-test
 description: Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a close-or-address-gaps recommendation. Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's /dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable.
+model: sonnet
 ---
 
 # QA test a feature

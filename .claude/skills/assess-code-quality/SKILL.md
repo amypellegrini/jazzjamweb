@@ -1,6 +1,7 @@
 ---
 name: assess-code-quality
 description: Re-assess the Code Quality Infrastructure dimension and update the score. Run after adding or configuring a linter, formatter, type checker, pre-commit hooks, or lockfile.
+model: sonnet
 ---
 
 # Assess code quality infrastructure

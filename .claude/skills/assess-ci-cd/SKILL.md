@@ -1,6 +1,7 @@
 ---
 name: assess-ci-cd
 description: Re-assess the CI/CD & Delivery Conventions dimension and update the score. Run after adding or updating CI pipelines, commit conventions, PR templates, or release pipelines.
+model: sonnet
 ---
 
 # Assess CI/CD & delivery conventions

@@ -1,6 +1,7 @@
 ---
 name: assess-security
 description: Re-assess the Security Baseline dimension and update the score. Run after adding .env.example, fixing .gitignore, documenting auth, or wiring a security scanner in CI.
+model: sonnet
 ---
 
 # Assess security baseline

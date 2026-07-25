@@ -1,6 +1,7 @@
 ---
 name: assess-observability
 description: Re-assess the Observability dimension and update the score. Run after adding logging, error handling, health check endpoints, or monitoring configuration.
+model: sonnet
 ---
 
 # Assess observability

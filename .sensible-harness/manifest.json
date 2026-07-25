@@ -33,11 +33,14 @@
     "assess-observability",
     "assess-security",
     "assess-test-quality",
-    "regenerate-dashboard"
+    "regenerate-dashboard",
+    "track-tokens"
   ],
   "agents": [
     "dev",
-    "qa"
+    "qa",
+    "business-analyst",
+    "track-tokens"
   ],
   "issueTracker": "github"
 }

@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: Use whenever the user asks to open a pull request for the current branch. Reviews uncommitted changes, commits them atomically (defers to the `commit` skill), pushes the branch with upstream/protected-branch safety checks, and opens the PR with `gh pr create` against `main`. Refuses to run on `main`.
+description: Use whenever the user asks to open a pull request for the current branch. Reviews uncommitted changes, commits them atomically (defers to the `commit` skill), pushes the branch with upstream/protected-branch safety checks, opens the PR with `gh pr create` against `main`, and posts a token-spend snapshot (delegated to `/track-tokens` where installed). Refuses to run on `main`.
 model: haiku
 ---
 
@@ -43,3 +43,9 @@ Run `gh pr create` against base `main`:
 When `gh pr create` returns, report the PR URL.
 
 > **Issue auto-close link.** When the work was driven by an issue, the PR body should link it so the issue closes on merge (e.g. `Closes #<number>` for GitHub). The exact per-tracker syntax depends on a follow-up — this version of the skill opens the PR *without* the link. Add it by hand for now if the issue should auto-close.
+
+## Step 5 — track token spend
+
+Immediately after the PR is created — still on the feature branch, before anything switches it — invoke `/track-tokens`. It identifies the driving issue by the current branch name, aggregates this session's token spend, and posts a comment on that issue when one is found; it always prints the breakdown in-session regardless, and never fails or blocks this skill if no issue can be identified.
+
+If `/track-tokens` isn't installed in this repo (no `.claude/skills/track-tokens/SKILL.md`), skip this step — it's optional instrumentation, not load-bearing for opening the PR.

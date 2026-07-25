@@ -1,6 +1,7 @@
 ---
 name: assess-ai-governance
 description: Re-assess the AI Governance dimension and update the score. Run after updating AGENTS.md, CLAUDE.md, adding skills, or adding explicit agent behaviour rules.
+model: sonnet
 ---
 
 # Assess AI governance

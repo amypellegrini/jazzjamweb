@@ -1,6 +1,7 @@
 ---
 name: assess-ci
 description: Use whenever the user asks to check whether CI is configured, audit what the pipeline verifies, or identify gaps in automated quality gates. Locates the repo's CI configuration files, classifies what each pipeline step covers (build, test, lint, typecheck, security), surfaces any uncovered gates, and writes a plain-language markdown report at .sensible-harness/reports/assess-ci-<timestamp>.md.
+model: sonnet
 ---
 
 # Assess CI coverage

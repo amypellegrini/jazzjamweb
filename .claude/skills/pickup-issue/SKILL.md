@@ -1,6 +1,7 @@
 ---
 name: pickup-issue
 description: Use whenever the user asks to start work on a specific issue ("pick up issue #N", "let's tackle SH-42", "take this one"). Detects the configured issue tracker from .sensible-harness/manifest.json and routes to the GitHub (gh CLI) or Jira (ACLI) workflow. Validates the issue against the project checklist, creates the feature branch, syncs the issue to "In Progress" on the active board, and gates implementation behind plan-mode approval. Invoked as the first step of the /dev orchestrator's composition; also invocable directly by humans.
+model: haiku
 ---
 
 # Pickup issue
@@ -69,13 +70,16 @@ Re-fetch the issue: `gh issue view <number> --json projectItems` — confirm the
 
 ### Step 6 — plan-mode gate
 
-You **MUST** enter plan mode before doing any implementation work. Read relevant code, research the codebase, and create a thorough implementation plan. Do **NOT** exit plan mode until the user has reviewed and approved the plan.
+You **MUST NOT** do any implementation work until the user has explicitly approved the implementation plan. Read relevant code, research the codebase, and create a thorough plan. How you surface it depends on how you were invoked:
+
+- **Direct human invocation (top-level session)** — enter plan mode. Do **NOT** exit plan mode until the user has reviewed and approved the plan.
+- **Subagent invocation (via the Agent tool, e.g. from the `/dev` orchestrator)** — there is no plan-mode UI in a subagent context; the only mid-run prompt that reaches the human is `AskUserQuestion`. Present the plan (or a clear summary of it) via `AskUserQuestion` with two options — **Approve plan** and **Request changes** — and block on the answer. On **Request changes**, revise the plan from the feedback and ask again. Do **NOT** write any code until the answer is **Approve plan**.
 
 This is the single most load-bearing pause in the workflow. The orchestrator (or a human) decides next steps once the plan is approved.
 
 ### Step 7 — implement (after plan approval)
 
-Exit plan mode and implement. When invoked via the `/dev` orchestrator, the agent then loops `/tdd` once per acceptance criterion. When invoked directly by a human, the human drives the implementation themselves.
+Exit plan mode (or, in a subagent context, proceed after the `AskUserQuestion` approval) and implement. When invoked via the `/dev` orchestrator, the agent then loops `/tdd` once per acceptance criterion. When invoked directly by a human, the human drives the implementation themselves.
 
 Make atomic commits using Conventional Commits 1.0.0 — defer to the `commit` skill for the rules. Each commit should address a single concern.
 
@@ -85,10 +89,10 @@ Make atomic commits using Conventional Commits 1.0.0 — defer to the `commit` s
 
 ### Step 1 — fetch the issue
 
-Run `jira issue view <KEY>` (e.g. `jira issue view SH-42`). If ACLI is not installed or not authenticated, stop and surface the gap:
+Run `acli jira workitem view <KEY>` (e.g. `acli jira workitem view SH-42`). If `acli` is not installed or not authenticated, stop and surface the gap:
 
-- Not installed: `npm install -g @ankitpokhrel/jira-cli` (or follow the ACLI installation guide)
-- Not authenticated: `jira init`
+- Not installed: follow https://developer.atlassian.com/cloud/acli/guides/install-acli/
+- Not authenticated: `acli jira auth login --web` (or `--site <site> --email <email> --token` with an API token)
 
 ### Step 2 — validate understanding and quality
 
@@ -109,32 +113,34 @@ Before any branch or code work:
 Assign to yourself:
 
 ```bash
-jira issue assign <KEY> $(jira me --plain | awk '/AccountID/{print $2}')
+acli jira workitem assign --key <KEY> --assignee "@me"
 ```
 
-If parsing fails, pass your account ID or email directly: `jira issue assign <KEY> <account-id-or-email>`
+`@me` self-assigns using the authenticated account. To assign someone else, pass their email or account ID: `acli jira workitem assign --key <KEY> --assignee <email-or-account-id>`.
 
-List available transitions, then transition to "In Progress":
+`acli` transitions by target status name directly — there is no separate "list transitions" subcommand:
 
 ```bash
-jira issue transition list <KEY>
-jira issue transition <KEY> "In Progress"
+acli jira workitem transition --key <KEY> --status "In Progress" --yes
 ```
 
-Use the exact transition name from the list output — names vary by board (e.g. `"Start Progress"`, `"In Development"`).
+Names vary by board (e.g. `"Start Progress"`, `"In Development"`, `"In Progress"`). If the transition fails with `No allowed transitions found for given status`, the name doesn't match this board's workflow — confirm the current status (`acli jira workitem view <KEY> --fields status`) and check the exact status name in the Jira web UI (`acli jira workitem view <KEY> --web`) rather than guessing repeatedly.
 
 ### Step 5 — verify the board sync
 
-Re-fetch the issue: `jira issue view <KEY>` — confirm **Assignee** is you and **Status** reflects "In Progress" before proceeding.
+Re-fetch the issue: `acli jira workitem view <KEY> --fields "status,assignee"` — confirm **assignee** is you and **status** reflects "In Progress" before proceeding.
 
 ### Step 6 — plan-mode gate
 
-You **MUST** enter plan mode before doing any implementation work. Read relevant code, research the codebase, and create a thorough implementation plan. Do **NOT** exit plan mode until the user has reviewed and approved the plan.
+You **MUST NOT** do any implementation work until the user has explicitly approved the implementation plan. Read relevant code, research the codebase, and create a thorough plan. How you surface it depends on how you were invoked:
+
+- **Direct human invocation (top-level session)** — enter plan mode. Do **NOT** exit plan mode until the user has reviewed and approved the plan.
+- **Subagent invocation (via the Agent tool, e.g. from the `/dev` orchestrator)** — there is no plan-mode UI in a subagent context; the only mid-run prompt that reaches the human is `AskUserQuestion`. Present the plan (or a clear summary of it) via `AskUserQuestion` with two options — **Approve plan** and **Request changes** — and block on the answer. On **Request changes**, revise the plan from the feedback and ask again. Do **NOT** write any code until the answer is **Approve plan**.
 
 This is the single most load-bearing pause in the workflow. The orchestrator (or a human) decides next steps once the plan is approved.
 
 ### Step 7 — implement (after plan approval)
 
-Exit plan mode and implement. When invoked via the `/dev` orchestrator, the agent then loops `/tdd` once per acceptance criterion. When invoked directly by a human, the human drives the implementation themselves.
+Exit plan mode (or, in a subagent context, proceed after the `AskUserQuestion` approval) and implement. When invoked via the `/dev` orchestrator, the agent then loops `/tdd` once per acceptance criterion. When invoked directly by a human, the human drives the implementation themselves.
 
 Make atomic commits using Conventional Commits 1.0.0 — defer to the `commit` skill for the rules. Each commit should address a single concern.

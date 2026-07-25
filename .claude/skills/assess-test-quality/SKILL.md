@@ -1,6 +1,7 @@
 ---
 name: assess-test-quality
 description: Re-assess the Test Quality dimension and update the score. Run after adding tests, restructuring the test suite, or updating the test pyramid definition.
+model: sonnet
 ---
 
 # Assess test quality

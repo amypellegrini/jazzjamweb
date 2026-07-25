@@ -1,6 +1,7 @@
 ---
 name: tdd
 description: Use whenever the user asks to run one TDD cycle for a single acceptance criterion or AC fragment. Drives the red → green → refactor → commit loop once, then stops — the caller (`/dev` agent or human) decides whether to invoke again for the next AC. Defers to the `commit` skill for atomicity and Conventional Commits format.
+model: sonnet
 ---
 
 # Test-driven development cycle (one AC)

@@ -1,6 +1,7 @@
 ---
 name: assess-architecture
 description: Re-assess the Architecture dimension and update the score. Run after restructuring directories, adding an architecture doc, or refactoring layers.
+model: sonnet
 ---
 
 # Assess architecture

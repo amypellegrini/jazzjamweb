@@ -1,6 +1,7 @@
 ---
 name: assess-repo
 description: Use whenever the user asks to assess the repository, generate an engineering health report, score the codebase, or run the initial repository assessment after sensible-harness init. Scores the repo across 9 dimensions (documentation, test quality, code quality infrastructure, architecture, CI/CD, security, observability, dependency health, AI governance), writes per-dimension markdown reports to .sensible-harness/reports/assessment/<timestamp>/, updates an interactive HTML dashboard, and generates repo-specific setup-workspace and onboard-me skills for the selected platforms.
+model: sonnet
 ---
 
 # Assess repository
@@ -32,23 +33,13 @@ Identify the following. Record all findings; they feed into later phases.
 
 ## Phase 2 — Documentation inventory
 
-Scan all `*.md` files in the repo root and `docs/` tree. Classify each:
+Delegate to `/assess-documentation`. Pass this context:
 
-| Class | Examples |
-|-------|---------|
-| README | `README.md`, `readme.md` |
-| Architecture | `ARCHITECTURE.md`, `docs/architecture*`, `docs/adr/*` |
-| Contributing | `CONTRIBUTING.md`, `docs/contributing*` |
-| Onboarding | `ONBOARDING.md`, `docs/getting-started*`, `docs/setup*` |
-| Testing | `TESTING.md`, `docs/testing*`, `docs/test-pyramid*` |
-| Security | `SECURITY.md`, `docs/security*` |
-| API docs | `docs/api*`, OpenAPI/Swagger files |
-| Domain model | `docs/domain*`, `docs/glossary*`, `docs/ubiquitous-language*` |
-| AI governance | `AGENTS.md`, `CLAUDE.md`, `.claude/CLAUDE.md`, `.cursor/rules*` |
-| ADRs | `docs/adr/*`, `docs/decisions/*`, `docs/rfcs/*` |
-| Runbooks | `docs/runbook*`, `docs/ops*`, `docs/incident*` |
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/01-documentation.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
 
-For each file found: record path, word count, last-modified date if inferable, and note if it is a stub (< 100 words).
+After `/assess-documentation` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- Which doc classes are present vs. missing (feeds Phase 11 contradiction detection)
 
 ---
 
@@ -70,120 +61,84 @@ Record these findings. They feed Phase 12 scoring for the Test Quality dimension
 
 ## Phase 4 — Code quality infrastructure
 
-**4a — Static tooling (inline)**
+Delegate to `/assess-code-quality`. Pass this context:
 
-Assess directly:
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/03-code-quality-infra.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
 
-- **Linter**: config file present (not just a devDependency)? Configured to fail on errors? Integrated into CI?
-- **Formatter**: config present? Integrated into CI or pre-commit?
-- **Type checker**: strict mode enabled? (For TypeScript: `"strict": true` in tsconfig. For Python: `strict = true` in mypy or pyright config.)
-- **Lockfile**: present and committed?
-- **Editor config**: `.editorconfig` present?
-
-**4b — Pre-commit hooks (delegated)**
-
-Delegate to `/assess-pre-commit`. Pass this context:
-
-> "Running as part of /assess-repo full sweep. If no project pre-commit policy document is found, proceed with generic heuristics rather than stopping. Do not ask the user for input — assess what is present and flag the missing policy doc as a gap."
-
-After `/assess-pre-commit` completes, read its markdown report from `.sensible-harness/reports/assess-pre-commit-<timestamp>.md`. Extract:
-- Which gate categories are covered by hooks: format, lint, typecheck, test, commit message, secrets scan
-- Whether hooks are committed to the repo (enforced for all developers)
-- Bypassability risk (are the same checks also in CI as defence-in-depth?)
-
-Record these findings. They feed Phase 12 scoring for the Code Quality Infrastructure dimension.
+After `/assess-code-quality` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- Which tooling is configured: linter, formatter, type checker, lockfile, pre-commit hooks (feeds Phase 11)
 
 ---
 
 ## Phase 5 — Architecture analysis
 
-1. **Detect the architectural pattern** from directory structure and import patterns:
-   - MVC: `controllers/`, `models/`, `views/`
-   - Layered: `domain/`, `application/`, `infrastructure/`, `presentation/`
-   - Feature-sliced: `features/` or `modules/` with sub-layers inside each
-   - Monorepo multi-package: `packages/`, `apps/`, `libs/`
-   - Flat / unstructured: no discernible pattern
-2. **Check for layer violations**: imports from a higher layer into a lower layer (e.g. domain importing from infrastructure). Sample 10–20 files.
-3. **Compare to documentation**: if an architecture doc exists, does the code match? Note contradictions.
-4. **Assess separation of concerns**: are business logic, I/O, and framework glue mixed in the same files?
+Delegate to `/assess-architecture`. Pass this context:
+
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/04-architecture.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
+
+After `/assess-architecture` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- Detected pattern, layer violations found, whether code matches docs (feeds Phase 11)
 
 ---
 
 ## Phase 6 — CI/CD & delivery conventions
 
-**6a — CI pipeline (delegated)**
+Delegate to `/assess-ci-cd`. Pass this context:
 
-Delegate to `/assess-ci`. Pass this context:
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/05-ci-cd-conventions.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
 
-> "Running as part of /assess-repo full sweep. If no project CI policy document is found, proceed with generic heuristics rather than stopping. Do not ask the user for input — assess what is present and flag the missing policy doc as a gap."
-
-After `/assess-ci` completes, read its markdown report from `.sensible-harness/reports/assess-ci-<timestamp>.md`. Extract:
-- Whether a CI pipeline exists and which platform (GitHub Actions, GitLab, CircleCI, etc.)
-- Gate coverage: build, test, lint, typecheck, security — each Covered / Partial / Not Covered
-- Whether CI runs on PRs and on the main branch
-
-**6b — Delivery conventions (inline)**
-
-Assess directly:
-
-- **Commit conventions**: `commitlint.config.*`, `.commitlintrc*`, `[tool.commitizen]`, or conventional-commits mentioned in CONTRIBUTING.md?
-- **PR template**: `.github/PULL_REQUEST_TEMPLATE.md` or equivalent?
-- **Branch strategy**: documented in CONTRIBUTING.md or README? Infer from branch names in git log if accessible.
-- **Release pipeline**: `semantic-release`, `standard-version`, `release-please`, or manual release notes doc?
-- **Deploy pipeline**: deploy step in CI? Separate deploy config?
-
-Record all findings from 6a and 6b. They feed Phase 12 scoring for the CI/CD & Delivery Conventions dimension.
+After `/assess-ci-cd` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- CI platform, gate coverage, delivery convention findings (feeds Phase 11)
 
 ---
 
 ## Phase 7 — Security baseline
 
-Assess:
+Delegate to `/assess-security`. Pass this context:
 
-- **`.env.example`**: present at repo root or in documented location?
-- **Secrets in tracked files**: scan for obvious secret patterns — `password =`, `api_key =`, `secret =`, `private_key`, AWS key patterns (`AKIA[0-9A-Z]{16}`), base64-encoded tokens in config files. Flag matches with file:line references. Do not print the secret values — print `[REDACTED]`.
-- **`.gitignore` coverage**: does `.gitignore` include `.env`, `*.key`, `*.pem`, `secrets/`?
-- **Auth layer documented**: is there any documentation of authentication/authorisation patterns in the codebase?
-- **Security scan in CI**: `trivy`, `snyk`, `dependabot alerts`, `semgrep`, `npm audit`, `safety` in CI pipeline?
-- **Dependency pinning**: are dependencies pinned to exact versions or using caret/tilde ranges?
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/06-security.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
+
+After `/assess-security` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- Any secrets found (file:line, values redacted)
 
 ---
 
 ## Phase 8 — Observability
 
-Assess:
+Delegate to `/assess-observability`. Pass this context:
 
-- **Logging**: a logging library configured (`winston`, `pino`, `structlog`, `slog`, `zap`, `logrus`)? Log levels used? Structured logging (JSON output)?
-- **Error handling**: consistent error handling patterns? Uncaught exception handlers? Error boundaries (React)? `process.on('uncaughtException')` or equivalent?
-- **Metrics / monitoring**: `prometheus`, `opentelemetry`, `datadog`, `newrelic`, `sentry` configured?
-- **Health check endpoint**: `/health`, `/healthz`, `/ping` route present?
-- **Runbooks**: any runbook or on-call documentation?
-- **Distributed tracing**: trace IDs propagated? OpenTelemetry instrumentation?
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/07-observability.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
+
+After `/assess-observability` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
 
 ---
 
 ## Phase 9 — Dependency health
 
-Assess:
+Delegate to `/assess-dependency-health`. Pass this context:
 
-- **Lockfile present and committed**: already noted in Phase 4 — record here too.
-- **Manifest vs. lockfile consistency**: if `package.json` has dependencies not in the lockfile, or vice versa, note it.
-- **Undeclared imports**: sample 10–20 source files and check whether imports reference packages not in the manifest.
-- **Private registry setup**: if a `.npmrc`, `.yarnrc.yml`, or `pip.conf` references a private registry, is it documented?
-- **Dependency count**: note total direct + dev dependency count. Flag if > 100 direct dependencies (signal of potential bloat).
-- **Known outdated tooling**: check if the declared Node/Python/etc. version is out of active support (Node < 18, Python < 3.9 as of 2026).
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/08-dependency-health.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
+
+After `/assess-dependency-health` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- Lockfile status and runtime version verdict (feeds Phase 11)
 
 ---
 
 ## Phase 10 — AI governance
 
-Assess:
+Delegate to `/assess-ai-governance`. Pass this context:
 
-- **AGENTS.md / CLAUDE.md quality**: present? Covers: project purpose, tech stack, directory layout, conventions, how the agent should work? Word count > 200?
-- **Accuracy**: does the governance doc match what you observe in the code? (Cross-check language, package manager, test framework claims.)
-- **Installed skills**: is `.claude/skills/` or `.cursor/commands/` present? Are skills documented with names and descriptions?
-- **AI conventions**: are there explicit rules about what the agent should/should not do autonomously?
-- **Context documents**: are there any `*.md` files explicitly written to orient an AI agent vs. written for humans?
+> "Running as part of /assess-repo full sweep. Write your markdown report to `.sensible-harness/reports/assessment/<timestamp>/09-ai-governance.md`. Do NOT update assessment.json — assess-repo will write the full snapshot at the end. Do NOT invoke /regenerate-dashboard — assess-repo will do that in Phase 14."
+
+After `/assess-ai-governance` completes, extract from its output:
+- Score (0–100) and P0/P1/P2/P3 gap counts
+- Accuracy issues found (governance doc contradictions with code — feeds Phase 11)
 
 ---
 
@@ -208,11 +163,9 @@ Collect all contradictions. Each one feeds into the score of its relevant dimens
 
 ---
 
-## Phase 12 — Score each dimension and write per-area markdown reports
+## Phase 12 — Compute overall score and write 00-overview.md
 
-### Scoring
-
-Score each dimension 0–100. Apply these weights for the overall score:
+Each dimension skill (Phases 2–10) has already written its per-dimension markdown report. Collect the scores and gap counts returned by each skill and compute the weighted overall score:
 
 | Dimension | Weight |
 |-----------|--------|
@@ -228,87 +181,9 @@ Score each dimension 0–100. Apply these weights for the overall score:
 
 Overall score = weighted average. Grade: A (90–100), B (80–89), C (65–79), D (50–64), F (< 50).
 
-### Scoring guidance per dimension
+Apply contradiction penalties from Phase 11: deduct 5–15 points from the relevant dimension score for each confirmed contradiction (cap dimension score at 0).
 
-**Documentation (0–100)**
-Start at 100. Deduct for each missing or stub document:
-- README missing or < 100 words: −30
-- README has no setup/install section: −10
-- No architecture doc: −20
-- No contributing guide: −15
-- No onboarding guide: −10
-- No testing doc: −10
-- API docs missing (if the project has an API surface): −10
-- No AI governance doc: −10 (more in Phase 10)
-- Stub docs (< 100 words) count as 50% present
-
-**Test Quality (0–100)**
-- No tests at all: 0
-- Test framework present but 0 tests: 10
-- Tests present; apply distribution scoring:
-  - unit ≥ 60% and e2e < 30%: +60
-  - unit 40–59%: +40; unit < 40%: +20
-  - e2e 30–50%: −10; e2e > 50%: −20
-  - Zero integration layer: −10
-- CI runs tests: +20
-- Test pyramid definition documented: +10
-- Coverage configured: +10
-
-**Code Quality Infrastructure (0–100)**
-- Linter configured: +25
-- Formatter configured: +20
-- Type checker in strict mode: +20
-- Pre-commit hooks: +20
-- Lockfile committed: +10
-- Contradictions from Phase 11 related to tooling: deduct 5–15 each
-
-**Architecture (0–100)**
-- Detectable pattern: +30
-- Pattern documented: +20
-- No layer violations found in sample: +30
-- Code matches architecture doc: +20
-- Deduct for violations and mismatches
-
-**CI/CD & Delivery Conventions (0–100)**
-- CI pipeline exists: +25
-- Tests run in CI: +20
-- Lint/type-check in CI: +15
-- Commit conventions enforced: +15
-- PR template present: +10
-- Branch strategy documented: +10
-- Release pipeline: +5
-
-**Security Baseline (0–100)**
-- `.env.example` present: +20
-- No secrets found in tracked files: +30 (deduct 15 per secret found, min 0)
-- `.gitignore` covers secrets: +20
-- Auth documented: +15
-- Security scan in CI: +15
-
-**Observability (0–100)**
-- Logging configured with a library: +30
-- Structured logging: +20
-- Error handling patterns consistent: +20
-- Health check endpoint: +15
-- Monitoring/metrics configured: +10
-- Runbooks present: +5
-
-**Dependency Health (0–100)**
-- Lockfile present: +30
-- Manifest/lockfile consistent: +20
-- No undeclared imports found in sample: +25
-- Runtime version in active support: +15
-- Private registry documented (if used): +10
-
-**AI Governance (0–100)**
-- AGENTS.md/CLAUDE.md present: +25
-- Word count > 200: +15
-- Covers tech stack and conventions: +20
-- Accurate (no contradictions with code): +20
-- Installed skills present: +10
-- Explicit agent behaviour rules: +10
-
-### Report format
+### 00-overview.md format
 
 Write one file per dimension. Assign gaps a priority:
 - **P0**: Blocking — prevents onboarding, causes agent errors, or is a security risk
@@ -348,40 +223,6 @@ Create the directory `.sensible-harness/reports/assessment/<timestamp>/` and wri
 ## Top Priorities
 1. [Highest-impact P0 gap with one-sentence rationale]
 2. ...
-```
-
-**Per-dimension report format:**
-
-```markdown
-# Assessment: <Dimension Name>
-**Repository**: <repo-name> | **Date**: <date> | **Score**: <score>/100 (<grade>)
-
-## Summary
-[One-paragraph narrative of what was found]
-
-## Present
-- [x] <item found> — <brief note>
-...
-
-## Gaps
-### P0 — Blocking
-- **<gap title>** — <one-sentence finding>
-  - Impact: <what this blocks or breaks>
-  - Suggested ticket: "<title for BA agent>"
-
-### P1 — Important
-...
-
-### P2 — Notable
-...
-
-## Contradictions
-- <file:line> references X but Y is observed (P0/P1/P2/P3)
-
-## Suggested Tickets (for BA agent)
-| Title | Context | Acceptance Criteria |
-|-------|---------|---------------------|
-| <ticket title> | <one line of context> | <one measurable AC> |
 ```
 
 ---
@@ -429,7 +270,175 @@ The page must include:
 6. **Report links**: for the current run, a list of links to the per-area `.md` reports (relative paths).
 7. **Footer**: "Generated by Sensible Harness assess-repo on `<timestamp>`".
 
-Style requirements: dark mode friendly (use CSS variables), readable on a 1280px screen, no external fonts, monospace for scores and numbers, sans-serif for prose.
+Style requirements: readable on a 1280px screen minimum, no external fonts, monospace for scores and numbers, sans-serif for prose.
+
+### Design system
+
+The dashboard must use the Sensible Harness brand palette. Apply the following exactly.
+
+**Brand palette:**
+
+| Token | Hex | Role |
+|-------|-----|------|
+| Talc | `#FFFFFF` | Card / panel surface |
+| Mist | `#EEF2F5` | Page canvas background |
+| Onyx | `#050505` | Body text |
+| Wave | `#003049` | Hero background, section headers, nav |
+| Sapphire | `#2E8B9A` | Score bars, primary interactive |
+| Jade | `#5F9B73` | Grade A / healthy / positive trend |
+| Amethyst | `#5B4080` | Secondary accent, Grade B |
+| Turmeric | `#CF8A0E` | Grade C / warning / P1 gaps |
+| Flamingo | `#F05273` | Grade D–F / danger / P0 gaps |
+
+**CSS variables (`:root`):**
+
+```css
+:root {
+  --bg:           #EEF2F5;
+  --surface:      #FFFFFF;
+  --border:       #d0dae3;
+  --brand:        #003049;
+  --brand-light:  rgba(0,48,73,0.06);
+  --sapphire:     #2E8B9A;
+  --jade:         #5F9B73;
+  --amethyst:     #5B4080;
+  --turmeric:     #CF8A0E;
+  --flamingo:     #F05273;
+  --text:         #050505;
+  --text-muted:   #4a6070;
+  --text-dim:     #7a8f9e;
+  --text-on-brand:#FFFFFF;
+  --grade-a:      #5F9B73;
+  --grade-b:      #2E8B9A;
+  --grade-c:      #CF8A0E;
+  --grade-d:      #F05273;
+  --grade-f:      #c0392b;
+  --font-mono:    'SF Mono', 'Cascadia Code', 'Fira Code', ui-monospace, monospace;
+  --font-sans:    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+```
+
+**Page layout:**
+
+- `body`: Mist background, Onyx text, sans-serif, `margin: 0; padding: 0; -webkit-font-smoothing: antialiased;`
+- Content wrapper: `max-width: 1100px; margin: 0 auto; padding: 0 1.5rem 4rem;`
+
+**Hero section:**
+
+Full-width Wave strip: `background: var(--brand); color: var(--text-on-brand); padding: 3rem 1.5rem 2.5rem;`
+
+Inside hero (within max-width wrapper):
+- Wordmark `"SENSIBLE HARNESS"`: `font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.5; display: block; margin-bottom: 1rem;`
+- Repo name `<h1>`: `font-size: 2.2rem; font-weight: 800; margin: 0 0 0.25rem;`
+- Date: `font-family: var(--font-mono); font-size: 0.85rem; opacity: 0.6;`
+- Score block (to the right on desktop, stacked on mobile): Large score numeral `font-size: 5rem; font-weight: 800; font-family: var(--font-mono); line-height: 1;` + letter grade `font-size: 1.5rem; font-weight: 700; margin-left: 0.5rem; align-self: flex-end; padding-bottom: 0.5rem;`
+  - Grade colours applied as `color`:  A→`var(--grade-a)`, B→`var(--grade-b)`, C→`var(--grade-c)`, D→`var(--grade-d)`, F→`var(--grade-f)`
+
+**Section cards:**
+
+```css
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.75rem;
+  margin-top: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,48,73,0.07);
+}
+.card h2 {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--brand);
+  margin: 0 0 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--brand-light);
+}
+```
+
+**Dimension score bars:**
+
+```css
+.dim-row   { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.dim-name  { font-size: 0.85rem; width: 220px; flex-shrink: 0; color: var(--text); }
+.dim-track { background: var(--bg); border-radius: 6px; height: 16px; overflow: hidden; flex: 1; }
+.dim-fill  { height: 100%; border-radius: 6px; background: var(--sapphire); }
+.dim-score { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; width: 36px; text-align: right; color: var(--text); }
+.dim-trend { font-size: 0.8rem; width: 20px; text-align: center; }
+.dim-trend.up   { color: var(--jade); }
+.dim-trend.down { color: var(--flamingo); }
+.dim-trend.flat { color: var(--text-dim); }
+.dim-weight { font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-dim); width: 32px; text-align: right; }
+```
+
+Bar fill colour varies by score: ≥80 → `var(--jade)`; 65–79 → `var(--sapphire)`; 50–64 → `var(--turmeric)`; <50 → `var(--flamingo)`. Set with an inline `style="background: <colour>;"` on `.dim-fill`.
+
+**Gap summary:**
+
+Four pill counters side by side:
+```css
+.gap-pills { display: flex; gap: 1rem; flex-wrap: wrap; }
+.gap-pill  {
+  display: flex; flex-direction: column; align-items: center;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 8px; padding: 0.75rem 1.25rem; min-width: 80px;
+}
+.gap-pill .count { font-family: var(--font-mono); font-size: 2rem; font-weight: 800; line-height: 1; }
+.gap-pill .label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.25rem; color: var(--text-muted); }
+.gap-pill .delta { font-family: var(--font-mono); font-size: 0.72rem; margin-top: 0.2rem; }
+```
+
+P0 count colour: `var(--flamingo)`; P1: `var(--turmeric)`; P2: `var(--sapphire)`; P3: `var(--text-muted)`.
+Delta: positive (more gaps) → flamingo; negative (fewer gaps) → jade; zero → dim.
+
+**Run history table:**
+
+```css
+table { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+thead th {
+  background: var(--brand);
+  color: rgba(255,255,255,0.7);
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+}
+tbody tr:nth-child(even) { background: var(--bg); }
+tbody tr:hover            { background: rgba(0,48,73,0.04); }
+tbody td { padding: 0.55rem 0.85rem; border-bottom: 1px solid var(--border); }
+```
+
+Grade cells: wrap grade letter in `<span class="grade grade-X">` where X is A/B/C/D/F, styled:
+```css
+.grade { font-family: var(--font-mono); font-weight: 800; font-size: 0.9rem; }
+.grade-A { color: var(--grade-a); } .grade-B { color: var(--grade-b); }
+.grade-C { color: var(--grade-c); } .grade-D { color: var(--grade-d); }
+.grade-F { color: var(--grade-f); }
+```
+
+**Score history chart (inline SVG):**
+
+One SVG sparkline per dimension. Each line uses stroke colour matching the bar fill rule above (jade/sapphire/turmeric/flamingo). Background rect: Mist (`#EEF2F5`). Grid lines: `stroke: #d0dae3; stroke-width: 1`. Data polyline: `stroke-width: 2; fill: none`. Dot markers at each data point: `r="3"`, same colour as line.
+
+**Report links:**
+
+A grid of link cards:
+```css
+.link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
+.link-card {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+  padding: 0.75rem 1rem; text-decoration: none; color: var(--brand);
+  font-size: 0.82rem; font-weight: 600; transition: border-color 0.15s;
+}
+.link-card:hover { border-color: var(--sapphire); }
+```
+
+**Footer:**
+
+`font-size: 0.75rem; color: var(--text-dim); text-align: center; margin-top: 4rem; padding-top: 1rem; border-top: 1px solid var(--border);`
 
 ---
 

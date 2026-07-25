@@ -1,6 +1,7 @@
 ---
 name: assess-documentation
 description: Re-assess the Documentation dimension and update the score. Run after adding or improving README, architecture docs, CONTRIBUTING, TESTING, SECURITY, API docs, or AI governance files.
+model: sonnet
 ---
 
 # Assess documentation

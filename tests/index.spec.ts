@@ -38,12 +38,19 @@ test.describe("Home page", () => {
 
   test("displays beta signup section", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "Join our beta" })
+      page.getByRole("heading", { name: "Stay in the loop" })
     ).toBeVisible();
     await expect(page.getByLabel("email")).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Subscribe" })
     ).toBeVisible();
+  });
+
+  test("no pre-launch beta/waitlist copy remains", async ({ page }) => {
+    const bodyText = await page.locator("body").innerText();
+    expect(bodyText).not.toMatch(/join our beta/i);
+    expect(bodyText).not.toMatch(/get the app before it'?s launched/i);
+    expect(bodyText).not.toMatch(/waitlist/i);
   });
 
   test("contains link to privacy policy", async ({ page }) => {

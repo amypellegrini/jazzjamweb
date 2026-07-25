@@ -138,3 +138,6 @@ _site/
 # Playwright
 test-results/
 playwright-report/
+
+# macOS
+.DS_Store

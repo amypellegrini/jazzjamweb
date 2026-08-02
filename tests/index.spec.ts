@@ -46,6 +46,17 @@ test.describe("Home page", () => {
     await expect(proUnlock.getByText("Playlists")).toBeVisible();
   });
 
+  test("displays price and founder launch offer in Pro Unlock section", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    const price = proUnlock.locator(".pro-unlock-price");
+    await expect(price).toBeVisible();
+    await expect(price).toHaveText(/\$\d+(\.\d{2})?/);
+
+    const founderOffer = proUnlock.locator(".pro-unlock-founder-offer");
+    await expect(founderOffer).toBeVisible();
+    await expect(founderOffer).toContainText(/founder/i);
+  });
+
   test("displays beta signup section", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Stay in the loop" })

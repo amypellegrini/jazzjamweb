@@ -36,6 +36,44 @@ test.describe("Home page", () => {
     ).toBeVisible();
   });
 
+  test("displays Pro Unlock section listing the export formats from the app paywall", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    await expect(proUnlock).toBeVisible();
+    await expect(
+      proUnlock.getByText("Export your backing tracks")
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "MIDI", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "WAV", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "MP3", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "MusicXML", exact: true })
+    ).toBeVisible();
+  });
+
+  test("does not display hardcoded pricing in Pro Unlock section", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    await expect(proUnlock).toBeVisible();
+    await expect(proUnlock).not.toContainText("$");
+    await expect(proUnlock).not.toContainText(/founder/i);
+  });
+
+  test("Pro Unlock store CTA links to the app's store listing", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    const storeCta = proUnlock.locator(".pro-unlock-cta");
+    await expect(storeCta).toBeVisible();
+    await expect(storeCta).toHaveText("Unlock Pro");
+    await expect(storeCta).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
+    );
+  });
+
   test("displays beta signup section", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Stay in the loop" })
@@ -191,6 +229,57 @@ test.describe("Home page", () => {
       // Form should span nearly the full viewport width (minus container padding)
       expect(formBox!.width).toBeGreaterThan(viewportWidth * 0.8);
     });
+  });
+
+  test.describe("Pro Unlock section responsiveness", () => {
+    const viewports = [
+      { name: "desktop", width: 1280, height: 800 },
+      { name: "tablet", width: 820, height: 1180 },
+      { name: "mobile", width: 375, height: 812 },
+    ];
+
+    for (const { name, width, height } of viewports) {
+      test(`renders without overflow or clipping on ${name} (${width}x${height})`, async ({
+        page,
+      }) => {
+        await page.setViewportSize({ width, height });
+        await page.goto("/");
+
+        const proUnlock = page.locator(".pro-unlock");
+        await expect(proUnlock).toBeVisible();
+
+        // The page itself must not scroll horizontally at this viewport.
+        const hasHorizontalScroll = await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth >
+            document.documentElement.clientWidth
+        );
+        expect(hasHorizontalScroll).toBe(false);
+
+        // The section must fit within the viewport width, not overflow it.
+        const sectionBox = await proUnlock.boundingBox();
+        expect(sectionBox!.width).toBeLessThanOrEqual(width);
+
+        // Key sub-elements stay visible (not clipped or collapsed) at every width.
+        await expect(proUnlock.locator(".pro-unlock-grid")).toBeVisible();
+        await expect(proUnlock.locator(".pro-unlock-actions")).toBeVisible();
+        await expect(proUnlock.locator(".pro-unlock-cta")).toBeVisible();
+
+        // Each feature card must render at a sane, non-zero size (no clipping to 0).
+        const featureCards = proUnlock.locator(".pro-unlock-feature");
+        const count = await featureCards.count();
+        expect(count).toBe(4);
+        for (let i = 0; i < count; i++) {
+          const box = await featureCards.nth(i).boundingBox();
+          expect(box).not.toBeNull();
+          expect(box!.width).toBeGreaterThan(0);
+          expect(box!.height).toBeGreaterThan(0);
+          // Each card must sit fully inside the viewport horizontally.
+          expect(box!.x).toBeGreaterThanOrEqual(0);
+          expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+        }
+      });
+    }
   });
 
   test("has SEO meta tags", async ({ page }) => {

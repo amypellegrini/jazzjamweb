@@ -384,6 +384,104 @@
         line-height: 1.6;
       }
 
+      /* Pro Unlock Section - Light Theme */
+      .pro-unlock {
+        padding: 3rem 0;
+        background: var(--light-bg-white);
+      }
+
+      .pro-unlock > .container {
+        width: 100%;
+      }
+
+      .pro-unlock h2 {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--light-text-primary);
+      }
+
+      .pro-unlock-subtitle {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.35rem;
+        color: var(--light-text-secondary);
+        margin-top: 0.5rem;
+        margin-bottom: 2.5rem;
+      }
+
+      .pro-unlock-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 2rem;
+      }
+
+      .pro-unlock-feature {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2.5rem 2rem;
+        border-radius: 10px;
+        background: var(--light-bg);
+        border: 1px solid var(--light-card-border);
+        border-top: 3px solid var(--gradient-start);
+        text-align: center;
+      }
+
+
+      .pro-unlock-feature h3.pro-unlock-glyph {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 56px;
+        padding: 0.4rem 0.85rem;
+        margin-bottom: 0.75rem;
+        border-radius: 6px;
+        background: rgba(74, 144, 196, 0.14);
+        color: var(--light-blue-steel);
+        font-family: "Outfit", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.03rem;
+      }
+
+      .pro-unlock-feature p {
+        font-family: "Outfit", sans-serif;
+        color: var(--light-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .pro-unlock-actions {
+        text-align: center;
+        margin-top: 2.5rem;
+      }
+
+      .pro-unlock-cta {
+        display: inline-block;
+        margin-top: 1.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--gradient-start),
+          var(--gradient-end)
+        );
+        color: white;
+        border: none;
+        padding: 0.85rem 2.25rem;
+        border-radius: 6px;
+        text-transform: uppercase;
+        text-decoration: none;
+        font-family: "Outfit", sans-serif;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 0.05rem;
+      }
+
+      .pro-unlock-cta:hover {
+        filter: brightness(1.1);
+        text-decoration: underline;
+      }
+
       /* Layout utilities */
       .flex-row {
         display: flex;
@@ -853,6 +951,40 @@
                 enhance your practice sessions.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="pro-unlock">
+        <div class="container">
+          <h2 class="text-center">Unlock Pro</h2>
+          <p class="pro-unlock-subtitle text-center">
+            Export your backing tracks
+          </p>
+          <div class="pro-unlock-grid">
+            <div class="pro-unlock-feature">
+              <h3 class="pro-unlock-glyph">MIDI</h3>
+              <p>Edit tracks in your DAW</p>
+            </div>
+            <div class="pro-unlock-feature">
+              <h3 class="pro-unlock-glyph">WAV</h3>
+              <p>Uncompressed studio audio</p>
+            </div>
+            <div class="pro-unlock-feature">
+              <h3 class="pro-unlock-glyph">MP3</h3>
+              <p>Small files, easy to share</p>
+            </div>
+            <div class="pro-unlock-feature">
+              <h3 class="pro-unlock-glyph">MusicXML</h3>
+              <p>Open in MuseScore, Dorico, Finale</p>
+            </div>
+          </div>
+          <div class="pro-unlock-actions">
+            <a
+              href="https://play.google.com/store/apps/details?id=com.musicpracticepro&amp;utm_source=emea_Med"
+              class="pro-unlock-cta"
+              >Unlock Pro</a
+            >
           </div>
         </div>
       </section>

@@ -141,3 +141,4 @@ playwright-report/
 
 # macOS
 .DS_Store
+.envrc

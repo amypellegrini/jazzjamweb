@@ -419,7 +419,24 @@
         border-radius: 10px;
         background: var(--light-bg);
         border: 1px solid var(--light-card-border);
+        border-top: 3px solid var(--gradient-start);
         text-align: center;
+      }
+
+      .pro-unlock-glyph {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        padding: 0.35rem 0.6rem;
+        margin-bottom: 0.75rem;
+        border-radius: 6px;
+        background: rgba(74, 144, 196, 0.14);
+        color: var(--light-blue-steel);
+        font-family: "Courier New", monospace;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.05rem;
       }
 
       .pro-unlock-feature h3 {
@@ -947,18 +964,22 @@
           </p>
           <div class="pro-unlock-grid">
             <div class="pro-unlock-feature">
+              <span class="pro-unlock-glyph">MID</span>
               <h3>MIDI</h3>
               <p>Edit tracks in your DAW</p>
             </div>
             <div class="pro-unlock-feature">
+              <span class="pro-unlock-glyph">WAV</span>
               <h3>WAV</h3>
               <p>Uncompressed studio audio</p>
             </div>
             <div class="pro-unlock-feature">
+              <span class="pro-unlock-glyph">MP3</span>
               <h3>MP3</h3>
               <p>Small files, easy to share</p>
             </div>
             <div class="pro-unlock-feature">
+              <span class="pro-unlock-glyph">MXL</span>
               <h3>MusicXML</h3>
               <p>Open in MuseScore, Dorico, Finale</p>
             </div>

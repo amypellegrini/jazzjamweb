@@ -57,6 +57,16 @@ test.describe("Home page", () => {
     await expect(founderOffer).toContainText(/founder/i);
   });
 
+  test("Pro Unlock store CTA links to the app's store listing", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    const storeCta = proUnlock.locator(".pro-unlock-cta");
+    await expect(storeCta).toBeVisible();
+    await expect(storeCta).toHaveAttribute(
+      "href",
+      "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
+    );
+  });
+
   test("displays beta signup section", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Stay in the loop" })

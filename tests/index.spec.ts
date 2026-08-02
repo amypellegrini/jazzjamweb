@@ -36,6 +36,16 @@ test.describe("Home page", () => {
     ).toBeVisible();
   });
 
+  test("displays Pro Unlock section listing all three unlock features", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    await expect(proUnlock).toBeVisible();
+    await expect(
+      proUnlock.getByText("Export to MIDI/MP3/MusicXML")
+    ).toBeVisible();
+    await expect(proUnlock.getByText("All Keys Cycle")).toBeVisible();
+    await expect(proUnlock.getByText("Playlists")).toBeVisible();
+  });
+
   test("displays beta signup section", async ({ page }) => {
     await expect(
       page.getByRole("heading", { name: "Stay in the loop" })

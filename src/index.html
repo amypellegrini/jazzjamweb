@@ -401,9 +401,16 @@
         color: var(--light-text-primary);
       }
 
+      .pro-unlock-subtitle {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.1rem;
+        color: var(--light-text-muted);
+        margin-bottom: 2rem;
+      }
+
       .pro-unlock-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
         gap: 2rem;
       }
 
@@ -422,30 +429,16 @@
         color: var(--light-text-primary);
       }
 
-      .pro-unlock-pricing {
+      .pro-unlock-feature p {
+        font-family: "Outfit", sans-serif;
+        color: var(--light-text-muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .pro-unlock-actions {
         text-align: center;
         margin-top: 2.5rem;
-      }
-
-      .pro-unlock-price {
-        font-family: "Outfit", sans-serif;
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--light-text-primary);
-      }
-
-      .pro-unlock-price-note {
-        font-size: 1rem;
-        font-weight: 400;
-        color: var(--light-text-muted);
-      }
-
-      .pro-unlock-founder-offer {
-        margin-top: 0.5rem;
-        font-family: "Outfit", sans-serif;
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--light-blue-steel);
       }
 
       .pro-unlock-cta {
@@ -949,29 +942,32 @@
       <section class="pro-unlock">
         <div class="container">
           <h2 class="text-center mb-2">Unlock Pro</h2>
+          <p class="pro-unlock-subtitle text-center">
+            Export your backing tracks
+          </p>
           <div class="pro-unlock-grid">
             <div class="pro-unlock-feature">
-              <h3>Export to MIDI/MP3/MusicXML</h3>
+              <h3>MIDI</h3>
+              <p>Edit tracks in your DAW</p>
             </div>
             <div class="pro-unlock-feature">
-              <h3>All Keys Cycle</h3>
+              <h3>WAV</h3>
+              <p>Uncompressed studio audio</p>
             </div>
             <div class="pro-unlock-feature">
-              <h3>Playlists</h3>
+              <h3>MP3</h3>
+              <p>Small files, easy to share</p>
+            </div>
+            <div class="pro-unlock-feature">
+              <h3>MusicXML</h3>
+              <p>Open in MuseScore, Dorico, Finale</p>
             </div>
           </div>
-          <div class="pro-unlock-pricing">
-            <p class="pro-unlock-price">
-              $4.99 <span class="pro-unlock-price-note">one-time purchase</span>
-            </p>
-            <p class="pro-unlock-founder-offer">
-              Founder launch offer: get Pro Unlock for $2.99 for a limited
-              time.
-            </p>
+          <div class="pro-unlock-actions">
             <a
               href="https://play.google.com/store/apps/details?id=com.musicpracticepro&amp;utm_source=emea_Med"
               class="pro-unlock-cta"
-              >Get Pro Unlock</a
+              >Unlock Pro</a
             >
           </div>
         </div>

@@ -36,31 +36,38 @@ test.describe("Home page", () => {
     ).toBeVisible();
   });
 
-  test("displays Pro Unlock section listing all three unlock features", async ({ page }) => {
+  test("displays Pro Unlock section listing the export formats from the app paywall", async ({ page }) => {
     const proUnlock = page.locator(".pro-unlock");
     await expect(proUnlock).toBeVisible();
     await expect(
-      proUnlock.getByText("Export to MIDI/MP3/MusicXML")
+      proUnlock.getByText("Export your backing tracks")
     ).toBeVisible();
-    await expect(proUnlock.getByText("All Keys Cycle")).toBeVisible();
-    await expect(proUnlock.getByText("Playlists")).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "MIDI", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "WAV", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "MP3", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "MusicXML", exact: true })
+    ).toBeVisible();
   });
 
-  test("displays price and founder launch offer in Pro Unlock section", async ({ page }) => {
+  test("does not display hardcoded pricing in Pro Unlock section", async ({ page }) => {
     const proUnlock = page.locator(".pro-unlock");
-    const price = proUnlock.locator(".pro-unlock-price");
-    await expect(price).toBeVisible();
-    await expect(price).toHaveText(/\$\d+(\.\d{2})?/);
-
-    const founderOffer = proUnlock.locator(".pro-unlock-founder-offer");
-    await expect(founderOffer).toBeVisible();
-    await expect(founderOffer).toContainText(/founder/i);
+    await expect(proUnlock).toBeVisible();
+    await expect(proUnlock).not.toContainText("$");
+    await expect(proUnlock).not.toContainText(/founder/i);
   });
 
   test("Pro Unlock store CTA links to the app's store listing", async ({ page }) => {
     const proUnlock = page.locator(".pro-unlock");
     const storeCta = proUnlock.locator(".pro-unlock-cta");
     await expect(storeCta).toBeVisible();
+    await expect(storeCta).toHaveText("Unlock Pro");
     await expect(storeCta).toHaveAttribute(
       "href",
       "https://play.google.com/store/apps/details?id=com.musicpracticepro&utm_source=emea_Med"
@@ -255,13 +262,13 @@ test.describe("Home page", () => {
 
         // Key sub-elements stay visible (not clipped or collapsed) at every width.
         await expect(proUnlock.locator(".pro-unlock-grid")).toBeVisible();
-        await expect(proUnlock.locator(".pro-unlock-pricing")).toBeVisible();
+        await expect(proUnlock.locator(".pro-unlock-actions")).toBeVisible();
         await expect(proUnlock.locator(".pro-unlock-cta")).toBeVisible();
 
         // Each feature card must render at a sane, non-zero size (no clipping to 0).
         const featureCards = proUnlock.locator(".pro-unlock-feature");
         const count = await featureCards.count();
-        expect(count).toBe(3);
+        expect(count).toBe(4);
         for (let i = 0; i < count; i++) {
           const box = await featureCards.nth(i).boundingBox();
           expect(box).not.toBeNull();

@@ -957,33 +957,23 @@
 
       <section class="pro-unlock">
         <div class="container">
-          <h2 class="text-center">Unlock Pro</h2>
+          <h2 class="text-center">{{ shared.paywall.title }}</h2>
           <p class="pro-unlock-subtitle text-center">
-            Export your backing tracks
+            {{ shared.paywall.subtitle }}
           </p>
           <div class="pro-unlock-grid">
+            {% for benefit in shared.paywall.benefits %}
             <div class="pro-unlock-feature">
-              <h3 class="pro-unlock-glyph">MIDI</h3>
-              <p>Edit tracks in your DAW</p>
+              <h3 class="pro-unlock-glyph">{{ benefit.name }}</h3>
+              <p>{{ benefit.description }}</p>
             </div>
-            <div class="pro-unlock-feature">
-              <h3 class="pro-unlock-glyph">WAV</h3>
-              <p>Uncompressed studio audio</p>
-            </div>
-            <div class="pro-unlock-feature">
-              <h3 class="pro-unlock-glyph">MP3</h3>
-              <p>Small files, easy to share</p>
-            </div>
-            <div class="pro-unlock-feature">
-              <h3 class="pro-unlock-glyph">MusicXML</h3>
-              <p>Open in MuseScore, Dorico, Finale</p>
-            </div>
+            {% endfor %}
           </div>
           <div class="pro-unlock-actions">
             <a
               href="https://play.google.com/store/apps/details?id=com.musicpracticepro&amp;utm_source=emea_Med"
               class="pro-unlock-cta"
-              >Unlock Pro</a
+              >{{ shared.paywall.title }}</a
             >
           </div>
         </div>

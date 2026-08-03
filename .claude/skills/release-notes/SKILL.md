@@ -21,5 +21,6 @@ Generate Play Store release notes from a GitHub project board.
    - Group into a short intro paragraph, "New features:" bullet list, and "Bug fixes:" bullet list
    - Keep the total length **under 500 characters** (Google Play Store limit)
    - Write in user-facing language — concise, clear, no technical jargon
-5. Write the output to `RELEASE_NOTES.txt` in the repo root
-6. Display the final character count to confirm it's under 500
+5. Write the **same content** to both `whatsnew/en-US.txt` and `whatsnew/en-GB.txt`
+6. Run `npm run validate-release-notes` to verify the files pass validation
+7. Display the final character count to confirm it's under 500

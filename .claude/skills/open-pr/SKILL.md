@@ -1,7 +1,6 @@
 ---
 name: open-pr
-description: Use whenever the user asks to open a pull request for the current branch. Reviews uncommitted changes, commits them atomically (defers to the `commit` skill), pushes the branch with upstream/protected-branch safety checks, opens the PR with `gh pr create` against `main`, and posts a token-spend snapshot (delegated to `/track-tokens` where installed). Refuses to run on `main`.
-model: haiku
+description: Use whenever the user asks to open a pull request for the current branch. Reviews uncommitted changes, commits them atomically (defers to the `commit` skill), pushes the branch with upstream/protected-branch safety checks, opens the PR with `gh pr create` against `main`, and syncs the driving issue to "In Review" on the active project board. Refuses to run on `main`.
 ---
 
 # Open PR
@@ -42,10 +41,36 @@ Run `gh pr create` against base `main`:
 
 When `gh pr create` returns, report the PR URL.
 
+## Step 5 — sync the driving issue to "In Review" on the active project board
+
+Opening the PR is the moment the work transitions from *in progress* to *awaiting review*. Mirror that on the project board so it stays an honest reflection of the work.
+
+First, **determine the driving issue**:
+
+- The feature branch carries the issue number as its prefix (`feature/<issue-number>-<short-description>` — the prefix is load-bearing). Parse it from the current branch name.
+- Failing that, read the `Closes #<number>` / `Fixes #N` / `Resolves #N` link from the PR body.
+- If neither yields an issue (the branch isn't issue-driven, or there is no tracker), **skip this step** and note it in the final report.
+
+Then sync the board. GitHub Projects rotate as milestones change — **never hard-code project numbers, IDs, or field IDs**; resolve them fresh every time, exactly as `pickup-issue` does:
+
+- Determine the project owner. Default to the repo's owner: `owner=$(gh repo view --json owner -q .owner.login)`. If projects live on a different user/org, ask the user which owner to use.
+- List open projects: `gh project list --owner "$owner" --format json` (filter to `closed: false`).
+- If **no open projects** exist, skip this step — note it in the final report.
+- If **exactly one** open project exists, use it.
+- If **more than one** open project exists, ask the user via `AskUserQuestion` which is the active roadmap project for this repo.
+- Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"In Review"** option ID. If the board has no "In Review" option (its column may be named "Review", "In review", etc.), match by intent; if none exists at all, surface it and skip rather than guessing.
+- Resolve the issue's item on the board. Re-fetch with `gh issue view <number> --json projectItems`; if the issue was picked up via `pickup-issue` it is already on the board. If it is **not** on the board (e.g. `open-pr` was invoked directly without a prior pickup), add it: `gh project item-add <number> --owner "$owner" --url <issue-url> --format json` — capture the returned item `id`.
+- Set the status:
+  ```
+  gh project item-edit \
+    --project-id <project-id> \
+    --id <item-id> \
+    --field-id <status-field-id> \
+    --single-select-option-id <in-review-option-id>
+  ```
+
+## Step 6 — verify the project sync (only when step 5 ran)
+
+Re-fetch the issue: `gh issue view <number> --json projectItems` — confirm the project title matches and the status is **"In Review"** before reporting success.
+
 > **Issue auto-close link.** When the work was driven by an issue, the PR body should link it so the issue closes on merge (e.g. `Closes #<number>` for GitHub). The exact per-tracker syntax depends on a follow-up — this version of the skill opens the PR *without* the link. Add it by hand for now if the issue should auto-close.
-
-## Step 5 — track token spend
-
-Immediately after the PR is created — still on the feature branch, before anything switches it — invoke `/track-tokens`. It identifies the driving issue by the current branch name, aggregates this session's token spend, and posts a comment on that issue when one is found; it always prints the breakdown in-session regardless, and never fails or blocks this skill if no issue can be identified.
-
-If `/track-tokens` isn't installed in this repo (no `.claude/skills/track-tokens/SKILL.md`), skip this step — it's optional instrumentation, not load-bearing for opening the PR.

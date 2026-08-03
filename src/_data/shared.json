@@ -1,0 +1,29 @@
+{
+  "__generated": "GENERATED from content/shared.json in the JazzJam workbench — do not edit. Regenerate: npm run sync",
+  "paywall": {
+    "title": "Unlock Pro",
+    "subtitle": "Export your backing tracks",
+    "benefits": [
+      {
+        "glyph": "MID",
+        "name": "MIDI",
+        "description": "Edit tracks in your DAW"
+      },
+      {
+        "glyph": "WAV",
+        "name": "WAV",
+        "description": "Uncompressed studio audio"
+      },
+      {
+        "glyph": "MP3",
+        "name": "MP3",
+        "description": "Small files, easy to share"
+      },
+      {
+        "glyph": "MXL",
+        "name": "MusicXML",
+        "description": "Open in MuseScore, Dorico, Finale"
+      }
+    ]
+  }
+}

@@ -1,64 +1,32 @@
----
-name: pickup-issue
-description: Use whenever the user asks to start work on a specific GitHub issue ("pick up issue #N", "let's tackle #N", "take this one"). Validates the issue against the project checklist, creates the feature branch, optionally syncs the issue to "In Progress" on the active project board, and gates implementation behind plan-mode approval. Invoked as the first step of the /dev orchestrator's composition; also invocable directly by humans.
----
+# Pickup Issue
 
-# Pickup issue
+1. Fetch the specified GitHub issue with `gh issue view`
+2. **Validate understanding and quality** — before any branch or code work:
+   a. Summarise the issue back to the user in your own words to confirm you understand it correctly
+   b. Check the issue against the /business-analyst criteria: **Business Value**, **Acceptance Criteria**, **Manual Verification Steps**, and **Scope**. Flag any sections that are missing or weak.
+   c. Ask any clarifying questions — do NOT proceed until the user confirms understanding is correct and all questions are resolved
+   d. If the issue is missing required sections, suggest improvements and ask the user whether to update the issue before continuing
+3. Ensure the main branch is up to date by running `git pull origin main` before creating any branch
+4. Create a feature branch named `feature/<issue-number>-<short-description>`
+5. **Discover the currently-active project and set the issue to "In Progress" on it.** Never hard-code project numbers, IDs, or field IDs — active projects rotate as milestones change.
+   a. List open projects: `gh project list --owner amypellegrini --format json` (filter to `closed: false`)
+   b. If more than one open project exists, ask the user which one is the active roadmap project for this repo before proceeding
+   c. Fetch that project's field IDs fresh: `gh project field-list <number> --owner amypellegrini --format json` — capture the Status field ID and the "In Progress" option ID
+   d. Add the issue: `gh project item-add <number> --owner amypellegrini --url <issue-url> --format json` — capture the returned item `id`
+   e. Set status: `gh project item-edit --project-id <project-id> --id <item-id> --field-id <status-field-id> --single-select-option-id <in-progress-option-id>`
+6. Verify the issue is on the correct project with "In Progress" status by re-fetching it with `gh issue view <number> --json projectItems` — confirm the project title matches the active project and status is "In Progress" before proceeding
+7. You MUST enter plan mode before doing any implementation work. Read relevant code, research the codebase, and create a thorough implementation plan. Do NOT exit plan mode until the user has reviewed and approved the plan.
+8. Once the plan is approved, exit plan mode and implement using TDD — write tests first, then implementation
+9. Make atomic commits using Conventional Commits format (e.g. `test:`, `feat:`, `fix:`, `refactor:`). Each commit should address a single concern and reference the issue number (e.g. `feat: add tempo selector (#42)`)
 
-Apply these steps whenever invoked to start work on a specific GitHub issue. The skill validates the issue, creates a feature branch, optionally syncs the issue to "In Progress" on the active project board, and gates implementation behind plan-mode approval.
+## Design-only issues
 
-The `/dev` orchestrator invokes this as its first composed step; humans can also invoke it directly.
+When an issue is **design-only** (no production code — mockups, UX flows, wireframes), follow the same branch + PR workflow as a code feature (`feature/<issue-number>-<short-description>`), but:
 
-## Step 1 — fetch the issue
-
-Run `gh issue view <number>` to read the issue. If the current directory's `origin` points at a different repo than where the issue lives, pass `--repo <owner>/<name>` explicitly — do **not** silently repoint `origin`.
-
-## Step 2 — validate understanding and quality
-
-Before any branch or code work:
-
-- Summarise the issue back to the user in your own words to confirm you understand it correctly.
-- Check the issue body for the sections this repo expects — typically Context, Scope (sketch), Acceptance criteria / out-of-scope, Manual verification, Dependencies / related. Flag any that are missing or weak.
-- Ask any clarifying questions — do **not** proceed until the user confirms understanding is correct and all questions are resolved.
-- If the issue is missing required sections, suggest improvements and ask the user whether to update the issue (via `/business-analyst #N` review) before continuing.
-
-## Step 3 — sync `main` and create the feature branch
-
-- `git pull origin main` to ensure the base is current.
-- `git checkout -b feature/<issue-number>-<short-description>` — the issue number prefix is load-bearing; downstream skills (`/tdd`, `close-issue`) infer the driving issue from it.
-
-## Step 4 — sync the issue to "In Progress" on the active project board
-
-GitHub Projects rotate as milestones change. Never hard-code project numbers, IDs, or field IDs — resolve them fresh every time.
-
-- Determine the project owner. Default to the repo's owner: `owner=$(gh repo view --json owner -q .owner.login)`. If projects live on a different user/org (e.g. a personal project tracking issues from an org repo), ask the user which owner to use.
-- List open projects: `gh project list --owner "$owner" --format json` (filter to `closed: false` in the JSON).
-- If **no open projects** exist, skip this step — the issue stays in the default backlog. Note it in the final report.
-- If **exactly one** open project exists, use it.
-- If **more than one** open project exists, ask the user via `AskUserQuestion` which is the active roadmap project for this repo before proceeding.
-- Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"In Progress"** option ID.
-- Add the issue to the project: `gh project item-add <number> --owner "$owner" --url <issue-url> --format json` — capture the returned item `id`.
-- Set the status:
-  ```
-  gh project item-edit \
-    --project-id <project-id> \
-    --id <item-id> \
-    --field-id <status-field-id> \
-    --single-select-option-id <in-progress-option-id>
-  ```
-
-## Step 5 — verify the project sync (only when step 4 ran)
-
-Re-fetch the issue: `gh issue view <number> --json projectItems` — confirm the project title matches and the status is **"In Progress"** before proceeding.
-
-## Step 6 — plan-mode gate
-
-You **MUST** enter plan mode before doing any implementation work. Read relevant code, research the codebase, and create a thorough implementation plan. Do **NOT** exit plan mode until the user has reviewed and approved the plan.
-
-This is the single most load-bearing pause in the workflow. The orchestrator (or a human) decides next steps once the plan is approved.
-
-## Step 7 — implement (after plan approval)
-
-Exit plan mode and implement. When invoked via the `/dev` orchestrator, the agent then loops `/tdd` once per acceptance criterion. When invoked directly by a human, the human drives the implementation themselves.
-
-Make atomic commits using Conventional Commits 1.0.0 — defer to the `commit` skill for the rules. Each commit should address a single concern.
+- **Artifact format:** HTML mockups, consistent with existing `designs/` folder conventions (dark + light variants where applicable, phone-frame 375×812, same font stack and CSS token naming).
+- **Location:** inside the top-level `designs/` directory. Organise freely (e.g. `designs/screens/` for single frames, or a subfolder per flow for multi-step journeys). Update `designs/index.njk` to surface new screens in the gallery.
+- **UX principles to optimise for** (apply before visual polish):
+  1. **Limit options** — prevent decision fatigue; avoid overwhelming the user with controls.
+  2. **Shortest path to outcome** — target **no more than 3 taps** from the starting point to completion.
+- **Deliverable shape:** start with UX flow journeys (user paths from entry → outcome, annotated), *then* produce screen mockups. Propose multiple options first and let the user pick before committing to a single direction.
+- **TDD does not apply** — skip the test-first loop, but still make atomic Conventional Commits (`design:` or `docs:` prefix when appropriate).

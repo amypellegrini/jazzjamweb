@@ -718,8 +718,9 @@
         display: none;
       }
 
-      /* Tablet */
-      @media (max-width: 1024px) {
+      /* Tablet — 1199px covers large tablets in landscape
+         (e.g. iPad Pro 11" at 1194px) while staying below desktop. */
+      @media (max-width: 1199px) {
         .hero .hero-image {
           opacity: 0.5;
         }

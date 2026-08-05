@@ -41,7 +41,7 @@ You drive a feature through the following sequence of atomised, DEV-specific ski
 4. **`open-pr`** — group commits, push the branch, open the PR against `main` via `gh pr create`, link the driving issue with `Closes #N` so it auto-closes on merge, and sync the project board to "In Review".
 5. **`/check-ci`** — verify the PR's CI status. Invoked at multiple touchpoints (see *Post-PR CI checkpoint* below).
 6. **`address-pr-comments`** — when review feedback arrives on the PR: classify each comment, decide per comment (apply / partial-apply / push back / ask / defer) under the four guardrails, reply with reasoning. Atomic commits per applied concern.
-7. **`close-issue`** — **the only way the issue gets closed.** After review feedback is addressed: verify acceptance criteria against the diff, confirm `Closes #N` in the PR body, wait for green CI (delegated to `/check-ci`), squash-merge, clean up local + remote branch.
+7. **`close-issue`** — **the only way the issue gets closed.** After review feedback is addressed and merge authorization is present (an approving review, or the user explicitly saying to merge): verify acceptance criteria against the diff, confirm `Closes #N` in the PR body, wait for green CI (delegated to `/check-ci`), squash-merge, clean up local + remote branch.
 
 ## Gates (load-bearing checkpoints)
 
@@ -117,10 +117,11 @@ The third invocation, before merge, is the CI gate above.
 
 The pass does not end when the PR opens. Progress until the feature is implemented, then once `open-pr` has run, the board is synced to "In Review", and the post-PR `/check-ci` is green, **switch to monitoring the PR for review feedback**:
 
-- Poll the PR for new reviews and comments (`gh pr view <number> --comments`, `gh api repos/{owner}/{repo}/pulls/<number>/reviews`).
+- Poll the PR every few minutes for new reviews and comments (`gh pr view <number> --comments`, `gh api repos/{owner}/{repo}/pulls/<number>/reviews`).
 - When feedback arrives, address it via `address-pr-comments` (honouring the classification gate), then re-run `/check-ci`.
-- Keep monitoring until the PR is approved and no feedback is left unaddressed.
-- **Close the issue only via `close-issue`** — never `gh pr merge` or `gh issue close` directly. `close-issue` owns the AC-verification gate, the CI gate, and the squash-merge.
+- **Waiting is the default; silence is not approval.** Green CI with zero comments and no approving review means keep polling — it does NOT mean the PR is ready to merge. In particular, an empty `reviewDecision` (a repo with no required reviewers configured) is not approval.
+- Move to close only on a positive merge-authorization signal: an **approving review** on the PR, or the **user explicitly instructing the merge** ("merge it", "close #N"). `close-issue` re-checks this as its own gate.
+- **Close the issue only via `close-issue`** — never `gh pr merge` or `gh issue close` directly. `close-issue` owns the AC-verification gate, the merge-authorization gate, the CI gate, and the squash-merge.
 
 If monitoring cannot continue (the session ends, or the user asks to stop), report the PR as open, In Review, and awaiting feedback; a later `/dev` invocation resumes from the monitoring loop, not from pickup.
 

@@ -231,6 +231,141 @@ test.describe("Home page", () => {
     });
   });
 
+  test.describe("tablet layout", () => {
+    // Reference tablet viewports from issue #35.
+    const tabletViewports = [
+      { name: "iPad Mini portrait", width: 768, height: 1024 },
+      { name: "iPad Air portrait", width: 820, height: 1180 },
+      { name: "iPad Mini landscape", width: 1024, height: 768 },
+      { name: "iPad Air landscape", width: 1180, height: 820 },
+    ];
+
+    const topLevelSections = [
+      ".hero",
+      ".app-showcase-section",
+      ".features",
+      ".pro-unlock",
+      ".beta-signup",
+      "footer",
+    ];
+
+    for (const { name, width, height } of tabletViewports) {
+      test.describe(`${name} (${width}x${height})`, () => {
+        test.beforeEach(async ({ page }) => {
+          await page.setViewportSize({ width, height });
+          await page.goto("/");
+        });
+
+        test("page does not scroll horizontally and every section fits the viewport", async ({
+          page,
+        }) => {
+          const hasHorizontalScroll = await page.evaluate(
+            () =>
+              document.documentElement.scrollWidth >
+              document.documentElement.clientWidth
+          );
+          expect(hasHorizontalScroll).toBe(false);
+
+          for (const selector of topLevelSections) {
+            const box = await page.locator(selector).boundingBox();
+            expect(box, `${selector} should render`).not.toBeNull();
+            expect(box!.x, `${selector} left edge`).toBeGreaterThanOrEqual(0);
+            expect(
+              box!.x + box!.width,
+              `${selector} right edge`
+            ).toBeLessThanOrEqual(width);
+          }
+        });
+
+        test("features cards render in a multi-column layout without overflow", async ({
+          page,
+        }) => {
+          const columnCount = await page
+            .locator(".features-grid")
+            .evaluate(
+              (el) =>
+                getComputedStyle(el).gridTemplateColumns.split(" ").length
+            );
+          expect(columnCount, "features grid columns").toBeGreaterThanOrEqual(
+            2
+          );
+
+          const cards = page.locator(".feature-card");
+          const count = await cards.count();
+          expect(count).toBeGreaterThan(0);
+          for (let i = 0; i < count; i++) {
+            const box = await cards.nth(i).boundingBox();
+            expect(box).not.toBeNull();
+            expect(box!.x).toBeGreaterThanOrEqual(0);
+            expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+          }
+        });
+
+        test("Pro Unlock benefit cards render two or more per row without overflow", async ({
+          page,
+        }) => {
+          const columnCount = await page
+            .locator(".pro-unlock-grid")
+            .evaluate(
+              (el) =>
+                getComputedStyle(el).gridTemplateColumns.split(" ").length
+            );
+          expect(
+            columnCount,
+            "pro unlock grid columns"
+          ).toBeGreaterThanOrEqual(2);
+
+          const cards = page.locator(".pro-unlock-feature");
+          const count = await cards.count();
+          expect(count).toBeGreaterThan(0);
+          for (let i = 0; i < count; i++) {
+            const box = await cards.nth(i).boundingBox();
+            expect(box).not.toBeNull();
+            expect(box!.x).toBeGreaterThanOrEqual(0);
+            expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+          }
+        });
+
+        test("hero text and CTA fit the viewport and sit over a dimmed hero image", async ({
+          page,
+        }) => {
+          for (const selector of [
+            ".hero-content h1",
+            ".hero p.tagline",
+            ".primary-cta",
+          ]) {
+            const box = await page.locator(`${selector}:visible`).boundingBox();
+            expect(box, `${selector} should render`).not.toBeNull();
+            expect(box!.x, `${selector} left edge`).toBeGreaterThanOrEqual(0);
+            expect(
+              box!.x + box!.width,
+              `${selector} right edge`
+            ).toBeLessThanOrEqual(width);
+          }
+
+          // The hero artwork must be dimmed so the text stays readable over it.
+          const heroImageOpacity = await page
+            .locator(".hero-image")
+            .evaluate((el) => parseFloat(getComputedStyle(el).opacity));
+          expect(heroImageOpacity, "hero image opacity").toBeLessThan(1);
+        });
+
+        test("primary CTAs meet the 44px minimum touch-target height", async ({
+          page,
+        }) => {
+          for (const selector of [".primary-cta", ".pro-unlock-cta"]) {
+            const box = await page.locator(selector).boundingBox();
+            expect(box, `${selector} should render`).not.toBeNull();
+            expect(
+              box!.height,
+              `${selector} height`
+            ).toBeGreaterThanOrEqual(44);
+          }
+        });
+      });
+    }
+  });
+
   test.describe("Pro Unlock section responsiveness", () => {
     const viewports = [
       { name: "desktop", width: 1280, height: 800 },

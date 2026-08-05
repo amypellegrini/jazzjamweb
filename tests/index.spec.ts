@@ -231,6 +231,55 @@ test.describe("Home page", () => {
     });
   });
 
+  test.describe("tablet layout", () => {
+    // Reference tablet viewports from issue #35.
+    const tabletViewports = [
+      { name: "iPad Mini portrait", width: 768, height: 1024 },
+      { name: "iPad Air portrait", width: 820, height: 1180 },
+      { name: "iPad Mini landscape", width: 1024, height: 768 },
+      { name: "iPad Air landscape", width: 1180, height: 820 },
+    ];
+
+    const topLevelSections = [
+      ".hero",
+      ".app-showcase-section",
+      ".features",
+      ".pro-unlock",
+      ".beta-signup",
+      "footer",
+    ];
+
+    for (const { name, width, height } of tabletViewports) {
+      test.describe(`${name} (${width}x${height})`, () => {
+        test.beforeEach(async ({ page }) => {
+          await page.setViewportSize({ width, height });
+          await page.goto("/");
+        });
+
+        test("page does not scroll horizontally and every section fits the viewport", async ({
+          page,
+        }) => {
+          const hasHorizontalScroll = await page.evaluate(
+            () =>
+              document.documentElement.scrollWidth >
+              document.documentElement.clientWidth
+          );
+          expect(hasHorizontalScroll).toBe(false);
+
+          for (const selector of topLevelSections) {
+            const box = await page.locator(selector).boundingBox();
+            expect(box, `${selector} should render`).not.toBeNull();
+            expect(box!.x, `${selector} left edge`).toBeGreaterThanOrEqual(0);
+            expect(
+              box!.x + box!.width,
+              `${selector} right edge`
+            ).toBeLessThanOrEqual(width);
+          }
+        });
+      });
+    }
+  });
+
   test.describe("Pro Unlock section responsiveness", () => {
     const viewports = [
       { name: "desktop", width: 1280, height: 800 },

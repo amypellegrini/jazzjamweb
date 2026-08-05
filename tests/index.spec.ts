@@ -349,6 +349,19 @@ test.describe("Home page", () => {
             .evaluate((el) => parseFloat(getComputedStyle(el).opacity));
           expect(heroImageOpacity, "hero image opacity").toBeLessThan(1);
         });
+
+        test("primary CTAs meet the 44px minimum touch-target height", async ({
+          page,
+        }) => {
+          for (const selector of [".primary-cta", ".pro-unlock-cta"]) {
+            const box = await page.locator(selector).boundingBox();
+            expect(box, `${selector} should render`).not.toBeNull();
+            expect(
+              box!.height,
+              `${selector} height`
+            ).toBeGreaterThanOrEqual(44);
+          }
+        });
       });
     }
   });

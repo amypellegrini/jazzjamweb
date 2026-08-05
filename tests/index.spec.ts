@@ -325,6 +325,30 @@ test.describe("Home page", () => {
             expect(box!.x + box!.width).toBeLessThanOrEqual(width);
           }
         });
+
+        test("hero text and CTA fit the viewport and sit over a dimmed hero image", async ({
+          page,
+        }) => {
+          for (const selector of [
+            ".hero-content h1",
+            ".hero p.tagline",
+            ".primary-cta",
+          ]) {
+            const box = await page.locator(`${selector}:visible`).boundingBox();
+            expect(box, `${selector} should render`).not.toBeNull();
+            expect(box!.x, `${selector} left edge`).toBeGreaterThanOrEqual(0);
+            expect(
+              box!.x + box!.width,
+              `${selector} right edge`
+            ).toBeLessThanOrEqual(width);
+          }
+
+          // The hero artwork must be dimmed so the text stays readable over it.
+          const heroImageOpacity = await page
+            .locator(".hero-image")
+            .evaluate((el) => parseFloat(getComputedStyle(el).opacity));
+          expect(heroImageOpacity, "hero image opacity").toBeLessThan(1);
+        });
       });
     }
   });

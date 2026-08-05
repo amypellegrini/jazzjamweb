@@ -276,6 +276,30 @@ test.describe("Home page", () => {
             ).toBeLessThanOrEqual(width);
           }
         });
+
+        test("features cards render in a multi-column layout without overflow", async ({
+          page,
+        }) => {
+          const columnCount = await page
+            .locator(".features-grid")
+            .evaluate(
+              (el) =>
+                getComputedStyle(el).gridTemplateColumns.split(" ").length
+            );
+          expect(columnCount, "features grid columns").toBeGreaterThanOrEqual(
+            2
+          );
+
+          const cards = page.locator(".feature-card");
+          const count = await cards.count();
+          expect(count).toBeGreaterThan(0);
+          for (let i = 0; i < count; i++) {
+            const box = await cards.nth(i).boundingBox();
+            expect(box).not.toBeNull();
+            expect(box!.x).toBeGreaterThanOrEqual(0);
+            expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+          }
+        });
       });
     }
   });

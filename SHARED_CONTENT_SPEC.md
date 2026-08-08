@@ -17,6 +17,14 @@ It is deliberately committed (not gitignored) because CI and the Pages deploy ch
 repo out standalone. The workbench's `sync --check` gate will flag any manual edit as
 drift the next time it runs.
 
+### CI enforcement
+
+`.github/workflows/shared-content.yml` fails any PR whose diff touches the file above,
+unless the commit that touched it has a `chore(sync):` subject. Use that prefix when
+committing regenerated output. The gate catches hand edits; it does not verify content
+against the workbench (this repo has no access to the private workbench) — the workbench's
+own `sync:check` pre-commit hook does that.
+
 ## What reads the shared data
 
 `src/index.html` renders the Pro Unlock section from it via Nunjucks
@@ -32,7 +40,8 @@ label). The app renders the same benefits in its paywall via a generated
 2. Run `npm run sync` from the workbench root. It regenerates `src/_data/shared.json`
    here and `benefits.ts` in the app.
 3. Commit the regenerated file(s) in each affected repo following its conventions
-   (this repo: branch + PR; pre-commit runs the Playwright suite).
+   (this repo: branch + PR; pre-commit runs the Playwright suite). Give the commit that
+   carries regenerated output a `chore(sync):` subject — CI requires it.
 4. Bump the submodule pointers in the workbench.
 
 If you only have this repo checked out (no workbench), do not change the Pro Unlock

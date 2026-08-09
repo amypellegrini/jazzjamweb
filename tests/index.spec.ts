@@ -124,6 +124,70 @@ test.describe("Home page", () => {
     );
   });
 
+  test("Pro Unlock groups render as full-width bands of plain text, not cards", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    const sectionBox = await proUnlock.boundingBox();
+
+    // Each group is a dedicated band spanning the section edge to edge.
+    const groups = proUnlock.locator(".pro-unlock-group");
+    const groupCount = await groups.count();
+    expect(groupCount).toBe(shared.paywall.groups.length);
+    for (let g = 0; g < groupCount; g++) {
+      const box = await groups.nth(g).boundingBox();
+      expect(Math.abs(box!.width - sectionBox!.width), "band width").toBeLessThan(2);
+    }
+
+    // Benefits are plain text blocks — no card box around them.
+    const features = proUnlock.locator(".pro-unlock-feature");
+    for (let i = 0; i < (await features.count()); i++) {
+      const style = await features.nth(i).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return { background: s.backgroundColor, borderTop: s.borderTopWidth };
+      });
+      expect(style.background, "feature background").toBe("rgba(0, 0, 0, 0)");
+      expect(style.borderTop, "feature border").toBe("0px");
+    }
+
+    // Benefit names read as plain dark text: no highlight behind them, and
+    // the same ink as the section title rather than an accent colour.
+    const titleColor = await proUnlock
+      .getByRole("heading", { level: 2 })
+      .evaluate((el) => getComputedStyle(el).color);
+    const glyphs = proUnlock.locator(".pro-unlock-glyph");
+    for (let i = 0; i < (await glyphs.count()); i++) {
+      const style = await glyphs.nth(i).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return { background: s.backgroundColor, color: s.color };
+      });
+      expect(style.background, "benefit name highlight").toBe("rgba(0, 0, 0, 0)");
+      expect(style.color, "benefit name ink").toBe(titleColor);
+    }
+  });
+
+  test("a group's lone benefit spans its band instead of floating as a narrow card", async ({ page }) => {
+    const soloGroups = shared.paywall.groups.filter(
+      (group) =>
+        shared.paywall.benefits.filter(
+          (benefit) => expectedGroupId(benefit.id) === group.id
+        ).length === 1
+    );
+    expect(soloGroups.length).toBeGreaterThan(0);
+
+    for (const group of soloGroups) {
+      const groupEl = page.locator(
+        `.pro-unlock-group[data-group="${group.id}"]`
+      );
+      const gridBox = await groupEl.locator(".pro-unlock-grid").boundingBox();
+      const featureBox = await groupEl
+        .locator(".pro-unlock-feature")
+        .boundingBox();
+      expect(
+        featureBox!.width / gridBox!.width,
+        "lone benefit's share of its band"
+      ).toBeGreaterThan(0.9);
+    }
+  });
+
   test("Pro Unlock heading levels step down without skipping one", async ({ page }) => {
     const levels = await page
       .locator(".pro-unlock :is(h1, h2, h3, h4, h5, h6)")

@@ -409,8 +409,17 @@
         margin-bottom: 2.5rem;
       }
 
-      .pro-unlock-group + .pro-unlock-group {
-        margin-top: 3rem;
+      /* Each group is a dedicated band: a direct child of the section, so it
+         spans the full page width, with an inner .container keeping its text
+         aligned to the rest of the page. Alternating backgrounds and a top
+         rule separate the bands without boxing the benefits into cards. */
+      .pro-unlock-group {
+        padding: 2.5rem 0;
+        border-top: 1px solid var(--light-card-border);
+      }
+
+      .pro-unlock-group:nth-child(even) {
+        background: var(--light-bg);
       }
 
       .pro-unlock-group-subtitle {
@@ -444,27 +453,21 @@
         max-width: var(--pro-unlock-column-width);
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
-        padding: 2.5rem 2rem;
-        border-radius: 10px;
-        background: var(--light-bg);
-        border: 1px solid var(--light-card-border);
-        border-top: 3px solid var(--gradient-start);
         text-align: center;
       }
 
+      /* A group with a single benefit owns its whole band — a lone
+         column-width block would strand it as a floating card. */
+      .pro-unlock-feature:only-child {
+        flex-basis: 100%;
+        max-width: 100%;
+      }
 
       .pro-unlock-feature .pro-unlock-glyph {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 56px;
-        padding: 0.4rem 0.85rem;
-        margin-bottom: 0.75rem;
-        border-radius: 6px;
-        background: rgba(74, 144, 196, 0.14);
-        color: var(--light-blue-steel);
+        margin: 0 0 0.5rem;
+        color: var(--light-text-primary);
         font-family: "Outfit", sans-serif;
         font-size: 1.15rem;
         font-weight: 700;
@@ -1002,8 +1005,10 @@
           <p class="pro-unlock-subtitle text-center">
             {{ shared.paywall.subtitle }}
           </p>
-          {% for group in proUnlock.groups %}
-          <div class="pro-unlock-group" data-group="{{ group.id }}">
+        </div>
+        {% for group in proUnlock.groups %}
+        <div class="pro-unlock-group" data-group="{{ group.id }}">
+          <div class="container">
             <h3 class="pro-unlock-group-subtitle text-center">
               {{ group.subtitle }}
             </h3>
@@ -1016,7 +1021,9 @@
               {% endfor %}
             </div>
           </div>
-          {% endfor %}
+        </div>
+        {% endfor %}
+        <div class="container">
           <div class="pro-unlock-actions">
             <a
               href="https://play.google.com/store/apps/details?id=com.musicpracticepro&amp;utm_source=emea_Med"

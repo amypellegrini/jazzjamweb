@@ -19,11 +19,26 @@ drift the next time it runs.
 
 ### CI enforcement
 
-`.github/workflows/shared-content.yml` fails any PR whose diff touches the file above,
-unless the commit that touched it has a `chore(sync):` subject. Use that prefix when
-committing regenerated output. The gate catches hand edits; it does not verify content
-against the workbench (this repo has no access to the private workbench) — the workbench's
-own `sync:check` pre-commit hook does that.
+The `Shared Content` workflow (`.github/workflows/shared-content.yml`) runs
+`scripts/check-shared-content.js` — tested in `tests/check-shared-content.spec.ts` — on
+every PR and on pushes to main. It fails any commit in the PR range that touches the
+file above unless that commit's subject starts with `chore(sync):` (the breaking form
+`chore(sync)!:` is also accepted). Use that prefix when committing regenerated output.
+
+Design points, shared with musicpracticepro's gate (a change to one belongs in both):
+
+- Judged per commit against the **live** base branch (merge-base semantics), so a
+  branch that merges main in is not blamed for mainline commits, and a hand edit
+  cannot be laundered by a later sync commit or revert.
+- Merge commits are inspected with a combined diff (`git log -c`), so a hand edit
+  written into a merge-conflict resolution is caught.
+- Fails closed on unresolvable revisions and untracked guarded paths.
+- Catches hand edits only; it does not verify content against the workbench (this
+  repo has no access to the private workbench) — the workbench's own `sync:check`
+  hook does that.
+
+⚠️ `main` has no branch protection, so the check is advisory until it is made required
+in the repo settings.
 
 ## What reads the shared data
 

@@ -2,7 +2,18 @@ name: Shared Content
 
 on:
   pull_request:
+    # 'edited' catches a stacked PR retargeted onto main after its parent
+    # merges, which would otherwise never re-run the gate.
+    types: [opened, synchronize, reopened, edited]
     branches: [main]
+  # Covers direct human pushes to main. Merged PRs are re-checked here too,
+  # which is cheap and keeps the trigger simple.
+  push:
+    branches: [main]
+
+concurrency:
+  group: shared-content-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   no-hand-edits:
@@ -13,50 +24,38 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Block hand edits to generated shared content
+      - name: Resolve range
+        id: range
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          PUSH_AFTER: ${{ github.event.after }}
         run: |
-          set -eu
+          set -euo pipefail
 
-          # Files rendered by the private jazzjam-workbench from its canonical
-          # content/shared.json. See SHARED_CONTENT_SPEC.md.
-          GENERATED="
-          src/_data/shared.json
-          "
-
-          fail=0
-          for f in $GENERATED; do
-            # Unchanged in this PR? Nothing to check.
-            if git diff --quiet "$BASE_SHA" "$HEAD_SHA" -- "$f"; then
-              continue
+          if [ "$EVENT" = "pull_request" ]; then
+            # Resolve the LIVE base branch, not the base.sha recorded in the
+            # event payload. A branch that has since merged main in would take
+            # its merge base against that stale sha and drag mainline commits
+            # into the range.
+            git fetch --no-tags --quiet origin "+refs/heads/${BASE_REF}:refs/remotes/origin/${BASE_REF}"
+            echo "base=origin/${BASE_REF}" >> "$GITHUB_OUTPUT"
+            echo "head=${HEAD_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            # Branch creation reports an all-zero 'before'; there is no range to
+            # judge, so skip rather than fail closed on a non-event.
+            if [ "$PUSH_BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
             fi
-
-            for sha in $(git log --format=%H "$BASE_SHA".."$HEAD_SHA" -- "$f"); do
-              subject=$(git log -1 --format=%s "$sha")
-              case "$subject" in
-                "chore(sync):"*)
-                  echo "ok: $f updated by sync commit $(git log -1 --format=%h "$sha")"
-                  ;;
-                *)
-                  echo "::error file=$f::$f is generated and was edited by $(git log -1 --format=%h "$sha") ($subject)"
-                  fail=1
-                  ;;
-              esac
-            done
-          done
-
-          if [ "$fail" -ne 0 ]; then
-            echo ""
-            echo "Generated shared content was edited outside the sync flow."
-            echo ""
-            echo "To change it: edit content/shared.json in the jazzjam-workbench,"
-            echo "run 'npm run sync' from the workbench root, then commit the"
-            echo "regenerated files here with a 'chore(sync):' subject."
-            echo ""
-            echo "See SHARED_CONTENT_SPEC.md."
-            exit 1
+            echo "base=${PUSH_BEFORE}" >> "$GITHUB_OUTPUT"
+            echo "head=${PUSH_AFTER}" >> "$GITHUB_OUTPUT"
           fi
 
-          echo "No hand edits to generated shared content."
+      - name: Block hand edits to generated shared content
+        if: steps.range.outputs.skip != 'true'
+        run: |
+          node scripts/check-shared-content.js \
+            --base "${{ steps.range.outputs.base }}" \
+            --head "${{ steps.range.outputs.head }}"

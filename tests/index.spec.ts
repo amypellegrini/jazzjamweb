@@ -233,12 +233,19 @@ test.describe("Home page", () => {
           weight: Number(s.fontWeight),
           color: s.color,
           size: parseFloat(s.fontSize),
+          transform: s.textTransform,
+          tracking: parseFloat(s.letterSpacing),
           barHeight: parseFloat(after.height),
           barWidth: parseFloat(after.width),
           barColor: after.backgroundColor,
         };
       });
-      expect(style.weight, "group heading weight").toBeGreaterThanOrEqual(700);
+      // An eyebrow label: all caps, tracked out, and thinner than the
+      // benefit names beneath it — rank comes from casing and size, not
+      // weight.
+      expect(style.transform, "group heading casing").toBe("uppercase");
+      expect(style.tracking, "group heading tracking").toBeGreaterThan(0);
+      expect(style.weight, "group heading weight").toBeLessThan(700);
       // Muted grey ink — the heading is an eyebrow label, softer than the
       // benefit names it introduces; the accent stays in the underscore bar.
       const muted = await page.evaluate(() => {

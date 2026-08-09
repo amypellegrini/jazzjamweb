@@ -25,11 +25,63 @@ const GUARDED_PATHS = [
 // accepted because a shared-data shape change needs it.
 const SYNC_SUBJECT = /^chore\(sync\)!?:/;
 
+// git exports repository-targeting variables (GIT_DIR, GIT_INDEX_FILE,
+// GIT_CONFIG_PARAMETERS, ...) into hook environments, and each of them outranks
+// the cwd and repo-local config used below — an inherited GIT_DIR would point
+// this gate at a different repository than the one it was handed, and
+// GIT_CONFIG_PARAMETERS carries `-c` overrides at command-line precedence. CI
+// exports none of them today, but the safety property belongs in the unit that
+// spawns git, not only in its caller. `git rev-parse --local-env-vars` is
+// documented for exactly this case ("useful for shell scripts that need to run
+// a git command in a different repository"); FALLBACK_LOCAL_ENV_VARS (git
+// 2.50.1's list) is used only if that command cannot run. Dropping
+// GIT_CONFIG_COUNT also neutralises any GIT_CONFIG_KEY_<n>/VALUE_<n> pairs.
+const FALLBACK_LOCAL_ENV_VARS = [
+  'GIT_ALTERNATE_OBJECT_DIRECTORIES',
+  'GIT_CONFIG',
+  'GIT_CONFIG_PARAMETERS',
+  'GIT_CONFIG_COUNT',
+  'GIT_OBJECT_DIRECTORY',
+  'GIT_DIR',
+  'GIT_WORK_TREE',
+  'GIT_IMPLICIT_WORK_TREE',
+  'GIT_GRAFT_FILE',
+  'GIT_INDEX_FILE',
+  'GIT_NO_REPLACE_OBJECTS',
+  'GIT_REPLACE_REF_BASE',
+  'GIT_PREFIX',
+  'GIT_SHALLOW_FILE',
+  'GIT_COMMON_DIR',
+];
+
+function scrubbedGitEnv() {
+  let names;
+  try {
+    names = execFileSync('git', ['rev-parse', '--local-env-vars'], {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+      .split('\n')
+      .map(name => name.trim())
+      .filter(Boolean);
+  } catch {
+    names = FALLBACK_LOCAL_ENV_VARS;
+  }
+  const env = {...process.env};
+  for (const name of names) {
+    delete env[name];
+  }
+  return env;
+}
+
+const GIT_ENV = scrubbedGitEnv();
+
 function git(repoDir, args) {
   return execFileSync('git', args, {
     cwd: repoDir,
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
+    env: GIT_ENV,
   });
 }
 

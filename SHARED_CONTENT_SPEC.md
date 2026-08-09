@@ -42,11 +42,30 @@ in the repo settings.
 
 ## What reads the shared data
 
-`src/index.html` renders the Pro Unlock section from it via Nunjucks
-(`{{ shared.paywall.title }}`, `{{ shared.paywall.subtitle }}`, a `{% for %}` loop over
-`shared.paywall.benefits` using `benefit.name` + `benefit.description`, and the CTA
-label). The app renders the same benefits in its paywall via a generated
+`src/index.html` renders the Pro Unlock section from it via Nunjucks: an `<h2>` from
+`{{ shared.paywall.title }}` with the bundle-level `{{ shared.paywall.subtitle }}`
+beneath it, then one block per entry in `shared.paywall.groups` — each with its own
+`<h3>` subtitle and a grid of the benefit cards belonging to that group — and the CTA
+label. The app renders the same benefits, in the same groups, via a generated
 `components/paywall-sheet/benefits.ts`.
+
+### Group membership is derived, not listed
+
+The data declares the groups but never says which benefit belongs where. A benefit id
+names its group (`export-midi` belongs to `export`), and the group flagged
+`"catchAll": true` takes every benefit no namespace claims — which is how
+`all-keys-cycle` reaches the practice group. `scripts/pro-benefit-groups.js` applies
+that rule at build time and `src/_data/proUnlock.js` exposes the result to the
+template, so a benefit added in the workbench lands in the right group here with no
+template edit.
+
+The rule is re-derived rather than read off the data because this repo is checked out
+standalone by CI and the Pages deploy. Anything it cannot place — a benefit matching no
+group, a benefit two group namespaces both claim, two `catchAll` groups, a group left
+with no cards — throws and fails the Eleventy build. A benefit is never dropped from
+the page or appended to an arbitrary group. `tests/pro-benefit-groups.spec.ts` covers
+each of those failures; `tests/index.spec.ts` asserts the rendered grouping against the
+same rule rather than against a literal card list.
 
 ## How to change the Pro Unlock content
 

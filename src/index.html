@@ -409,13 +409,39 @@
         margin-bottom: 2.5rem;
       }
 
+      .pro-unlock-group + .pro-unlock-group {
+        margin-top: 3rem;
+      }
+
+      .pro-unlock-group-subtitle {
+        font-family: "Outfit", sans-serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--light-text-secondary);
+        margin-bottom: 1.5rem;
+      }
+
+      /* One group's cards. --pro-unlock-max-columns is the row budget for the
+         current breakpoint and every card is capped at exactly one column's
+         width, so a group fills its rows evenly instead of stranding a lone
+         card under a full row. The Playwright layout assertions read the
+         custom property off the rendered grid, keeping this declaration the
+         single source of truth for how many cards share a row. */
       .pro-unlock-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        --pro-unlock-max-columns: 4;
+        --pro-unlock-column-width: calc(
+          (100% - (var(--pro-unlock-max-columns) - 1) * 2rem) /
+            var(--pro-unlock-max-columns)
+        );
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 2rem;
       }
 
       .pro-unlock-feature {
+        flex: 1 1 var(--pro-unlock-column-width);
+        max-width: var(--pro-unlock-column-width);
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -429,7 +455,7 @@
       }
 
 
-      .pro-unlock-feature h3.pro-unlock-glyph {
+      .pro-unlock-feature .pro-unlock-glyph {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -728,6 +754,20 @@
         .hero::after {
           background: linear-gradient(to right, var(--bg-deep) 0%, transparent 100%);
         }
+
+        /* Two per row keeps an even split for the export formats — three
+           across would strand the fourth card on a row of its own. */
+        .pro-unlock-grid {
+          --pro-unlock-max-columns: 2;
+        }
+      }
+
+      /* Phones. 768px is the narrowest tablet the layout supports two-up
+         (iPad Mini portrait), so the single-column budget starts below it. */
+      @media (max-width: 767px) {
+        .pro-unlock-grid {
+          --pro-unlock-max-columns: 1;
+        }
       }
 
       /* Mobile */
@@ -962,14 +1002,21 @@
           <p class="pro-unlock-subtitle text-center">
             {{ shared.paywall.subtitle }}
           </p>
-          <div class="pro-unlock-grid">
-            {% for benefit in shared.paywall.benefits %}
-            <div class="pro-unlock-feature">
-              <h3 class="pro-unlock-glyph">{{ benefit.name }}</h3>
-              <p>{{ benefit.description }}</p>
+          {% for group in proUnlock.groups %}
+          <div class="pro-unlock-group" data-group="{{ group.id }}">
+            <h3 class="pro-unlock-group-subtitle text-center">
+              {{ group.subtitle }}
+            </h3>
+            <div class="pro-unlock-grid">
+              {% for benefit in group.benefits %}
+              <div class="pro-unlock-feature">
+                <h4 class="pro-unlock-glyph">{{ benefit.name }}</h4>
+                <p>{{ benefit.description }}</p>
+              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
+          {% endfor %}
           <div class="pro-unlock-actions">
             <a
               href="https://play.google.com/store/apps/details?id=com.musicpracticepro&amp;utm_source=emea_Med"

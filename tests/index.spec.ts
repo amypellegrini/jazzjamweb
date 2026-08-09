@@ -1,5 +1,35 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Locator } from "@playwright/test";
 import shared from "../src/_data/shared.json";
+
+// The Pro Unlock benefit-to-group rule, restated independently of the build:
+// a benefit id names its group ("export-midi" belongs to "export") and the
+// group flagged catchAll takes whatever no namespace claims. Asserting the
+// rule rather than a literal card list is what keeps a benefit added in the
+// workbench from needing an edit here.
+const expectedGroupId = (benefitId: string): string => {
+  const namespaced = shared.paywall.groups.find((group) =>
+    benefitId.startsWith(`${group.id}-`)
+  );
+  return (namespaced ?? shared.paywall.groups.find((g) => g.catchAll))!.id;
+};
+
+type Row = { y: number; count: number };
+
+// Cards sharing a top edge (within a rounding tolerance) form one row.
+async function cardRows(cards: Locator): Promise<Row[]> {
+  const rows: Row[] = [];
+  for (let i = 0; i < (await cards.count()); i++) {
+    const box = await cards.nth(i).boundingBox();
+    expect(box).not.toBeNull();
+    const row = rows.find((r) => Math.abs(r.y - box!.y) < 4);
+    if (row) {
+      row.count += 1;
+    } else {
+      rows.push({ y: box!.y, count: 1 });
+    }
+  }
+  return rows;
+}
 
 test.describe("Home page", () => {
   test.beforeEach(async ({ page }) => {
@@ -56,6 +86,57 @@ test.describe("Home page", () => {
         proUnlock.getByText(benefit.description, { exact: true })
       ).toBeVisible();
     }
+  });
+
+  test("renders each Pro benefit under the group its id namespace declares", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    expect(shared.paywall.groups.length).toBeGreaterThan(1);
+    await expect(proUnlock.locator(".pro-unlock-group")).toHaveCount(
+      shared.paywall.groups.length
+    );
+
+    for (const group of shared.paywall.groups) {
+      const groupEl = proUnlock.locator(
+        `.pro-unlock-group[data-group="${group.id}"]`
+      );
+      await expect(groupEl).toHaveCount(1);
+
+      // The subtitle belongs to the group, not to the section: it must sit
+      // inside the block holding exactly the cards it describes.
+      await expect(
+        groupEl.getByRole("heading", { name: group.subtitle, exact: true })
+      ).toBeVisible();
+
+      const expected = shared.paywall.benefits
+        .filter((benefit) => expectedGroupId(benefit.id) === group.id)
+        .map((benefit) => benefit.name);
+      expect(expected.length).toBeGreaterThan(0);
+
+      const rendered = await groupEl
+        .locator(".pro-unlock-feature .pro-unlock-glyph")
+        .allInnerTexts();
+      expect(rendered.map((text) => text.trim())).toEqual(expected);
+    }
+
+    // Nothing dropped and nothing rendered twice.
+    await expect(proUnlock.locator(".pro-unlock-feature")).toHaveCount(
+      shared.paywall.benefits.length
+    );
+  });
+
+  test("Pro Unlock heading levels step down without skipping one", async ({ page }) => {
+    const levels = await page
+      .locator(".pro-unlock :is(h1, h2, h3, h4, h5, h6)")
+      .evaluateAll((headings) =>
+        headings.map((heading) => Number(heading.tagName.slice(1)))
+      );
+
+    expect(levels[0], "section title").toBe(2);
+    for (let i = 1; i < levels.length; i++) {
+      expect(levels[i] - levels[i - 1], `heading ${i}`).toBeLessThanOrEqual(1);
+    }
+    // Section title, group headings and benefit names occupy three levels.
+    expect([...new Set(levels)].sort()).toEqual([2, 3, 4]);
   });
 
   test("does not display hardcoded pricing in Pro Unlock section", async ({ page }) => {
@@ -306,26 +387,34 @@ test.describe("Home page", () => {
         test("Pro Unlock benefit cards render two or more per row without overflow", async ({
           page,
         }) => {
-          const columnCount = await page
-            .locator(".pro-unlock-grid")
-            .evaluate(
-              (el) =>
-                getComputedStyle(el).gridTemplateColumns.split(" ").length
-            );
-          expect(
-            columnCount,
-            "pro unlock grid columns"
-          ).toBeGreaterThanOrEqual(2);
+          // Per group now that the section is grouped — a single .pro-unlock-grid
+          // locator would trip strict mode. A group with two or more cards must
+          // still put two or more of them on its first row at tablet widths.
+          const grids = page.locator(".pro-unlock-group .pro-unlock-grid");
+          const gridCount = await grids.count();
+          expect(gridCount).toBe(shared.paywall.groups.length);
 
-          const cards = page.locator(".pro-unlock-feature");
-          const count = await cards.count();
-          expect(count).toBeGreaterThan(0);
-          for (let i = 0; i < count; i++) {
-            const box = await cards.nth(i).boundingBox();
-            expect(box).not.toBeNull();
-            expect(box!.x).toBeGreaterThanOrEqual(0);
-            expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+          let seen = 0;
+          for (let g = 0; g < gridCount; g++) {
+            const cards = grids.nth(g).locator(".pro-unlock-feature");
+            const cardCount = await cards.count();
+            expect(cardCount).toBeGreaterThan(0);
+            seen += cardCount;
+
+            const rows = await cardRows(cards);
+            expect(
+              rows[0].count,
+              "pro unlock cards on the first row of a group"
+            ).toBeGreaterThanOrEqual(Math.min(cardCount, 2));
+
+            for (let i = 0; i < cardCount; i++) {
+              const box = await cards.nth(i).boundingBox();
+              expect(box).not.toBeNull();
+              expect(box!.x).toBeGreaterThanOrEqual(0);
+              expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+            }
           }
+          expect(seen).toBe(shared.paywall.benefits.length);
         });
 
         test("hero text and CTA fit the viewport and sit over a dimmed hero image", async ({
@@ -397,8 +486,17 @@ test.describe("Home page", () => {
         const sectionBox = await proUnlock.boundingBox();
         expect(sectionBox!.width).toBeLessThanOrEqual(width);
 
-        // Key sub-elements stay visible (not clipped or collapsed) at every width.
-        await expect(proUnlock.locator(".pro-unlock-grid")).toBeVisible();
+        // Key sub-elements stay visible (not clipped or collapsed) at every
+        // width. Each group owns a grid, so these are counted rather than
+        // located as singletons — a bare .pro-unlock-grid would trip strict mode.
+        const grids = proUnlock.locator(".pro-unlock-grid");
+        await expect(grids).toHaveCount(shared.paywall.groups.length);
+        for (let g = 0; g < shared.paywall.groups.length; g++) {
+          await expect(grids.nth(g)).toBeVisible();
+          await expect(
+            proUnlock.locator(".pro-unlock-group-subtitle").nth(g)
+          ).toBeVisible();
+        }
         await expect(proUnlock.locator(".pro-unlock-actions")).toBeVisible();
         await expect(proUnlock.locator(".pro-unlock-cta")).toBeVisible();
 
@@ -416,6 +514,38 @@ test.describe("Home page", () => {
           // Each card must sit fully inside the viewport horizontally.
           expect(box!.x).toBeGreaterThanOrEqual(0);
           expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+        }
+
+        // No group may fill a row and then strand a lone card on the next one —
+        // the 4 + 1 arrangement the grouping replaced. The row budget is read
+        // from the stylesheet so the CSS stays its single source of truth.
+        const groups = proUnlock.locator(".pro-unlock-group");
+        for (let g = 0; g < (await groups.count()); g++) {
+          const grid = groups.nth(g).locator(".pro-unlock-grid");
+          const maxColumns = await grid.evaluate((el) =>
+            Number(
+              getComputedStyle(el).getPropertyValue("--pro-unlock-max-columns")
+            )
+          );
+          expect(maxColumns, "row budget").toBeGreaterThan(0);
+
+          const cards = groups.nth(g).locator(".pro-unlock-feature");
+          const cardCount = await cards.count();
+          const rows = await cardRows(cards);
+          expect(rows[0].count, "cards on a group's first row").toBe(
+            Math.min(cardCount, maxColumns)
+          );
+
+          // Once a row holds more than one card, no row of that group may hold
+          // just one. A single-column viewport, where every row holds one card
+          // by design, is not an orphan.
+          const counts = rows.map((row) => row.count);
+          if (Math.max(...counts) > 1) {
+            expect(
+              Math.min(...counts),
+              "cards on a group's sparsest row"
+            ).toBeGreaterThan(1);
+          }
         }
       });
     }

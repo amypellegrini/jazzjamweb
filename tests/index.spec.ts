@@ -73,11 +73,11 @@ test.describe("Home page", () => {
     await expect(
       proUnlock.getByRole("heading", { name: shared.paywall.title, exact: true })
     ).toBeVisible();
-    // Derived from the generated shared data rather than repeated as literals,
-    // so a copy change made in the workbench is asserted here automatically.
+    // The site leads with the title alone; the canonical paywall.subtitle is
+    // an app-hero string and deliberately not rendered here.
     await expect(
       proUnlock.getByText(shared.paywall.subtitle, { exact: true })
-    ).toBeVisible();
+    ).toHaveCount(0);
     for (const benefit of shared.paywall.benefits) {
       await expect(
         proUnlock.getByRole("heading", { name: benefit.name, exact: true })

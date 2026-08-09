@@ -4,7 +4,61 @@ import * as path from "path";
 import * as os from "os";
 import { execFileSync } from "child_process";
 
-// CJS script under test — shared logic with musicpracticepro's gate.
+// When this suite runs from a git hook inside a linked worktree, git exports
+// repository-targeting variables into the hook's environment, and those
+// override cwd for every git spawned here — by the fixture helper below AND by
+// the in-process script under test — so fixture commands would operate on the
+// developer's real repository instead of repoDir. GIT_CONFIG_PARAMETERS is
+// equally hostile without touching repo location: it carries the commit's `-c`
+// flags at command-line precedence, above the repo-local core.hooksPath the
+// fixture sets in createRepo, so an inherited value re-opens the very hook
+// isolation that setting exists to provide.
+//
+// Rather than hand-maintain the list, ask git for it: `rev-parse
+// --local-env-vars` is documented for exactly this case ("useful for shell
+// scripts that need to run a git command in a different repository") and stays
+// correct as git grows new variables. On git 2.50.1 it yields 15 names,
+// including GIT_CONFIG_COUNT, whose removal also neutralises any
+// GIT_CONFIG_KEY_<n>/GIT_CONFIG_VALUE_<n> pairs. FALLBACK_LOCAL_ENV_VARS is
+// used only if that command cannot run.
+const FALLBACK_LOCAL_ENV_VARS = [
+  "GIT_ALTERNATE_OBJECT_DIRECTORIES",
+  "GIT_CONFIG",
+  "GIT_CONFIG_PARAMETERS",
+  "GIT_CONFIG_COUNT",
+  "GIT_OBJECT_DIRECTORY",
+  "GIT_DIR",
+  "GIT_WORK_TREE",
+  "GIT_IMPLICIT_WORK_TREE",
+  "GIT_GRAFT_FILE",
+  "GIT_INDEX_FILE",
+  "GIT_NO_REPLACE_OBJECTS",
+  "GIT_REPLACE_REF_BASE",
+  "GIT_PREFIX",
+  "GIT_SHALLOW_FILE",
+  "GIT_COMMON_DIR",
+];
+
+function localEnvVars(): string[] {
+  try {
+    return execFileSync("git", ["rev-parse", "--local-env-vars"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    })
+      .split("\n")
+      .map((name) => name.trim())
+      .filter(Boolean);
+  } catch {
+    return FALLBACK_LOCAL_ENV_VARS;
+  }
+}
+
+for (const name of localEnvVars()) {
+  delete process.env[name];
+}
+
+// CJS script under test — shared logic with musicpracticepro's gate. Required
+// after the scrub above so the module can never capture an inherited GIT_*.
 const { checkSharedContent } = require("../scripts/check-shared-content");
 
 const GUARDED = "src/_data/shared.json";

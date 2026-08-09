@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import shared from "../src/_data/shared.json";
 
 test.describe("Home page", () => {
   test.beforeEach(async ({ page }) => {
@@ -41,6 +42,12 @@ test.describe("Home page", () => {
     await expect(proUnlock).toBeVisible();
     await expect(
       proUnlock.getByText("Export your backing tracks")
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByRole("heading", { name: "All Keys Cycle", exact: true })
+    ).toBeVisible();
+    await expect(
+      proUnlock.getByText("Cycle any chart through all 12 keys")
     ).toBeVisible();
     await expect(
       proUnlock.getByRole("heading", { name: "MIDI", exact: true })
@@ -401,9 +408,11 @@ test.describe("Home page", () => {
         await expect(proUnlock.locator(".pro-unlock-cta")).toBeVisible();
 
         // Each feature card must render at a sane, non-zero size (no clipping to 0).
+        // Derived from the generated shared data rather than hardcoded, so
+        // adding a Pro benefit in the workbench does not need this edited.
         const featureCards = proUnlock.locator(".pro-unlock-feature");
         const count = await featureCards.count();
-        expect(count).toBe(4);
+        expect(count).toBe(shared.paywall.benefits.length);
         for (let i = 0; i < count; i++) {
           const box = await featureCards.nth(i).boundingBox();
           expect(box).not.toBeNull();

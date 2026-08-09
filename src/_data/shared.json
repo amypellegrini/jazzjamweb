@@ -5,21 +5,31 @@
     "subtitle": "Export your backing tracks",
     "benefits": [
       {
+        "id": "all-keys-cycle",
+        "glyph": "12K",
+        "name": "All Keys Cycle",
+        "description": "Cycle any chart through all 12 keys"
+      },
+      {
+        "id": "export-midi",
         "glyph": "MID",
         "name": "MIDI",
         "description": "Edit tracks in your DAW"
       },
       {
+        "id": "export-wav",
         "glyph": "WAV",
         "name": "WAV",
         "description": "Uncompressed studio audio"
       },
       {
+        "id": "export-mp3",
         "glyph": "MP3",
         "name": "MP3",
         "description": "Small files, easy to share"
       },
       {
+        "id": "export-musicxml",
         "glyph": "MXL",
         "name": "MusicXML",
         "description": "Open in MuseScore, Dorico, Finale"

@@ -2,7 +2,19 @@
   "__generated": "GENERATED from content/shared.json in the JazzJam workbench — do not edit. Regenerate: npm run sync",
   "paywall": {
     "title": "Unlock Pro",
-    "subtitle": "Export your backing tracks",
+    "subtitle": "One purchase unlocks every Pro feature",
+    "groups": [
+      {
+        "id": "practice",
+        "subtitle": "Practise any chart in every key",
+        "catchAll": true
+      },
+      {
+        "id": "export",
+        "subtitle": "Export your backing tracks",
+        "catchAll": false
+      }
+    ],
     "benefits": [
       {
         "id": "all-keys-cycle",

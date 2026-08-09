@@ -1,5 +1,35 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, Locator } from "@playwright/test";
 import shared from "../src/_data/shared.json";
+
+// The Pro Unlock benefit-to-group rule, restated independently of the build:
+// a benefit id names its group ("export-midi" belongs to "export") and the
+// group flagged catchAll takes whatever no namespace claims. Asserting the
+// rule rather than a literal card list is what keeps a benefit added in the
+// workbench from needing an edit here.
+const expectedGroupId = (benefitId: string): string => {
+  const namespaced = shared.paywall.groups.find((group) =>
+    benefitId.startsWith(`${group.id}-`)
+  );
+  return (namespaced ?? shared.paywall.groups.find((g) => g.catchAll))!.id;
+};
+
+type Row = { y: number; count: number };
+
+// Cards sharing a top edge (within a rounding tolerance) form one row.
+async function cardRows(cards: Locator): Promise<Row[]> {
+  const rows: Row[] = [];
+  for (let i = 0; i < (await cards.count()); i++) {
+    const box = await cards.nth(i).boundingBox();
+    expect(box).not.toBeNull();
+    const row = rows.find((r) => Math.abs(r.y - box!.y) < 4);
+    if (row) {
+      row.count += 1;
+    } else {
+      rows.push({ y: box!.y, count: 1 });
+    }
+  }
+  return rows;
+}
 
 test.describe("Home page", () => {
   test.beforeEach(async ({ page }) => {
@@ -37,30 +67,247 @@ test.describe("Home page", () => {
     ).toBeVisible();
   });
 
-  test("displays Pro Unlock section listing the export formats from the app paywall", async ({ page }) => {
+  test("displays Pro Unlock section listing every benefit from the app paywall", async ({ page }) => {
     const proUnlock = page.locator(".pro-unlock");
     await expect(proUnlock).toBeVisible();
     await expect(
-      proUnlock.getByText("Export your backing tracks")
+      proUnlock.getByRole("heading", { name: shared.paywall.title, exact: true })
     ).toBeVisible();
+    // The site leads with the title alone; the canonical paywall.subtitle is
+    // an app-hero string and deliberately not rendered here.
     await expect(
-      proUnlock.getByRole("heading", { name: "All Keys Cycle", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByText("Cycle any chart through all 12 keys")
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "MIDI", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "WAV", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "MP3", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "MusicXML", exact: true })
-    ).toBeVisible();
+      proUnlock.getByText(shared.paywall.subtitle, { exact: true })
+    ).toHaveCount(0);
+    for (const benefit of shared.paywall.benefits) {
+      await expect(
+        proUnlock.getByRole("heading", { name: benefit.name, exact: true })
+      ).toBeVisible();
+      await expect(
+        proUnlock.getByText(benefit.description, { exact: true })
+      ).toBeVisible();
+    }
+  });
+
+  test("renders each Pro benefit under the group its id namespace declares", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    expect(shared.paywall.groups.length).toBeGreaterThan(1);
+    await expect(proUnlock.locator(".pro-unlock-group")).toHaveCount(
+      shared.paywall.groups.length
+    );
+
+    for (const group of shared.paywall.groups) {
+      const groupEl = proUnlock.locator(
+        `.pro-unlock-group[data-group="${group.id}"]`
+      );
+      await expect(groupEl).toHaveCount(1);
+
+      // The subtitle belongs to the group, not to the section: it must sit
+      // inside the block holding exactly the cards it describes.
+      await expect(
+        groupEl.getByRole("heading", { name: group.subtitle, exact: true })
+      ).toBeVisible();
+
+      const expected = shared.paywall.benefits
+        .filter((benefit) => expectedGroupId(benefit.id) === group.id)
+        .map((benefit) => benefit.name);
+      expect(expected.length).toBeGreaterThan(0);
+
+      const rendered = await groupEl
+        .locator(".pro-unlock-feature .pro-unlock-glyph")
+        .allInnerTexts();
+      expect(rendered.map((text) => text.trim())).toEqual(expected);
+    }
+
+    // Nothing dropped and nothing rendered twice.
+    await expect(proUnlock.locator(".pro-unlock-feature")).toHaveCount(
+      shared.paywall.benefits.length
+    );
+  });
+
+  test("Pro Unlock groups render as full-width bands of plain text, not cards", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+    const sectionBox = await proUnlock.boundingBox();
+
+    // Each group is a dedicated band spanning the section edge to edge.
+    const groups = proUnlock.locator(".pro-unlock-group");
+    const groupCount = await groups.count();
+    expect(groupCount).toBe(shared.paywall.groups.length);
+    for (let g = 0; g < groupCount; g++) {
+      const box = await groups.nth(g).boundingBox();
+      expect(Math.abs(box!.width - sectionBox!.width), "band width").toBeLessThan(2);
+    }
+
+    // Benefits are plain text blocks — no card box around them.
+    const features = proUnlock.locator(".pro-unlock-feature");
+    for (let i = 0; i < (await features.count()); i++) {
+      const style = await features.nth(i).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return { background: s.backgroundColor, borderTop: s.borderTopWidth };
+      });
+      expect(style.background, "feature background").toBe("rgba(0, 0, 0, 0)");
+      expect(style.borderTop, "feature border").toBe("0px");
+    }
+
+    // Benefit names read as plain dark text: no highlight behind them, and
+    // the same ink as the section title rather than an accent colour.
+    const titleColor = await proUnlock
+      .getByRole("heading", { level: 2 })
+      .evaluate((el) => getComputedStyle(el).color);
+    const glyphs = proUnlock.locator(".pro-unlock-glyph");
+    for (let i = 0; i < (await glyphs.count()); i++) {
+      const style = await glyphs.nth(i).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return { background: s.backgroundColor, color: s.color };
+      });
+      expect(style.background, "benefit name highlight").toBe("rgba(0, 0, 0, 0)");
+      expect(style.color, "benefit name ink").toBe(titleColor);
+    }
+  });
+
+  test("group bands share one treatment and hold content to a readable measure", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const proUnlock = page.locator(".pro-unlock");
+    const groups = proUnlock.locator(".pro-unlock-group");
+    const groupCount = await groups.count();
+    expect(groupCount).toBe(shared.paywall.groups.length);
+
+    // Every band gets the identical background — sibling groups, not one
+    // highlighted box and one unstructured area. Alternation reads as
+    // asymmetry with only two groups.
+    const backgrounds: string[] = [];
+    for (let g = 0; g < groupCount; g++) {
+      backgrounds.push(
+        await groups
+          .nth(g)
+          .evaluate((el) => getComputedStyle(el).backgroundColor)
+      );
+    }
+    expect(new Set(backgrounds).size, "one band treatment").toBe(1);
+    expect(backgrounds[0], "bands are visibly delimited").not.toBe(
+      "rgba(0, 0, 0, 0)"
+    );
+
+    // The band spans the page, but its content is held to a narrower,
+    // centred measure so the items still read as one group at desktop.
+    for (let g = 0; g < groupCount; g++) {
+      const bandBox = await groups.nth(g).boundingBox();
+      const contentBox = await groups
+        .nth(g)
+        .locator(".container")
+        .boundingBox();
+      expect(
+        contentBox!.width / bandBox!.width,
+        "content measure inside its band"
+      ).toBeLessThan(0.8);
+      const leftGutter = contentBox!.x - bandBox!.x;
+      const rightGutter =
+        bandBox!.x + bandBox!.width - (contentBox!.x + contentBox!.width);
+      expect(Math.abs(leftGutter - rightGutter), "content centred").toBeLessThan(2);
+    }
+  });
+
+  test("group headings stand out from the benefit names beneath them", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+
+    // The accent colour comes from the palette, not a literal, so a palette
+    // change stays a one-line CSS edit.
+    const accent = await page.evaluate(() => {
+      const probe = document.createElement("span");
+      probe.style.color = "var(--light-blue-dark)";
+      document.body.appendChild(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return color;
+    });
+    const benefitInk = await proUnlock
+      .locator(".pro-unlock-glyph")
+      .first()
+      .evaluate((el) => getComputedStyle(el).color);
+
+    const headings = proUnlock.locator(".pro-unlock-group-subtitle");
+    for (let g = 0; g < (await headings.count()); g++) {
+      const style = await headings.nth(g).evaluate((el) => {
+        const s = getComputedStyle(el);
+        const after = getComputedStyle(el, "::after");
+        return {
+          weight: Number(s.fontWeight),
+          color: s.color,
+          size: parseFloat(s.fontSize),
+          transform: s.textTransform,
+          tracking: parseFloat(s.letterSpacing),
+          barHeight: parseFloat(after.height),
+          barWidth: parseFloat(after.width),
+          barColor: after.backgroundColor,
+        };
+      });
+      // An eyebrow label: all caps, tracked out, and thinner than the
+      // benefit names beneath it — rank comes from casing and size, not
+      // weight.
+      expect(style.transform, "group heading casing").toBe("uppercase");
+      expect(style.tracking, "group heading tracking").toBeGreaterThan(0);
+      expect(style.weight, "group heading weight").toBeLessThan(700);
+      // Muted grey ink — the heading is an eyebrow label, softer than the
+      // benefit names it introduces; the accent stays in the underscore bar.
+      const muted = await page.evaluate(() => {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--light-text-muted)";
+        document.body.appendChild(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      });
+      expect(style.color, "group heading ink").toBe(muted);
+      expect(style.color, "softer than benefit ink").not.toBe(benefitInk);
+      expect(style.barHeight, "underscore height").toBeGreaterThanOrEqual(2);
+      expect(style.barWidth, "underscore width").toBeGreaterThanOrEqual(24);
+      expect(style.barColor, "underscore accent").toBe(accent);
+
+      // The h3 must visibly outrank the h4 benefit names it introduces.
+      const benefitSize = await proUnlock
+        .locator(".pro-unlock-glyph")
+        .first()
+        .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+      expect(style.size, "group heading size").toBeGreaterThan(benefitSize);
+    }
+  });
+
+  test("a group's lone benefit spans its band instead of floating as a narrow card", async ({ page }) => {
+    const soloGroups = shared.paywall.groups.filter(
+      (group) =>
+        shared.paywall.benefits.filter(
+          (benefit) => expectedGroupId(benefit.id) === group.id
+        ).length === 1
+    );
+    expect(soloGroups.length).toBeGreaterThan(0);
+
+    for (const group of soloGroups) {
+      const groupEl = page.locator(
+        `.pro-unlock-group[data-group="${group.id}"]`
+      );
+      const gridBox = await groupEl.locator(".pro-unlock-grid").boundingBox();
+      const featureBox = await groupEl
+        .locator(".pro-unlock-feature")
+        .boundingBox();
+      expect(
+        featureBox!.width / gridBox!.width,
+        "lone benefit's share of its band"
+      ).toBeGreaterThan(0.9);
+    }
+  });
+
+  test("Pro Unlock heading levels step down without skipping one", async ({ page }) => {
+    const levels = await page
+      .locator(".pro-unlock :is(h1, h2, h3, h4, h5, h6)")
+      .evaluateAll((headings) =>
+        headings.map((heading) => Number(heading.tagName.slice(1)))
+      );
+
+    expect(levels[0], "section title").toBe(2);
+    for (let i = 1; i < levels.length; i++) {
+      expect(levels[i] - levels[i - 1], `heading ${i}`).toBeLessThanOrEqual(1);
+    }
+    // Section title, group headings and benefit names occupy three levels.
+    expect([...new Set(levels)].sort()).toEqual([2, 3, 4]);
   });
 
   test("does not display hardcoded pricing in Pro Unlock section", async ({ page }) => {
@@ -311,26 +558,34 @@ test.describe("Home page", () => {
         test("Pro Unlock benefit cards render two or more per row without overflow", async ({
           page,
         }) => {
-          const columnCount = await page
-            .locator(".pro-unlock-grid")
-            .evaluate(
-              (el) =>
-                getComputedStyle(el).gridTemplateColumns.split(" ").length
-            );
-          expect(
-            columnCount,
-            "pro unlock grid columns"
-          ).toBeGreaterThanOrEqual(2);
+          // Per group now that the section is grouped — a single .pro-unlock-grid
+          // locator would trip strict mode. A group with two or more cards must
+          // still put two or more of them on its first row at tablet widths.
+          const grids = page.locator(".pro-unlock-group .pro-unlock-grid");
+          const gridCount = await grids.count();
+          expect(gridCount).toBe(shared.paywall.groups.length);
 
-          const cards = page.locator(".pro-unlock-feature");
-          const count = await cards.count();
-          expect(count).toBeGreaterThan(0);
-          for (let i = 0; i < count; i++) {
-            const box = await cards.nth(i).boundingBox();
-            expect(box).not.toBeNull();
-            expect(box!.x).toBeGreaterThanOrEqual(0);
-            expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+          let seen = 0;
+          for (let g = 0; g < gridCount; g++) {
+            const cards = grids.nth(g).locator(".pro-unlock-feature");
+            const cardCount = await cards.count();
+            expect(cardCount).toBeGreaterThan(0);
+            seen += cardCount;
+
+            const rows = await cardRows(cards);
+            expect(
+              rows[0].count,
+              "pro unlock cards on the first row of a group"
+            ).toBeGreaterThanOrEqual(Math.min(cardCount, 2));
+
+            for (let i = 0; i < cardCount; i++) {
+              const box = await cards.nth(i).boundingBox();
+              expect(box).not.toBeNull();
+              expect(box!.x).toBeGreaterThanOrEqual(0);
+              expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+            }
           }
+          expect(seen).toBe(shared.paywall.benefits.length);
         });
 
         test("hero text and CTA fit the viewport and sit over a dimmed hero image", async ({
@@ -402,8 +657,17 @@ test.describe("Home page", () => {
         const sectionBox = await proUnlock.boundingBox();
         expect(sectionBox!.width).toBeLessThanOrEqual(width);
 
-        // Key sub-elements stay visible (not clipped or collapsed) at every width.
-        await expect(proUnlock.locator(".pro-unlock-grid")).toBeVisible();
+        // Key sub-elements stay visible (not clipped or collapsed) at every
+        // width. Each group owns a grid, so these are counted rather than
+        // located as singletons — a bare .pro-unlock-grid would trip strict mode.
+        const grids = proUnlock.locator(".pro-unlock-grid");
+        await expect(grids).toHaveCount(shared.paywall.groups.length);
+        for (let g = 0; g < shared.paywall.groups.length; g++) {
+          await expect(grids.nth(g)).toBeVisible();
+          await expect(
+            proUnlock.locator(".pro-unlock-group-subtitle").nth(g)
+          ).toBeVisible();
+        }
         await expect(proUnlock.locator(".pro-unlock-actions")).toBeVisible();
         await expect(proUnlock.locator(".pro-unlock-cta")).toBeVisible();
 
@@ -421,6 +685,38 @@ test.describe("Home page", () => {
           // Each card must sit fully inside the viewport horizontally.
           expect(box!.x).toBeGreaterThanOrEqual(0);
           expect(box!.x + box!.width).toBeLessThanOrEqual(width);
+        }
+
+        // No group may fill a row and then strand a lone card on the next one —
+        // the 4 + 1 arrangement the grouping replaced. The row budget is read
+        // from the stylesheet so the CSS stays its single source of truth.
+        const groups = proUnlock.locator(".pro-unlock-group");
+        for (let g = 0; g < (await groups.count()); g++) {
+          const grid = groups.nth(g).locator(".pro-unlock-grid");
+          const maxColumns = await grid.evaluate((el) =>
+            Number(
+              getComputedStyle(el).getPropertyValue("--pro-unlock-max-columns")
+            )
+          );
+          expect(maxColumns, "row budget").toBeGreaterThan(0);
+
+          const cards = groups.nth(g).locator(".pro-unlock-feature");
+          const cardCount = await cards.count();
+          const rows = await cardRows(cards);
+          expect(rows[0].count, "cards on a group's first row").toBe(
+            Math.min(cardCount, maxColumns)
+          );
+
+          // Once a row holds more than one card, no row of that group may hold
+          // just one. A single-column viewport, where every row holds one card
+          // by design, is not an orphan.
+          const counts = rows.map((row) => row.count);
+          if (Math.max(...counts) > 1) {
+            expect(
+              Math.min(...counts),
+              "cards on a group's sparsest row"
+            ).toBeGreaterThan(1);
+          }
         }
       });
     }

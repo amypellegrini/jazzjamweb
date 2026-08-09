@@ -396,49 +396,91 @@
 
       .pro-unlock h2 {
         font-family: "Outfit", sans-serif;
-        font-size: 1.75rem;
+        font-size: 2.5rem;
         font-weight: 700;
         color: var(--light-text-primary);
+        margin-bottom: 2rem;
       }
 
-      .pro-unlock-subtitle {
+      /* Each group is a dedicated band: a direct child of the section, so it
+         spans the full page width. Every band gets the identical tinted
+         treatment — sibling groups, never one highlighted box next to an
+         unstructured area — separated by white gutters. The inner .container
+         is held to a narrower measure than the site default so the benefits
+         still read as one group at desktop widths. */
+      .pro-unlock-group {
+        padding: 2.5rem 0;
+        background: var(--light-bg);
+      }
+
+      .pro-unlock-group + .pro-unlock-group {
+        margin-top: 2rem;
+      }
+
+      .pro-unlock-group .container {
+        max-width: 56rem;
+      }
+
+      .pro-unlock-group-subtitle {
         font-family: "Outfit", sans-serif;
         font-size: 1.35rem;
-        color: var(--light-text-secondary);
-        margin-top: 0.5rem;
-        margin-bottom: 2.5rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--light-text-muted);
+        margin-bottom: 1.5rem;
       }
 
+      /* The accent lives in a short underscore beneath the heading rather
+         than in the text itself. */
+      .pro-unlock-group-subtitle::after {
+        content: "";
+        display: block;
+        width: 2.5rem;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--light-blue-dark);
+        margin: 0.65rem auto 0;
+      }
+
+      /* One group's cards. --pro-unlock-max-columns is the row budget for the
+         current breakpoint and every card is capped at exactly one column's
+         width, so a group fills its rows evenly instead of stranding a lone
+         card under a full row. The Playwright layout assertions read the
+         custom property off the rendered grid, keeping this declaration the
+         single source of truth for how many cards share a row. */
       .pro-unlock-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        --pro-unlock-max-columns: 4;
+        --pro-unlock-column-width: calc(
+          (100% - (var(--pro-unlock-max-columns) - 1) * 2rem) /
+            var(--pro-unlock-max-columns)
+        );
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 2rem;
       }
 
       .pro-unlock-feature {
+        flex: 1 1 var(--pro-unlock-column-width);
+        max-width: var(--pro-unlock-column-width);
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
-        padding: 2.5rem 2rem;
-        border-radius: 10px;
-        background: var(--light-bg);
-        border: 1px solid var(--light-card-border);
-        border-top: 3px solid var(--gradient-start);
         text-align: center;
       }
 
+      /* A group with a single benefit owns its whole band — a lone
+         column-width block would strand it as a floating card. */
+      .pro-unlock-feature:only-child {
+        flex-basis: 100%;
+        max-width: 100%;
+      }
 
-      .pro-unlock-feature h3.pro-unlock-glyph {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 56px;
-        padding: 0.4rem 0.85rem;
-        margin-bottom: 0.75rem;
-        border-radius: 6px;
-        background: rgba(74, 144, 196, 0.14);
-        color: var(--light-blue-steel);
+      .pro-unlock-feature .pro-unlock-glyph {
+        margin: 0 0 0.5rem;
+        color: var(--light-text-primary);
         font-family: "Outfit", sans-serif;
         font-size: 1.15rem;
         font-weight: 700;
@@ -454,12 +496,11 @@
 
       .pro-unlock-actions {
         text-align: center;
-        margin-top: 2.5rem;
+        margin-top: 2rem;
       }
 
       .pro-unlock-cta {
         display: inline-block;
-        margin-top: 1.5rem;
         background: linear-gradient(
           135deg,
           var(--gradient-start),
@@ -728,6 +769,20 @@
         .hero::after {
           background: linear-gradient(to right, var(--bg-deep) 0%, transparent 100%);
         }
+
+        /* Two per row keeps an even split for the export formats — three
+           across would strand the fourth card on a row of its own. */
+        .pro-unlock-grid {
+          --pro-unlock-max-columns: 2;
+        }
+      }
+
+      /* Phones. 768px is the narrowest tablet the layout supports two-up
+         (iPad Mini portrait), so the single-column budget starts below it. */
+      @media (max-width: 767px) {
+        .pro-unlock-grid {
+          --pro-unlock-max-columns: 1;
+        }
       }
 
       /* Mobile */
@@ -959,17 +1014,25 @@
       <section class="pro-unlock">
         <div class="container">
           <h2 class="text-center">{{ shared.paywall.title }}</h2>
-          <p class="pro-unlock-subtitle text-center">
-            {{ shared.paywall.subtitle }}
-          </p>
-          <div class="pro-unlock-grid">
-            {% for benefit in shared.paywall.benefits %}
-            <div class="pro-unlock-feature">
-              <h3 class="pro-unlock-glyph">{{ benefit.name }}</h3>
-              <p>{{ benefit.description }}</p>
+        </div>
+        {% for group in proUnlock.groups %}
+        <div class="pro-unlock-group" data-group="{{ group.id }}">
+          <div class="container">
+            <h3 class="pro-unlock-group-subtitle text-center">
+              {{ group.subtitle }}
+            </h3>
+            <div class="pro-unlock-grid">
+              {% for benefit in group.benefits %}
+              <div class="pro-unlock-feature">
+                <h4 class="pro-unlock-glyph">{{ benefit.name }}</h4>
+                <p>{{ benefit.description }}</p>
+              </div>
+              {% endfor %}
             </div>
-            {% endfor %}
           </div>
+        </div>
+        {% endfor %}
+        <div class="container">
           <div class="pro-unlock-actions">
             <a
               href="https://play.google.com/store/apps/details?id=com.musicpracticepro&amp;utm_source=emea_Med"

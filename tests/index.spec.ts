@@ -164,6 +164,47 @@ test.describe("Home page", () => {
     }
   });
 
+  test("group headings stand out from the benefit names beneath them", async ({ page }) => {
+    const proUnlock = page.locator(".pro-unlock");
+
+    // The accent colour comes from the palette, not a literal, so a palette
+    // change stays a one-line CSS edit.
+    const accent = await page.evaluate(() => {
+      const probe = document.createElement("span");
+      probe.style.color = "var(--light-blue-dark)";
+      document.body.appendChild(probe);
+      const color = getComputedStyle(probe).color;
+      probe.remove();
+      return color;
+    });
+    const benefitInk = await proUnlock
+      .locator(".pro-unlock-glyph")
+      .first()
+      .evaluate((el) => getComputedStyle(el).color);
+
+    const headings = proUnlock.locator(".pro-unlock-group-subtitle");
+    for (let g = 0; g < (await headings.count()); g++) {
+      const style = await headings.nth(g).evaluate((el) => {
+        const s = getComputedStyle(el);
+        return {
+          weight: Number(s.fontWeight),
+          color: s.color,
+          size: parseFloat(s.fontSize),
+        };
+      });
+      expect(style.weight, "group heading weight").toBeGreaterThanOrEqual(700);
+      expect(style.color, "group heading accent").toBe(accent);
+      expect(style.color, "distinct from benefit ink").not.toBe(benefitInk);
+
+      // The h3 must visibly outrank the h4 benefit names it introduces.
+      const benefitSize = await proUnlock
+        .locator(".pro-unlock-glyph")
+        .first()
+        .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+      expect(style.size, "group heading size").toBeGreaterThan(benefitSize);
+    }
+  });
+
   test("a group's lone benefit spans its band instead of floating as a narrow card", async ({ page }) => {
     const soloGroups = shared.paywall.groups.filter(
       (group) =>

@@ -9,6 +9,23 @@ const { checkSharedContent } = require("../scripts/check-shared-content");
 
 const GUARDED = "src/_data/shared.json";
 
+// When this suite runs from a git hook inside a linked worktree, git exports
+// absolute GIT_DIR/GIT_INDEX_FILE paths into the hook's environment, and those
+// override cwd for every git spawned here — by the fixture helper below AND by
+// the in-process script under test — so fixture commands would operate on the
+// developer's real repository instead of repoDir. Scrub them from the worker's
+// environment so cwd wins everywhere.
+for (const name of [
+  "GIT_DIR",
+  "GIT_WORK_TREE",
+  "GIT_INDEX_FILE",
+  "GIT_COMMON_DIR",
+  "GIT_PREFIX",
+  "GIT_OBJECT_DIRECTORY",
+]) {
+  delete process.env[name];
+}
+
 function git(repoDir: string, ...args: string[]): string {
   return execFileSync("git", args, { cwd: repoDir, encoding: "utf8" }).trim();
 }

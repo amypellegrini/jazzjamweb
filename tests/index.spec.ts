@@ -228,15 +228,23 @@ test.describe("Home page", () => {
     for (let g = 0; g < (await headings.count()); g++) {
       const style = await headings.nth(g).evaluate((el) => {
         const s = getComputedStyle(el);
+        const after = getComputedStyle(el, "::after");
         return {
           weight: Number(s.fontWeight),
           color: s.color,
           size: parseFloat(s.fontSize),
+          barHeight: parseFloat(after.height),
+          barWidth: parseFloat(after.width),
+          barColor: after.backgroundColor,
         };
       });
       expect(style.weight, "group heading weight").toBeGreaterThanOrEqual(700);
-      expect(style.color, "group heading accent").toBe(accent);
-      expect(style.color, "distinct from benefit ink").not.toBe(benefitInk);
+      // Dark ink like the section title; the accent moved into the
+      // underscore bar beneath the heading.
+      expect(style.color, "group heading ink").toBe(benefitInk);
+      expect(style.barHeight, "underscore height").toBeGreaterThanOrEqual(2);
+      expect(style.barWidth, "underscore width").toBeGreaterThanOrEqual(24);
+      expect(style.barColor, "underscore accent").toBe(accent);
 
       // The h3 must visibly outrank the h4 benefit names it introduces.
       const benefitSize = await proUnlock

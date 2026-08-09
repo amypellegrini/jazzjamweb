@@ -425,8 +425,20 @@
         font-family: "Outfit", sans-serif;
         font-size: 1.35rem;
         font-weight: 700;
-        color: var(--light-blue-dark);
+        color: var(--light-text-primary);
         margin-bottom: 1.5rem;
+      }
+
+      /* The accent lives in a short underscore beneath the heading rather
+         than in the text itself. */
+      .pro-unlock-group-subtitle::after {
+        content: "";
+        display: block;
+        width: 2.5rem;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--light-blue-dark);
+        margin: 0.65rem auto 0;
       }
 
       /* One group's cards. --pro-unlock-max-columns is the row budget for the

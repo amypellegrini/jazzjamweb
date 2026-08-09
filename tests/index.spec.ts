@@ -239,9 +239,18 @@ test.describe("Home page", () => {
         };
       });
       expect(style.weight, "group heading weight").toBeGreaterThanOrEqual(700);
-      // Dark ink like the section title; the accent moved into the
-      // underscore bar beneath the heading.
-      expect(style.color, "group heading ink").toBe(benefitInk);
+      // Muted grey ink — the heading is an eyebrow label, softer than the
+      // benefit names it introduces; the accent stays in the underscore bar.
+      const muted = await page.evaluate(() => {
+        const probe = document.createElement("span");
+        probe.style.color = "var(--light-text-muted)";
+        document.body.appendChild(probe);
+        const color = getComputedStyle(probe).color;
+        probe.remove();
+        return color;
+      });
+      expect(style.color, "group heading ink").toBe(muted);
+      expect(style.color, "softer than benefit ink").not.toBe(benefitInk);
       expect(style.barHeight, "underscore height").toBeGreaterThanOrEqual(2);
       expect(style.barWidth, "underscore width").toBeGreaterThanOrEqual(24);
       expect(style.barColor, "underscore accent").toBe(accent);

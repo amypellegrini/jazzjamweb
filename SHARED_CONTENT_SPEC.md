@@ -43,8 +43,9 @@ in the repo settings.
 ## What reads the shared data
 
 `src/index.html` renders the Pro Unlock section from it via Nunjucks: an `<h2>` from
-`{{ shared.paywall.title }}` with the bundle-level `{{ shared.paywall.subtitle }}`
-beneath it, then one full-width band per entry in `shared.paywall.groups` — each with
+`{{ shared.paywall.title }}` (the canonical `paywall.subtitle` is an app-hero string
+the site deliberately does not render), then one full-width band per entry in
+`shared.paywall.groups` — each with
 its own `<h3>` subtitle and the benefits belonging to that group as plain text blocks
 (a lone benefit spans its whole band) — and the CTA label. The app renders the same
 benefits, in the same groups, via a generated `components/paywall-sheet/benefits.ts`.

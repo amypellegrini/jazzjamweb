@@ -164,6 +164,48 @@ test.describe("Home page", () => {
     }
   });
 
+  test("group bands share one treatment and hold content to a readable measure", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    const proUnlock = page.locator(".pro-unlock");
+    const groups = proUnlock.locator(".pro-unlock-group");
+    const groupCount = await groups.count();
+    expect(groupCount).toBe(shared.paywall.groups.length);
+
+    // Every band gets the identical background — sibling groups, not one
+    // highlighted box and one unstructured area. Alternation reads as
+    // asymmetry with only two groups.
+    const backgrounds: string[] = [];
+    for (let g = 0; g < groupCount; g++) {
+      backgrounds.push(
+        await groups
+          .nth(g)
+          .evaluate((el) => getComputedStyle(el).backgroundColor)
+      );
+    }
+    expect(new Set(backgrounds).size, "one band treatment").toBe(1);
+    expect(backgrounds[0], "bands are visibly delimited").not.toBe(
+      "rgba(0, 0, 0, 0)"
+    );
+
+    // The band spans the page, but its content is held to a narrower,
+    // centred measure so the items still read as one group at desktop.
+    for (let g = 0; g < groupCount; g++) {
+      const bandBox = await groups.nth(g).boundingBox();
+      const contentBox = await groups
+        .nth(g)
+        .locator(".container")
+        .boundingBox();
+      expect(
+        contentBox!.width / bandBox!.width,
+        "content measure inside its band"
+      ).toBeLessThan(0.8);
+      const leftGutter = contentBox!.x - bandBox!.x;
+      const rightGutter =
+        bandBox!.x + bandBox!.width - (contentBox!.x + contentBox!.width);
+      expect(Math.abs(leftGutter - rightGutter), "content centred").toBeLessThan(2);
+    }
+  });
+
   test("group headings stand out from the benefit names beneath them", async ({ page }) => {
     const proUnlock = page.locator(".pro-unlock");
 

@@ -403,16 +403,22 @@
       }
 
       /* Each group is a dedicated band: a direct child of the section, so it
-         spans the full page width, with an inner .container keeping its text
-         aligned to the rest of the page. Alternating backgrounds and a top
-         rule separate the bands without boxing the benefits into cards. */
+         spans the full page width. Every band gets the identical tinted
+         treatment — sibling groups, never one highlighted box next to an
+         unstructured area — separated by white gutters. The inner .container
+         is held to a narrower measure than the site default so the benefits
+         still read as one group at desktop widths. */
       .pro-unlock-group {
         padding: 2.5rem 0;
-        border-top: 1px solid var(--light-card-border);
+        background: var(--light-bg);
       }
 
-      .pro-unlock-group:nth-child(even) {
-        background: var(--light-bg);
+      .pro-unlock-group + .pro-unlock-group {
+        margin-top: 2rem;
+      }
+
+      .pro-unlock-group .container {
+        max-width: 56rem;
       }
 
       .pro-unlock-group-subtitle {
@@ -476,12 +482,11 @@
 
       .pro-unlock-actions {
         text-align: center;
-        margin-top: 2.5rem;
+        margin-top: 2rem;
       }
 
       .pro-unlock-cta {
         display: inline-block;
-        margin-top: 1.5rem;
         background: linear-gradient(
           135deg,
           var(--gradient-start),

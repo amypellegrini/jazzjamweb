@@ -37,30 +37,25 @@ test.describe("Home page", () => {
     ).toBeVisible();
   });
 
-  test("displays Pro Unlock section listing the export formats from the app paywall", async ({ page }) => {
+  test("displays Pro Unlock section listing every benefit from the app paywall", async ({ page }) => {
     const proUnlock = page.locator(".pro-unlock");
     await expect(proUnlock).toBeVisible();
     await expect(
-      proUnlock.getByText("Export your backing tracks")
+      proUnlock.getByRole("heading", { name: shared.paywall.title, exact: true })
     ).toBeVisible();
+    // Derived from the generated shared data rather than repeated as literals,
+    // so a copy change made in the workbench is asserted here automatically.
     await expect(
-      proUnlock.getByRole("heading", { name: "All Keys Cycle", exact: true })
+      proUnlock.getByText(shared.paywall.subtitle, { exact: true })
     ).toBeVisible();
-    await expect(
-      proUnlock.getByText("Cycle any chart through all 12 keys")
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "MIDI", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "WAV", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "MP3", exact: true })
-    ).toBeVisible();
-    await expect(
-      proUnlock.getByRole("heading", { name: "MusicXML", exact: true })
-    ).toBeVisible();
+    for (const benefit of shared.paywall.benefits) {
+      await expect(
+        proUnlock.getByRole("heading", { name: benefit.name, exact: true })
+      ).toBeVisible();
+      await expect(
+        proUnlock.getByText(benefit.description, { exact: true })
+      ).toBeVisible();
+    }
   });
 
   test("does not display hardcoded pricing in Pro Unlock section", async ({ page }) => {

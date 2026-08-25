@@ -14,7 +14,7 @@ Spawn the `qa` subagent via the Agent tool, passing the user's input plus a one-
 
 - `/qa` (no arguments) → **Full sweep**. The subagent runs every installed assessment skill, applies the quality-bar gate per dimension, and consolidates the results into a single quality summary.
 - `/qa <dimension>` (e.g. `test-pyramid`, `ci`, `pre-commit`) → **Targeted assessment**. Pass the dimension. The subagent runs that single static assessment and reports.
-- `/qa <issue ref>` (e.g. `#41`, a bare number, or a Jira key) → **Feature verification**. Pass the issue reference. The subagent invokes `qa-test`: check out the feature branch, build a test plan from the issue's ACs, post it to the issue, run the feature, and post a close/address-gaps assessment to the PR. (Directly invocable as `/qa-test #N` too.)
+- `/qa <issue ref>` (e.g. `#41`, a bare number, or a Jira key) → **Feature verification**. Pass the issue reference. The subagent invokes `qa-test`: check out the feature branch, build a test plan from the issue's ACs, post it to the issue, run the feature, post a close/address-gaps assessment to the issue and PR, and — on a clean pass only — move the issue to "Ready For Sign Off" on the active project board. (Directly invocable as `/qa-test #N` too.)
 - `/qa <free-text>` (e.g. "is our test pyramid healthy?") → **Ask / route**. The subagent maps the request to a shape (assessment vs. feature verification), asking via `AskUserQuestion` if the mapping is ambiguous.
 
 If the argument is genuinely ambiguous, ask the user via AskUserQuestion before dispatching — don't guess.

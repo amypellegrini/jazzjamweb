@@ -1,6 +1,6 @@
 ---
 name: qa-test
-description: Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a close-or-address-gaps recommendation. Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's /dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable.
+description: Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a close-or-address-gaps recommendation, and — on a clean pass only — moves the issue to "Ready For Sign Off" on the active project board (never closing or merging it). Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's /dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable.
 model: sonnet
 ---
 
@@ -101,10 +101,34 @@ The assessment closes the loop on the test plan from §5. It goes to **both** su
 
 Show the assessment in the conversation as you post it, and capture both comment URLs for your report.
 
-## 9. Clean up and report
+## 9. Move the issue to "Ready For Sign Off" on the active project board (pass only)
+
+A clean verification is a state change on the work, not just a comment. When — and only when — the recommendation from §7 is **close / ship it**, transition the driving issue to **"Ready For Sign Off"** on the active project board, so the board shows the work as verified and waiting on the user's sign-off.
+
+**Gate.** Move the issue only if *every* AC passed and no scenario is **fail** or **blocked**. A blocked scenario is unverified, not verified-good — if any remain, leave the board status untouched and say so in the final report. When the recommendation is **address gaps**, never transition: the board should keep showing the work as in progress / in review.
+
+Resolve every ID fresh — GitHub Projects rotate as milestones change, so **never hard-code project numbers, IDs, or field IDs** (this is the same shape `pickup-issue` and `open-pr` use):
+
+- Determine the project owner: `owner=$(gh repo view --json owner -q .owner.login)`. If projects live on a different user/org, ask the user which owner to use.
+- List open projects: `gh project list --owner "$owner" --format json` (filter to `closed: false`). **No** open projects ⇒ skip the transition and note it. **Exactly one** ⇒ use it. **More than one** ⇒ ask via `AskUserQuestion` which is the active roadmap project for this repo.
+- Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"Ready For Sign Off"** option ID. If the board names that column differently ("Ready for sign-off", "Sign off"), match by intent; if no such option exists at all, surface it and skip — do **not** substitute "Done" or any other column.
+- Resolve the issue's board item: `gh issue view <N> --json projectItems`. If the issue isn't on the board, add it: `gh project item-add <number> --owner "$owner" --url <issue-url> --format json` — capture the returned item `id`.
+- Set the status:
+  ```
+  gh project item-edit \
+    --project-id <project-id> \
+    --id <item-id> \
+    --field-id <status-field-id> \
+    --single-select-option-id <ready-for-sign-off-option-id>
+  ```
+- Verify: re-fetch `gh issue view <N> --json projectItems` and confirm the status reads **"Ready For Sign Off"** before reporting success.
+
+This is a board transition only. Do not close the issue, merge the PR, or move anything to **Done** — sign-off is the user's call, and closing is `close-issue`'s.
+
+## 10. Clean up and report
 
 - Return to the branch you started on (from §2) — don't leave the user on a checked-out feature branch they didn't ask to be on.
-- Report back: the issue and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (close vs. address gaps), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
+- Report back: the issue and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (close vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
 
 ## Out of scope (do not do these)
 
@@ -112,4 +136,4 @@ Show the assessment in the conversation as you post it, and capture both comment
 - **Don't test `main` or a fabricated branch.** No branch ⇒ stop and surface.
 - **Don't clobber uncommitted work** to switch branches.
 - **Don't test out-of-scope items**, and don't invent ACs the issue doesn't state (mark provisional ACs as such if the user opts in).
-- **Don't merge, close, or transition the issue/PR.** Recommending closure is QA; the merge/close is a DEV move (`close-issue`).
+- **Don't merge or close the issue/PR, and don't move it to "Done".** The one board transition QA owns is → **"Ready For Sign Off"** on a clean pass (§9). Recommending closure is QA; the merge/close is a DEV move (`close-issue`).

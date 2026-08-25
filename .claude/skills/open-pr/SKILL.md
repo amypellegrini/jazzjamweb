@@ -38,8 +38,21 @@ Run `gh pr create` against base `main`:
 
 - **Title** — a concise summary of the branch's intent; Conventional-Commits-style where it fits.
 - **Body** — a short summary of what changed and why, plus a test plan when tests were touched.
+- **Issue auto-close link** — when the work is issue-driven, the body **must** contain
+  `Closes #<number>` (or `Fixes #N` / `Resolves #N`) on its own line, so the issue closes on merge.
+  Take the number from the branch prefix, the same way step 5 does. A bare `Refs #N` does **not**
+  create the link and does **not** close the issue — use it only for issues this PR genuinely does
+  not close.
 
-When `gh pr create` returns, report the PR URL.
+**Add the link now, at creation — not later.** GitHub Projects' "Pull request linked to issue"
+automation fires the moment the link appears and resets the item's status. Created with the link,
+that fires here, and step 5 immediately corrects the status to "In Review". Added days later, it
+fires then instead — yanking an item out of "Ready For Sign Off" mid-acceptance, for no reason
+connected to the work.
+
+When `gh pr create` returns, report the PR URL, and confirm the link registered:
+`gh pr view <pr> --json closingIssuesReferences` should list the driving issue. An empty list means
+the keyword is missing or malformed — fix it before moving on.
 
 ## Step 5 — sync the driving issue to "In Review" on the active project board
 
@@ -73,4 +86,5 @@ Then sync the board. GitHub Projects rotate as milestones change — **never har
 
 Re-fetch the issue: `gh issue view <number> --json projectItems` — confirm the project title matches and the status is **"In Review"** before reporting success.
 
-> **Issue auto-close link.** When the work was driven by an issue, the PR body should link it so the issue closes on merge (e.g. `Closes #<number>` for GitHub). The exact per-tracker syntax depends on a follow-up — this version of the skill opens the PR *without* the link. Add it by hand for now if the issue should auto-close.
+> **Issue auto-close link.** Handled in step 4, which opens the PR *with* `Closes #<number>` and
+> verifies it registered. Non-GitHub trackers may need different syntax; that remains a follow-up.

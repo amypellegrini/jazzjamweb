@@ -55,7 +55,8 @@ This is the QA value-add — do it well. For **each acceptance criterion**, deri
 
 Also:
 
-- Fold in any **Manual verification** steps the issue lists.
+- **Classify every scenario up front** as **device** or **headless**, and state the split in the plan before anything is executed or handed to a human. *Device* means the behaviour on the real surface is what the criterion is about — a real connected device for a device app, a browser for a website. *Headless* means a command, a rendered file, a report, or a test run shows it. "There is no point to fully demonstrate things in a device if it can be done headless."
+- Fold in any **Manual verification** steps the issue lists — written as steps a human performs (the exact command in a fenced code block, or the exact location to open), each marked device or headless.
 - Treat **Out of scope** items as explicit non-goals — do not test them, and note them as deliberately excluded so the plan's coverage is honest.
 
 Structure each scenario as: a short title, the steps to run it, and the expected result. Group scenarios under the AC they cover, and mark which category (happy / edge / negative) each is.
@@ -77,6 +78,14 @@ Now run the feature. Discover how this project is exercised — don't assume:
 - Execute each scenario from §4. For each, record a verdict: **pass** / **fail** / **blocked** (couldn't run — note why), with *observed* vs *expected*.
 - For UI/visual features, drive the actual interface where possible; if you can't (no browser, headless limits), say so explicitly and mark those scenarios **blocked** rather than claiming a pass.
 
+**When a human has to look, listen, or rule.** Some scenarios are not yours to verify: listening checks, feel or quality judgements, anything the issue's manual verification reserves for the product owner, and anything blocked on something only they can supply. The requirement, in the product owner's words: "The purpose of the desk check (same as sign off) is for me to validate with my own eyes. When asking the questions you should walk me through the steps and provide any references needed for the process. If you reference a file, you should provide the exact location in a way I can find it. If you reference the app, you should run the app in a connected device and show the behavior in the app." Apply it as a fixed protocol:
+
+1. **Setup first.** Before the human is asked anything, everything they will run or open is ready: the build installed on the connected device, the tools installed, the files rendered, the reports generated. Your own run of the scenario is preparation — it is never the evidence they rule on.
+2. **Steps, then what to observe, then the question.** Hand over the exact steps they perform (a command in a fenced code block, or the exact location to open), state what they should observe, and only then ask — via AskUserQuestion, one scenario per question. The options never pre-state the verdict: **Pass / Fail / Blocked**, each described in terms of what the user observed. A summary or table of your own reading of an artefact is never what they rule on.
+3. **Every reference is openable.** An absolute path, saying which environment it is for (Windows clone vs WSL); a line range for code; a URL for an issue comment or PR; and for a remote user the file itself, sent with SendUserFile. Never a bare filename.
+
+Record the human's answer as **pass (human-run)** / **fail (human-run)**. If the human is not present in this run, the scenario is **blocked**, not passed — it goes into §7 as a remaining manual step, written in exactly this shape.
+
 **Hard constraint:** if a scenario fails, **do not edit the feature's source, tests, or config to make it pass.** Record the failure as a gap with enough detail for DEV to act (steps, observed behaviour, which AC it violates). Modifying the code under test is the line between QA and DEV; crossing it invalidates the verification.
 
 ## 7. Produce the assessment and recommendation
@@ -86,6 +95,7 @@ Summarise:
 - **AC coverage** — each AC with an overall pass/fail, backed by its scenarios.
 - **Scenario results** — counts by category (happy / edge / negative) and by verdict (pass / fail / blocked).
 - **Gaps** — every failing or blocked scenario, with observed vs expected and the AC it maps to.
+- **Remaining manual steps** — every scenario a human still has to run, written as the steps they perform (exact command, or exact location to open), marked device or headless, with the setup already done or named as a precondition. Never a bare "listen and check".
 
 Then a single, unambiguous **recommendation**:
 

@@ -15,8 +15,7 @@ acting. Both Claude and Codex use its acceptance, Blocked and same-head rules.
    and QA records, and the human's explicit per-criterion sign-off. Quote/link the
    human decisions. If a gate is missing, report the actual status and next action:
    review handoff, qa-test, or sign-off. A reviewDecision of APPROVED, green CI,
-   a coordinator instruction or silence does not supply human acceptance. Honor
-   an explicit user override only as described in the shared contract.
+   a coordinator instruction or silence does not supply human acceptance.
 3. Verify the PR's closingIssuesReferences includes the driving issue. A PR that
    contributes only part of a cross-repo issue uses Refs instead of auto-closing it;
    close that issue only after all its work is accepted and merged. If adding a
@@ -31,11 +30,26 @@ acting. Both Claude and Codex use its acceptance, Blocked and same-head rules.
    contract. Squash-merge with `gh pr merge <PR> --repo <owner/repo> --squash
    --delete-branch=false --match-head-commit <verified-SHA>`. A mismatch stops the
    merge and requires fresh verification. Confirm merged state and merge commit.
-6. Clean up only this task's clean branch/worktree. Preserve unrelated local work;
-   do not switch or stash another task's checkout. Fetch main, and remove the
-   merged branch locally/remotely only after confirming it has no newer commits.
+6. Clean up only this task's branch/worktree. Check `git status --porcelain` and
+   `git worktree list` first; leave dirty or other-task checkouts untouched. In this
+   task's clean checkout, fetch main, switch to `main` and pull with `--ff-only`.
+   If main is owned by another worktree, detach this checkout at `origin/main`
+   instead; do not switch that other worktree. A disposable task-owned worktree
+   may be removed from outside it. Only then delete the feature branch. Confirm
+   its tip still equals the verified merged PR head before local deletion and use
+   `git branch -D <branch>` only after that check (squash merges fail `-d` ancestry
+   checks). Delete the remote branch with an explicit lease on that same SHA:
+   `git push --force-with-lease=refs/heads/<branch>:<verified-SHA> origin :refs/heads/<branch>`.
+   A newer tip or another checkout keeps the branch intact; report incomplete cleanup.
 7. Re-fetch project items after merge. Move only Ready For Sign Off to Done with
    live IDs, then verify. Already Done needs no write. For every other status,
    including Blocked, leave it unchanged and report the discrepancy to the human.
 8. Report PR URL, merged SHA, issue state, cleanup, AC evidence, CI and the exact
    human authorization. Report actual board state, including any incomplete cleanup.
+
+## Next step
+
+After a verified merge and Done, follow the workbench `docs/board-columns.md`
+close-issue row: bump the workbench pointer to the merged child main commit in a
+separate authorized commit, then take the next Todo item. If stopped at a gate,
+report the actual state and the missing review, QA, or human acceptance step.

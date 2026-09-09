@@ -34,10 +34,25 @@ The `commit-and-push` skill encodes the same conditions; when it is installed in
 
 ## Step 4 — open the PR
 
-Resolve the driving issue using step 5 and read its live board state before adding
-a closing link: linking can trigger project automation. If it is Blocked or already
-In Testing, Ready For Sign Off or Done, stop and report the state instead of
-creating a link that could reset it.
+Resolve the driving issue before creation, in this order:
+
+1. Use an explicit issue reference supplied with the task, and verify it exists.
+2. Otherwise parse `<N>` from `codex/<N>-...`, `feature/<N>-...` or `feat/<N>-...`
+   (also accept conventional-commit prefixes such as `fix/`, `test/` and `chore/`).
+3. If a PR already exists for this branch, read its closing issue references and
+   update that PR instead of creating a duplicate. Conflicting references require
+   clarification. No existing PR is required for the first two paths.
+
+If no issue is identified and the task is not issue-driven, create the PR without
+an auto-close link and report board synchronization as not applicable. If the task
+is explicitly issue-driven but the reference is missing, ask for that reference.
+A branch name without a number is valid; never invent an issue number.
+
+For a resolved issue, read its live board state before adding a closing link.
+Linking can trigger project automation. If it is Blocked or already In Testing,
+Ready For Sign Off or Done, preserve the state: create the PR without a new closing
+link (use Refs), report the deferred link and missing prerequisite, and skip board
+mutation. Do not refuse PR creation just because a link cannot safely be added.
 
 Run `gh pr create` against base `main`:
 
@@ -45,29 +60,27 @@ Run `gh pr create` against base `main`:
 - **Body** — a short summary of what changed and why, plus a test plan when tests were touched.
 - **Issue auto-close link** — when the work is issue-driven, the body **must** contain
   `Closes #<number>` (or `Fixes #N` / `Resolves #N`) on its own line, so the issue closes on merge.
-  Resolve the number using step 5; do not assume a single branch prefix. A bare `Refs #N` does **not**
-  create the link and does **not** close the issue — use it only for issues this PR genuinely does
-  not close.
+  Use the issue resolved above; honor the deferred-link case above. A bare `Refs #N` does **not**
+  create the link and does **not** close the issue — use it for partial contributions or the deferred-link case above.
 
-**Add the link now, at creation — not later.** GitHub Projects' "Pull request linked to issue"
+**Add an eligible closing link at creation.** GitHub Projects' "Pull request linked to issue"
 automation fires the moment the link appears and resets the item's status. Created with the link,
 that fires here, and step 5 immediately corrects the status to "In Review". Added days later, it
 fires then instead — yanking an item out of "Ready For Sign Off" mid-acceptance, for no reason
 connected to the work.
 
 When `gh pr create` returns, report the PR URL, and confirm the link registered:
-`gh pr view <pr> --json closingIssuesReferences` should list the driving issue. An empty list means
-the keyword is missing or malformed — fix it before moving on.
+`gh pr view <pr> --json closingIssuesReferences` should list the driving issue. For an issue-driven PR with a link added, an empty list means the keyword is
+missing or malformed — fix it before moving on. An intentionally omitted/deferred
+link is reported, not silently added here.
 
 ## Step 5 — sync the driving issue to "In Review" on the active project board
 
 Opening the PR is the moment the work transitions from *in progress* to *awaiting review*. Mirror that on the project board so it stays an honest reflection of the work.
 
-First, **determine the driving issue**:
-
-- Prefer the explicit driving issue supplied by the user or an existing PR closing link. Otherwise parse an issue number from `codex/<N>-...`, `feature/<N>-...` or `feat/<N>-...`; the tool-specific prefix is not required. Confirm conflicting references before linking; never rename an existing branch just to parse it.
-- Failing that, read the `Closes #<number>` / `Fixes #N` / `Resolves #N` link from the PR body.
-- If neither yields an issue (the branch isn't issue-driven, or there is no tracker), **skip this step** and note it in the final report.
+Use the driving issue already resolved in step 4. If it was unresolved for a
+non-issue-driven PR, or its link was deferred to preserve a later/Blocked status,
+skip board mutation and report why.
 
 Then sync the board. GitHub Projects rotate as milestones change — **never hard-code project numbers, IDs, or field IDs**; resolve them fresh every time, exactly as `pickup-issue` does:
 

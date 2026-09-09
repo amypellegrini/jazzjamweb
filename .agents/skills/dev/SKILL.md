@@ -1,6 +1,6 @@
 ---
 name: dev
-description: "Use whenever the user asks to drive a feature end-to-end — `$dev #N` picks up an existing issue, `$dev <description>` drives from scratch (BA handoff first), no arguments asks what to drive. Also responds to \"dev agent\" / \"dev\" aliases in natural-language requests. Routes to the `dev` subagent, which composes the DEV workflow (pickup → $tdd loop → commits → open-pr → $check-ci → address-pr-comments → close-issue) with load-bearing gates including repo-readiness (flags missing test harness / CI / issue tracker rather than silently skipping process), plan-approval, and AC-verification."
+description: "Use whenever the user asks to drive a feature end-to-end — `$dev #N` picks up an existing issue, `$dev followed by a description` drives from scratch (BA handoff first), no arguments asks what to drive. Also responds to \"dev agent\" / \"dev\" aliases in natural-language requests. Routes to the `dev` subagent, which composes the DEV workflow (pickup → $tdd loop → commits → open-pr → $check-ci → address-pr-comments → close-issue) with load-bearing gates including repo-readiness (flags missing test harness / CI / issue tracker rather than silently skipping process), plan-approval, and AC-verification."
 ---
 
 # Dev orchestrator
@@ -8,6 +8,8 @@ description: "Use whenever the user asks to drive a feature end-to-end — `$dev
 Skill entry point for driving a feature end-to-end — pickup → commits (via TDD) → PR → review handling → close. This skill is a routing layer; the actual workflow, gates, and skill composition are owned by the `dev` subagent (`.codex/agents/dev.toml`). Keep this file thin so the two surfaces never drift.
 
 ## Routing
+
+- `$dev validate #N` or a request to review and QA an existing PR → **Validate / resume validation**. Pass the existing reference; the profile owns review → verified handoff → QA → human sign-off routing.
 
 Spawn the `dev` subagent using the available Codex subagent tool, passing the user's input plus a one-line shape hint. Pick the shape from the arguments:
 

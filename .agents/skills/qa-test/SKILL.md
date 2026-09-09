@@ -1,11 +1,11 @@
 ---
 name: qa-test
-description: "Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a close-or-address-gaps recommendation, and — on a clean pass only — moves the issue to \"Ready For Sign Off\" on the active project board (never closing or merging it). Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's $dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable."
+description: "Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a sign-off-or-address-gaps recommendation, and — on a clean pass only — moves the issue to \"Ready For Sign Off\" on the active project board (never closing or merging it). Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's $dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable."
 ---
 
 # QA test a feature
 
-Verify a feature that's being worked, end-to-end, against the acceptance criteria of its driving issue. Given an issue number (or a feature reference), locate and check out the feature branch, fetch the issue, build a test plan that covers every AC — including edge cases and negative scenarios — post the plan to the issue, execute it against the running feature, and post a final assessment to the PR with a clear recommendation to **close** or **address gaps**.
+Verify a feature that's being worked, end-to-end, against the acceptance criteria of its driving issue. Given an issue number (or a feature reference), locate and check out the feature branch, fetch the issue, build a test plan that covers every AC — including edge cases and negative scenarios — post the plan to the issue, execute it against the running feature, and post a final assessment to the PR with a clear recommendation for **human sign-off** or **address gaps**.
 
 This is **dynamic verification**, not a static assessment. You will run the feature. But you remain QA, not DEV: **never modify the code under test to make a scenario pass.** A failing scenario is a recorded gap, not something you fix — recommending the fix is QA; applying it is `$dev`.
 
@@ -20,12 +20,9 @@ If you can't resolve the input to a concrete issue, stop and ask.
 
 ## Review prerequisite
 
-Normal QA starts in **In Testing**, after a recorded passing code review and green CI
-for the same open PR head. Read the issue comments for the SHA-stamped handoff
-(`Code review — <date> — <sha> — passed`) and compare it with the current PR head and
-checked-out commit before executing the plan. Missing or stale review means review is
-outstanding; do not infer approval from CI. Explicit exploratory testing may report
-results before this gate but cannot promote the item.
+Read and follow [the shared lifecycle contract](../../../docs/workflow-lifecycle.md),
+including its review prerequisite, SHA-stamped QA assessment and promotion rules.
+These rules apply equally to Claude and Codex.
 
 ## 1. Locate the feature branch
 
@@ -97,55 +94,32 @@ Summarise:
 
 Then a single, unambiguous **recommendation**:
 
-- **Close / ship it** — every AC passes, edge and negative coverage holds, no blocking gaps.
+- **Ready for human sign-off** — every AC passes, edge and negative coverage holds, no blocking gaps.
 - **Address gaps** — one or more ACs fail or critical scenarios are blocked. List exactly what must be fixed, mapped to ACs, so DEV can act without re-deriving the plan.
 
 ## 8. Post the assessment to the issue and the PR
 
 The assessment closes the loop on the test plan from §5. It goes to **both** surfaces: the issue (so the driving artifact carries the full QA verdict and history) and the PR (so the reviewer sees it in review context). Do not pause for approval.
 
-- **Always post to the issue:** `gh issue comment <N> --body <assessment>`. Lead with a marker (e.g. `## QA verification — <date> — recommendation: <close | address gaps>`).
+- **Always post to the issue:** `gh issue comment <N> --body <assessment>`. Lead with a marker (e.g. `## QA verification — <date> — recommendation: <ready for sign-off | address gaps>`).
 - **Find the PR for the branch:** `gh pr list --head <branch> --state open`. If a PR exists, post the same assessment there: `gh pr comment <PR> --body <assessment>`. If no PR exists yet, note it in your final report — the issue comment alone carries the assessment.
 
 Show the assessment in the conversation as you post it, and capture both comment URLs for your report.
 
-## 9. Move the issue to "Ready For Sign Off" on the active project board (pass only)
+## 9. Promote a clean pass
 
-A clean verification is a state change on the work, not just a comment. When — and only when — the recommendation from §7 is **close / ship it**, transition the driving issue to **"Ready For Sign Off"** on the active project board, so the board shows the work as verified and waiting on the user's sign-off.
-
-**Gate.** Move the issue only if every AC and scenario passed, the current item is exactly
-**In Testing**, the passing review record matches the tested SHA, and a fresh PR-head/CI
-check confirms that same open, green head immediately before promotion. Re-fetch the
-board state too. Missing review evidence, a changed head, or any failed/blocked scenario
-prevents promotion. Failed or blocked QA stays **In Testing**; record the tested SHA,
-evidence, gaps, and next action on the issue. A changed head invalidates promotion,
-not the historical results: report the stale assessment and request a new review handoff.
-Never move a human-parked **Blocked** item, regress an item from another column, or
-infer approval from its position. Development owns rework pickup to In Progress on the
-same PR, followed by CI, code review, and QA again.
-
-Resolve every ID fresh — GitHub Projects rotate as milestones change, so **never hard-code project numbers, IDs, or field IDs** (this is the same shape `pickup-issue` and `open-pr` use):
-
-- Determine the project owner: `owner=$(gh repo view --json owner -q .owner.login)`. If projects live on a different user/org, ask the user which owner to use.
-- List open projects: `gh project list --owner "$owner" --format json` (filter to `closed: false`). **No** open projects ⇒ skip the transition and note it. **Exactly one** ⇒ use it. **More than one** ⇒ ask the user directly which is the active roadmap project for this repo.
-- Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"Ready For Sign Off"** option ID. Require that exact option name. If missing, surface board drift and skip; never guess a spelling or substitute "Done" or another column.
-- Resolve the issue's existing board item: `gh issue view <N> --json projectItems`. If it is absent or is not in **In Testing**, report the missing prerequisite and skip promotion; do not add an item to manufacture eligibility.
-- Set the status:
-  ```
-  gh project item-edit \
-    --project-id <project-id> \
-    --id <item-id> \
-    --field-id <status-field-id> \
-    --single-select-option-id <ready-for-sign-off-option-id>
-  ```
-- Verify: re-fetch `gh issue view <N> --json projectItems` and confirm the status reads **"Ready For Sign Off"** before reporting success.
-
-This is a board transition only. Do not close the issue, merge the PR, or move anything to **Done** — sign-off is the user's call, and closing is `close-issue`'s.
+Follow the shared lifecycle contract's QA gate. Discover live project, item, Status
+and exact In Testing / Ready For Sign Off option IDs. Require existing membership;
+never add an item to manufacture eligibility. Recheck review, tested SHA, open PR
+head, green CI and In Testing immediately before mutation. On a clean pass use
+`gh project item-edit` with those IDs and verify the resulting Ready For Sign Off.
+Otherwise leave the board unchanged and report the missing prerequisite or gaps.
+Human acceptance follows; QA never merges, closes, or moves an item to Done.
 
 ## 10. Clean up and report
 
 - Return to the branch you started on (from §2) — don't leave the user on a checked-out feature branch they didn't ask to be on.
-- Report back: the issue, tested SHA, and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (close vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
+- Report back: the issue, tested SHA, and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (ready for sign-off vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
 
 ## Out of scope (do not do these)
 
@@ -153,7 +127,7 @@ This is a board transition only. Do not close the issue, merge the PR, or move a
 - **Don't test `main` or a fabricated branch.** No branch ⇒ stop and surface.
 - **Don't clobber uncommitted work** to switch branches.
 - **Don't test out-of-scope items**, and don't invent ACs the issue doesn't state (mark provisional ACs as such if the user opts in).
-- **Don't merge or close the issue/PR, and don't move it to "Done".** The one board transition QA owns is → **"Ready For Sign Off"** on a clean pass (§9). Recommending closure is QA; the merge/close is a DEV move (`close-issue`).
+- **Don't merge or close the issue/PR, and don't move it to "Done".** The one board transition QA owns is → **"Ready For Sign Off"** on a clean pass (§9). Recommending sign-off is QA; merge/close follows human acceptance via `close-issue`.
 
 ## Next step
 

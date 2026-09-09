@@ -67,9 +67,10 @@ actionable findings were found. Recheck the PR head; a changed head makes this r
 stale and ineligible for a passing board handoff.
 
 Do not post comments, approve PRs, merge, commit, push, or change board status. The
-workbench parallel-pr-review coordinator owns the SHA-stamped record and verified
-In Review → In Testing handoff. A standalone review reports the actual unchanged status
-if known and hands its result to that coordinator; never claim a transition. After a
+caller (child dev validation pass or workbench parallel-pr-review coordinator) owns
+the SHA-stamped record and verified In Review → In Testing handoff, following
+[the shared lifecycle contract](../../../docs/workflow-lifecycle.md). Return the
+result to that caller; the read-only reviewer never claims a transition. After a
 verified handoff the next step is $qa-test. Findings require fixes on the same PR and a
 fresh review. Review approval never substitutes for human sign-off.
 

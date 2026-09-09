@@ -34,13 +34,18 @@ The `commit-and-push` skill encodes the same conditions; when it is installed in
 
 ## Step 4 — open the PR
 
+Resolve the driving issue using step 5 and read its live board state before adding
+a closing link: linking can trigger project automation. If it is Blocked or already
+In Testing, Ready For Sign Off or Done, stop and report the state instead of
+creating a link that could reset it.
+
 Run `gh pr create` against base `main`:
 
 - **Title** — a concise summary of the branch's intent; Conventional-Commits-style where it fits.
 - **Body** — a short summary of what changed and why, plus a test plan when tests were touched.
 - **Issue auto-close link** — when the work is issue-driven, the body **must** contain
   `Closes #<number>` (or `Fixes #N` / `Resolves #N`) on its own line, so the issue closes on merge.
-  Take the number from the branch prefix, the same way step 5 does. A bare `Refs #N` does **not**
+  Resolve the number using step 5; do not assume a single branch prefix. A bare `Refs #N` does **not**
   create the link and does **not** close the issue — use it only for issues this PR genuinely does
   not close.
 
@@ -60,7 +65,7 @@ Opening the PR is the moment the work transitions from *in progress* to *awaitin
 
 First, **determine the driving issue**:
 
-- The feature branch carries the issue number as its prefix (`codex/<issue-number>-<short-description>` — the prefix is load-bearing). Parse it from the current branch name.
+- Prefer the explicit driving issue supplied by the user or an existing PR closing link. Otherwise parse an issue number from `codex/<N>-...`, `feature/<N>-...` or `feat/<N>-...`; the tool-specific prefix is not required. Confirm conflicting references before linking; never rename an existing branch just to parse it.
 - Failing that, read the `Closes #<number>` / `Fixes #N` / `Resolves #N` link from the PR body.
 - If neither yields an issue (the branch isn't issue-driven, or there is no tracker), **skip this step** and note it in the final report.
 
@@ -71,8 +76,9 @@ Then sync the board. GitHub Projects rotate as milestones change — **never har
 - If **no open projects** exist, skip this step — note it in the final report.
 - If **exactly one** open project exists, use it.
 - If **more than one** open project exists, ask the user directly which is the active roadmap project for this repo.
-- Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"In Review"** option ID. If the board has no "In Review" option (its column may be named "Review", "In review", etc.), match by intent; if none exists at all, surface it and skip rather than guessing.
+- Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"In Review"** option ID. Require the exact "In Review" option; if absent, report board drift and skip the mutation.
 - Resolve the issue's item on the board. Re-fetch with `gh issue view <number> --json projectItems`; if the issue was picked up via `pickup-issue` it is already on the board. If it is **not** on the board (e.g. `open-pr` was invoked directly without a prior pickup), add it: `gh project item-add <number> --owner "$owner" --url <issue-url> --format json` — capture the returned item `id`.
+- Re-fetch status before linking or changing the board. Never move an item into or out of Blocked or regress In Testing, Ready For Sign Off or Done. Report any link-automation status change instead of overwriting a human decision.
 - Set the status:
   ```
   gh project item-edit \

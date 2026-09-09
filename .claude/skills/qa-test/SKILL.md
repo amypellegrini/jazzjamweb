@@ -129,3 +129,11 @@ Human acceptance follows; QA never merges, closes, or moves an item to Done.
 - **Don't clobber uncommitted work** to switch branches.
 - **Don't test out-of-scope items**, and don't invent ACs the issue doesn't state (mark provisional ACs as such if the user opts in).
 - **Don't merge or close the issue/PR, and don't move it to "Done".** The one board transition QA owns is → **"Ready For Sign Off"** on a clean pass (§9). Recommending sign-off is QA; merge/close follows human acceptance via `close-issue`.
+
+## Next step
+
+Read the applicable row in the workbench `docs/board-columns.md` What comes next
+table. A verified clean pass ends at Ready For Sign Off: next sign-off. Gaps remain
+In Testing: name environment repair or development rework, followed by review and
+QA again. Missing/stale review: next dev validation or parallel-pr-review; never
+claim a transition that did not happen.

@@ -1,6 +1,6 @@
 ---
 name: dev
-description: Developer orchestrator for this project. Also responds to "dev agent" / "dev" aliases. Drives a feature end-to-end — from issue pickup through commits (via repeated /tdd), PR, review-comment handling, CI verification, and close — composing the DEV-specific atomised skills and gating at every load-bearing checkpoint. Use when picking up an issue to deliver, or when driving a feature from a free-text description.
+description: "Developer orchestrator for this project. Also responds to \"dev agent\" / \"dev\" aliases. Drives a feature end-to-end — from issue pickup through commits (via repeated /tdd), PR, review-comment handling, CI verification, and close — composing the DEV-specific atomised skills and gating at every load-bearing checkpoint. Use when picking up an issue to deliver, or when driving a feature from a free-text description."
 tools: Bash, Read, Grep, Glob, Edit, Write, AskUserQuestion
 ---
 

@@ -4,11 +4,11 @@ Both Claude and Codex workflows use this contract. In the workbench,
 `docs/board-columns.md` remains the authority for board columns. This document
 supplies the child-only handoff procedure when that checkout is unavailable.
 
-The sequence is Todo → In Progress → In Review → In Testing → Ready For Sign Off
-→ Done. Only a human moves an item into or out of Blocked. Read live status before
-any mutation; never infer eligibility from a previous session or overwrite a later
-stage. Rework keeps the same PR, moves to In Progress when development starts,
-and repeats CI, review and QA.
+For column definitions and their ordering, read the workbench's
+[canonical board document](https://github.com/amypellegrini/jazzjam-workbench/blob/main/docs/board-columns.md),
+or `docs/board-columns.md` in its local checkout. The procedures below implement
+its handoffs; they do not define another column set. When that contract changes,
+update this procedure in both children in the same coordinated change.
 
 ## Review handoff (the caller coordinates)
 
@@ -52,11 +52,11 @@ without the workbench, demonstrate each criterion and record each human decision
 on the issue with the full SHA. Preserve valid approvals already given in this
 session. Never replace missing product acceptance with a code-review approval.
 
-A direct merge request authorizes the action but does not by itself assert QA or
-per-criterion acceptance happened. If the user explicitly overrides a missing gate,
-record their exact instruction and the omitted verification; do not invent a pass.
+A direct merge request does not by itself assert QA or per-criterion acceptance
+happened. Report missing gates and route to review, QA or sign-off; this procedure
+does not define a shortcut around the workbench acceptance process.
 For untracked work, require explicit human merge authorization and report board
-stages as not applicable, rather than manufacturing membership or evidence.
+stages as not applicable rather than manufacturing membership or evidence.
 
 Re-fetch status, head and CI before merging; a changed head invalidates stale
 records. Blocked always stays human-owned. Use `--match-head-commit <verified-SHA>`

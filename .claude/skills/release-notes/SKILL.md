@@ -1,26 +1,37 @@
 ---
 name: release-notes
-description: Generate Play Store release notes from a GitHub project
 disable-model-invocation: true
-argument-hint: [project-number]
+argument-hint: "[project-number]"
+description: "Route Play Store release-note requests to musicpracticepro's release-notes skill and tooling. Website-only release announcements require a specified destination and format."
 ---
 
-# Generate Release Notes
+# Release notes from the website task
 
-Generate Play Store release notes from a GitHub project board.
+Play Store notes belong to musicpracticepro. This entry point routes to the app's
+existing procedure instead of duplicating its tooling in the website.
 
-## Steps
+1. For an explicitly website-only announcement, ask for its destination and format if
+   missing. Do not reinterpret it as Play Store notes or write to the app. No website
+   release publisher is configured by this skill.
+2. For Play Store notes, locate the musicpracticepro sibling in the workbench. Resolve
+   its absolute path using `package.json`, `scripts/validate-release-notes.js` and
+   both `whatsnew` locale files as app-checkout markers. Prefer
+   `.agents/skills/release-notes/SKILL.md`; if it has not landed yet, read the existing
+   `.claude/skills/release-notes/SKILL.md` as procedural Markdown (substitute the
+   supplied project number for `$ARGUMENTS`; no Claude runtime is needed). A missing
+   Codex skill does not mean the checkout is missing. If neither procedure exists,
+   report that exact missing prerequisite rather than asking for the same checkout. If this is
+   a standalone website clone without the app, ask for the app checkout location;
+   do not create app tooling inside the website.
+3. Tell the user the output belongs to the app's `whatsnew/en-US.txt` and
+   `whatsnew/en-GB.txt`. Read the app's AGENTS.md (or CLAUDE.md before migration) and resolved release-notes skill, then follow
+   that skill preserving the user's project number and requested scope. Run commands
+   with the app as the explicit working directory. If the app is outside the writable
+   workspace, prepare the text and obtain required permission before writing it.
+   Include only completed app-user features and fixes; exclude website-only items
+   even when using the legacy procedure on a cross-repo project board.
+4. Report absolute output paths and validation results. Generating notes does not
+   authorize committing, pushing, publishing a release or promoting a Play Store build.
 
-1. List GitHub projects with `gh project list --owner amypellegrini --closed --format json` to find the target project
-   - If `$ARGUMENTS` is provided, use it as the project number directly
-   - Otherwise, ask the user which closed project to use
-2. Fetch all items from the project: `gh project item-list <number> --owner amypellegrini --format json --limit 100`
-3. Filter issues to only **features** and **bug fixes** (ignore tests, CI/CD, chores, docs, refactors)
-4. Summarise the issues into a Play Store release notes format:
-   - Do NOT include issue numbers or conventional commit prefixes (feat:, fix:, etc.)
-   - Group into a short intro paragraph, "New features:" bullet list, and "Bug fixes:" bullet list
-   - Keep the total length **under 500 characters** (Google Play Store limit)
-   - Write in user-facing language — concise, clear, no technical jargon
-5. Write the **same content** to both `whatsnew/en-US.txt` and `whatsnew/en-GB.txt`
-6. Run `npm run validate-release-notes` to verify the files pass validation
-7. Display the final character count to confirm it's under 500
+Clarify ambiguous output requests before choosing a repository. Do not describe
+website-only project issues as app release features.

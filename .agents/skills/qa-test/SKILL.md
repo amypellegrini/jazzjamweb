@@ -108,6 +108,18 @@ Show the assessment in the conversation as you post it, and capture both comment
 
 ## 9. Promote a clean pass
 
+Resolve the target project before the promotion checks:
+
+- Discover the repository owner with `gh repo view --json owner` and list open
+  projects with `gh project list --owner <owner> --format json`. Use a different
+  project owner only when supplied or confirmed by the user.
+- If no project is open, report the missing board prerequisite and skip promotion.
+  If multiple projects are open and the issue's intended project is not already
+  explicit, ask which project owns this QA run; never choose by list order.
+- Discover live project, item, Status field and exact option IDs for that project
+  with `gh project field-list` and the issue's `projectItems`. Never hard-code
+  project numbers, IDs or field IDs. Require the existing issue membership.
+
 Follow the shared lifecycle contract's QA gate. Discover live project, item, Status
 and exact In Testing / Ready For Sign Off option IDs. Require existing membership;
 never add an item to manufacture eligibility. Recheck review, tested SHA, open PR
@@ -132,7 +144,7 @@ Human acceptance follows; QA never merges, closes, or moves an item to Done.
 ## Next step
 
 Read the applicable outcome from the workbench `docs/board-columns.md` and say it last.
-A verified promotion means **Ready For Sign Off**, next `$sign-off jazzjamweb#<N>`
+A verified promotion means **Ready For Sign Off**, next run `$sign-off jazzjamweb#<N>` from the workbench after its migration lands, or collect per-criterion human acceptance using `docs/workflow-lifecycle.md` in a child-only checkout
 from the workbench. Gaps or blocks remain **In Testing**: clear the environment or pick
 up development rework, then repeat CI, review, and QA. For exploratory runs, stale
 reviews, or skipped transitions, report the actual board state and missing prerequisite.

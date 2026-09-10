@@ -109,6 +109,18 @@ Show the assessment in the conversation as you post it, and capture both comment
 
 ## 9. Promote a clean pass
 
+Resolve the target project before the promotion checks:
+
+- Discover the repository owner with `gh repo view --json owner` and list open
+  projects with `gh project list --owner <owner> --format json`. Use a different
+  project owner only when supplied or confirmed by the user.
+- If no project is open, report the missing board prerequisite and skip promotion.
+  If multiple projects are open and the issue's intended project is not already
+  explicit, ask which project owns this QA run; never choose by list order.
+- Discover live project, item, Status field and exact option IDs for that project
+  with `gh project field-list` and the issue's `projectItems`. Never hard-code
+  project numbers, IDs or field IDs. Require the existing issue membership.
+
 Follow the shared lifecycle contract's QA gate. Discover live project, item, Status
 and exact In Testing / Ready For Sign Off option IDs. Require existing membership;
 never add an item to manufacture eligibility. Recheck review, tested SHA, open PR

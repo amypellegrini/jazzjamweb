@@ -1,6 +1,6 @@
 ---
 name: qa
-description: Use whenever the user asks to assess a repo's quality posture — `/qa` runs a full sweep (test pyramid, CI coverage, pre-commit hygiene) and consolidates the findings, `/qa <dimension>` runs a single assessment. Also responds to "QA agent" / "QA" aliases in natural-language requests. Routes to the `qa` subagent, which composes the QA assessment skills (assess-test-pyramid, assess-ci, assess-pre-commit) with load-bearing discipline: the quality-bar gate (surface the project's own standard rather than imposing generic defaults), a strict read-only constraint (reports and recommendations only), graceful degradation on missing skills, and auditable point-in-time reports under .claude/reports/.
+description: "Use whenever the user asks to assess a repo's quality posture — `/qa` runs a full sweep (test pyramid, CI coverage, pre-commit hygiene) and consolidates the findings, `/qa <dimension>` runs a single assessment. Also responds to \"QA agent\" / \"QA\" aliases in natural-language requests. Routes to the `qa` subagent, which composes the QA assessment skills (assess-test-pyramid, assess-ci, assess-pre-commit) with load-bearing discipline: the quality-bar gate (surface the project's own standard rather than imposing generic defaults), a strict read-only constraint (reports and recommendations only), graceful degradation on missing skills, and auditable point-in-time reports under .claude/reports/."
 model: haiku
 ---
 

@@ -105,7 +105,6 @@ If a required assessment skill isn't installed in the current repo, **surface th
 ```
 This dimension needs `<skill>`, which isn't installed in this repo.
 Add it under `.claude/skills/<skill>/`, then re-run /qa to include it.
-Then re-run /qa to include it.
 ```
 
 Detect by checking that `.claude/skills/<skill>/SKILL.md` exists for each skill name (`assess-test-pyramid`, `assess-ci`, `assess-pre-commit`, `qa-test`). For a **full sweep**, skip the missing dimension, record the gap in the consolidated report, and continue with the rest. For a **targeted assessment** or a **feature-verification** run whose skill is missing, stop and surface the missing skill.

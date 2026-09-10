@@ -34,14 +34,20 @@ The `commit-and-push` skill encodes the same conditions; when it is installed in
 
 ## Step 4 — open the PR
 
-Resolve the driving issue before creation, in this order:
+Before resolving the issue, always query existing open PRs for the current branch
+with `gh pr list --repo <owner/repo> --head <branch> --state open`. If exactly one
+exists, reuse/update it; if more than one matches, ask which one. Never run
+`gh pr create` when reusing a PR, even if an explicit issue or numbered branch
+already resolves the issue. Capture any existing closing references for comparison.
+
+Then resolve the driving issue before creation, in this order:
 
 1. Use an explicit issue reference supplied with the task, and verify it exists.
 2. Otherwise parse `<N>` from `codex/<N>-...`, `feature/<N>-...` or `feat/<N>-...`
    (also accept conventional-commit prefixes such as `fix/`, `test/` and `chore/`).
-3. If a PR already exists for this branch, read its closing issue references and
-   update that PR instead of creating a duplicate. Conflicting references require
-   clarification. No existing PR is required for the first two paths.
+3. Otherwise use the captured existing PR closing references, if any.
+Check all available references for conflicts before creating or editing a link;
+issue resolution never bypasses the independent duplicate-PR check above.
 
 If no issue is identified and the task is not issue-driven, create the PR without
 an auto-close link and report board synchronization as not applicable. If the task

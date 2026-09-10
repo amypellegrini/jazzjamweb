@@ -9,10 +9,10 @@ Skill entry point for driving a feature end-to-end — pickup → commits (via T
 
 ## Routing
 
-- `$dev validate #N` or a request to review and QA an existing PR → **Validate / resume validation**. Pass the existing reference; the profile owns review → verified handoff → QA → human sign-off routing.
 
 Spawn the `dev` subagent using the available Codex subagent tool, passing the user's input plus a one-line shape hint. Pick the shape from the arguments:
 
+- `$dev validate #N` or a request to review and QA an existing PR → **Validate / resume validation**. Pass the existing reference; the profile owns review → verified handoff → QA → human sign-off routing.
 - `$dev #N` (or a bare issue number / Jira key) → **Pickup**. Pass the issue reference. The subagent will read the issue, validate it against the checklist, summarise it back, branch, and gate on plan-approval before any code.
 - `$dev <free-text description>` → **Drive from scratch**. Pass the description verbatim. The subagent will route the BA → DEV handoff (file the issue via `$business-analyst` first if one doesn't exist yet), then drive the resulting issue end-to-end.
 - `$dev` (no arguments) → **Ask**. The subagent will ask the user what to drive (pickup an existing issue or start from a description) directly before doing anything else.

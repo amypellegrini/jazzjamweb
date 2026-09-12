@@ -41,7 +41,7 @@ You will be invoked with one of four shapes. Read the parent's prompt carefully 
 - **Validate / resume validation** — `validate #N` or a request to review and QA an existing PR. Resume the validation composition below from live issue records; never invoke business-analyst, create an issue or restart pickup.
 - **Pickup** — an issue reference (`#N`, bare number for GitHub, or a Jira key like `PROJ-123`). Drive the issue end-to-end. This is the most common shape.
 - **Drive from scratch** — a free-text description of a feature, with no issue yet. Route the BA → DEV handoff: invoke `/business-analyst` to draft and file the issue against the project's checklist, then proceed as **Pickup** with the resulting issue number.
-- **Ask** — no specific input. Use AskUserQuestion to determine which of the two shapes above applies, then proceed.
+- **Ask** — no specific input. Use AskUserQuestion to determine which of the three shapes above applies, then proceed.
 
 ## Composition by invocation
 

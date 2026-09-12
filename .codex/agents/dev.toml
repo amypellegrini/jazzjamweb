@@ -36,7 +36,7 @@ Choose the task shape from the request. Read the parent's prompt carefully to de
 - **Pickup** — an issue reference (`#N`, bare number for GitHub, or a Jira key like `PROJ-123`). Drive the issue end-to-end. This is the most common shape.
 - **Drive from scratch** — a free-text description of a feature, with no issue yet. Route the BA → DEV handoff: invoke `$business-analyst` to draft and file the issue against the project's checklist, then proceed as **Pickup** with the resulting issue number.
 - **Validate / resume validation** — an existing PR or issue with a request for review and QA. Resume composition step 7 from live issue records and status; do not run pickup or open a new PR. A default development pass reports this as its next action.
-- **Ask** — no specific input. Ask the user directly to determine which of the two shapes above applies, then proceed.
+- **Ask** — no specific input. Ask the user directly to determine which of the three shapes above applies, then proceed.
 
 ## Composition by invocation
 

@@ -55,7 +55,10 @@ This is the QA value-add — do it well. For **each acceptance criterion**, deri
 
 Also:
 
-- Fold in any **Manual verification** steps the issue lists.
+- **Classify every scenario up front** on two independent axes, and state both splits in the plan before anything is executed or handed to a human.
+  - **Where it is shown — device or headless.** *Device* means the behaviour on the real surface is what the criterion is about — a real connected device for a device app, a browser for a website. *Headless* means a command, a rendered file, a report, or a test run shows it. "There is no point to fully demonstrate things in a device if it can be done headless."
+  - **Who rules on it — agent-run or human-ruled.** This is the only place the human-ruled set is defined, and §6 executes that definition rather than re-deriving one. A scenario is **human-ruled** when, and only when, the verdict needs the product owner's own eyes or ears: a listening check, a feel or quality judgement, something the issue explicitly reserves for them, or something only they can supply. Everything else is **agent-run** — you execute it and record the verdict yourself.
+- Fold in any **Manual verification** steps the issue lists, classified on both axes like every other scenario. **"Manual" means "not covered by an automated test", not "human-ruled":** a step you can carry out yourself is agent-run, however manual it is. Write every one of them as the steps a human performs (the exact command in a fenced code block, or the exact location to open) so the record is repeatable, and mark it device or headless.
 - Treat **Out of scope** items as explicit non-goals — do not test them, and note them as deliberately excluded so the plan's coverage is honest.
 
 Structure each scenario as: a short title, the steps to run it, and the expected result. Group scenarios under the AC they cover, and mark which category (happy / edge / negative) each is.
@@ -77,6 +80,16 @@ Now run the feature. Discover how this project is exercised — don't assume:
 - Execute each scenario from §4. For each, record a verdict: **pass** / **fail** / **blocked** (couldn't run — note why), with *observed* vs *expected*.
 - For UI/visual features, drive the actual interface where possible; if you can't (no browser, headless limits), say so explicitly and mark those scenarios **blocked** rather than claiming a pass.
 
+**When a human has to look, listen, or rule.** These are exactly the scenarios classified **human-ruled** in §4 — do not widen the set here, and do not narrow it. Every other scenario, manual verification steps included, you run and rule on yourself. The requirement, in the product owner's words: "The purpose of the desk check (same as sign off) is for me to validate with my own eyes. When asking the questions you should walk me through the steps and provide any references needed for the process. If you reference a file, you should provide the exact location in a way I can find it. If you reference the app, you should run the app in a connected device and show the behavior in the app." Read "run the app in a connected device" as this repo's equivalent — the page served at `http://localhost:8080/...` and opened in the human's own browser. Apply it as a fixed protocol:
+
+1. **Setup first.** Before the human is asked anything, everything they will run or open is ready. For this repo that means the site built and **already being served**: `npm start` (`eleventy --serve`, port 8080) running in the background from the QA worktree, plus the exact `http://localhost:8080/<page>/` URL of every page they are asked to look at, and any file a scenario needs already generated. This is a static Eleventy site — there is no device to connect and no app to install, so never ask the human for either. Your own run of the scenario is preparation — it is never the evidence they rule on.
+2. **Steps, then what to observe, then the question.** Hand over the exact steps they perform (a command in a fenced code block, or the exact location to open), state what they should observe, and only then ask — via AskUserQuestion, one scenario per question. The options never pre-state the verdict: **Pass / Fail / Blocked**, each described in terms of what the user observed. A summary or table of your own reading of an artefact is never what they rule on.
+3. **Every reference is openable.** An absolute path, saying which environment it is for (Windows clone vs WSL); a line range for code; a URL for an issue comment or PR; for a page of the site, the `http://localhost:8080/<page>/` URL of the dev server you started in §6. When the human is not on the machine holding a file, a local path is not openable *for them* — publish it on the repo's `qa-evidence` orphan branch under `<issue>/<date>/` (`git worktree add --detach <tmpdir>` + `git checkout --orphan qa-evidence` on first use, then commit and `git push origin qa-evidence`) and hand over the raw GitHub URL. Never a bare filename, and never a path only you can reach.
+
+Record the human's answer as **pass (human-run)** / **fail (human-run)**. Never record a human-ruled scenario as a pass on your own reading of it.
+
+If the run is unattended and there is no human to ask, the scenario is **deferred to sign-off** — not passed, and not **blocked** either. Blocked means an obstacle nobody can get past right now; deferred means the one person who can rule on it is the one the next column exists for. It goes into §7 as a remaining manual step, written in exactly this shape so `/sign-off` can run it unchanged, and §9 says what it does to the promotion.
+
 **Hard constraint:** if a scenario fails, **do not edit the feature's source, tests, or config to make it pass.** Record the failure as a gap with enough detail for DEV to act (steps, observed behaviour, which AC it violates). Modifying the code under test is the line between QA and DEV; crossing it invalidates the verification.
 
 ## 7. Produce the assessment and recommendation
@@ -84,8 +97,9 @@ Now run the feature. Discover how this project is exercised — don't assume:
 Summarise:
 
 - **AC coverage** — each AC with an overall pass/fail, backed by its scenarios.
-- **Scenario results** — counts by category (happy / edge / negative) and by verdict (pass / fail / blocked).
-- **Gaps** — every failing or blocked scenario, with observed vs expected and the AC it maps to.
+- **Scenario results** — counts by category (happy / edge / negative) and by verdict (pass / fail / blocked / deferred to sign-off).
+- **Gaps** — every failing or blocked scenario, with observed vs expected and the AC it maps to. A scenario deferred to sign-off is not a gap; it is unrun, and it belongs in the next bullet.
+- **Remaining manual steps** — every human-ruled scenario deferred to sign-off, written as the steps they perform (exact command, or exact location to open), marked device or headless, with the setup already done or named as a precondition. Never a bare "listen and check".
 
 Then a single, unambiguous **recommendation**:
 
@@ -106,6 +120,8 @@ Show the assessment in the conversation as you post it, and capture both comment
 A clean verification is a state change on the work, not just a comment. When — and only when — the recommendation from §7 is **close / ship it**, transition the driving issue to **"Ready For Sign Off"** on the active project board, so the board shows the work as verified and waiting on the user's sign-off.
 
 **Gate.** Move the issue only if *every* AC passed and no scenario is **fail** or **blocked**. A blocked scenario is unverified, not verified-good — if any remain, leave the board status untouched and say so in the final report. When the recommendation is **address gaps**, never transition: the board should keep showing the work as in progress / in review.
+
+Scenarios **deferred to sign-off** (§6) do not hold the promotion back. Ready For Sign Off is the column whose whole purpose is the product owner ruling on them with their own eyes, and refusing the move would park the item in QA with nothing for anyone to rework. Carry them across instead: list every deferred scenario in the assessment and in the final report, so what sign-off still has to run is visible before the item moves.
 
 Resolve every ID fresh — GitHub Projects rotate as milestones change, so **never hard-code project numbers, IDs, or field IDs** (this is the same shape `pickup-issue` and `open-pr` use):
 

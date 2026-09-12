@@ -69,7 +69,7 @@ One AC per invocation. The cycle is atomic: red → green → refactor → commi
 ## Out of scope
 
 - Looping over multiple ACs (the caller's job).
-- Plan-mode discipline (already gated upstream by `pickup-issue`).
+- Plan-approval discipline (already gated upstream by `pickup-issue`).
 - Test framework selection (works with whatever the repo already uses).
 - Resuming a half-finished cycle (each invocation runs end-to-end).
 - End-of-PR AC coverage cross-check (handled by `close-issue`'s AC-verification gate).

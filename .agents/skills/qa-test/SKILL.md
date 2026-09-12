@@ -116,13 +116,12 @@ Resolve the target project before the promotion checks:
 - If no project is open, report the missing board prerequisite and skip promotion.
   If multiple projects are open and the issue's intended project is not already
   explicit, ask which project owns this QA run; never choose by list order.
-- Discover live project, item, Status field and exact option IDs for that project
-  with `gh project field-list` and the issue's `projectItems`. Never hard-code
-  project numbers, IDs or field IDs. Require the existing issue membership.
+- Discover the live project, item, Status field and exact In Testing / Ready For
+  Sign Off option IDs for that project with `gh project field-list` and the issue's
+  `projectItems`. Never hard-code project numbers, IDs or field IDs. Require the
+  existing issue membership; never add an item to manufacture eligibility.
 
-Follow the shared lifecycle contract's QA gate. Discover live project, item, Status
-and exact In Testing / Ready For Sign Off option IDs. Require existing membership;
-never add an item to manufacture eligibility. Recheck review, tested SHA, open PR
+Follow the shared lifecycle contract's QA gate. Recheck review, tested SHA, open PR
 head, green CI and In Testing immediately before mutation. On a clean pass use
 `gh project item-edit` with those IDs and verify the resulting Ready For Sign Off.
 Otherwise leave the board unchanged and report the missing prerequisite or gaps.

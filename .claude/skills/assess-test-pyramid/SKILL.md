@@ -97,7 +97,7 @@ The HTML must be self-contained: inline `<style>`, no external scripts, no CDN d
 
 The report must use the following brand palette and feel polished enough to share with a team. Apply the following design system exactly — do not use generic Bootstrap-style greys or flat colours.
 
-**Brand palette (from `src/banner.ts` — do not deviate):**
+**Brand palette (report design specification — do not deviate):** These values are the report's own design tokens; this website repository has no palette source module to read them from.
 
 | Token | Hex | Role |
 |-------|-----|------|

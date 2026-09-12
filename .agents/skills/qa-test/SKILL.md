@@ -144,7 +144,9 @@ Human acceptance follows; QA never merges, closes, or moves an item to Done.
 ## Next step
 
 Read the applicable outcome from the workbench `docs/board-columns.md` and say it last.
-A verified promotion means **Ready For Sign Off**, next run `$sign-off jazzjamweb#<N>` from the workbench after its migration lands, or collect per-criterion human acceptance using `docs/workflow-lifecycle.md` in a child-only checkout
-from the workbench. Gaps or blocks remain **In Testing**: clear the environment or pick
-up development rework, then repeat CI, review, and QA. For exploratory runs, stale
-reviews, or skipped transitions, report the actual board state and missing prerequisite.
+A verified promotion means **Ready For Sign Off**, next run `$sign-off jazzjamweb#<N>`
+from the workbench after its migration lands, or collect per-criterion human acceptance
+using `docs/workflow-lifecycle.md` in a child-only checkout. Gaps or blocks remain
+**In Testing**: clear the environment or pick up development rework, then repeat CI,
+review, and QA. For exploratory runs, stale reviews, or skipped transitions, report the
+actual board state and missing prerequisite.

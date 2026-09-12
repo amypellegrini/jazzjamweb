@@ -41,4 +41,6 @@ Surface the BA handoff report path prominently in your response so the user can 
 
 ## Codex delegation
 
-Read `.codex/agents/qa.toml` and delegate with its `developer_instructions`, the user input, and the repository path. If the tool cannot select a custom agent by name, explicitly instruct the spawned agent to read that definition. If delegation is unavailable, follow the same definition inline. Relay unresolved human decisions to the parent if direct user input is unavailable; wait for the response before dependent work.
+Read `.codex/agents/qa.toml` and delegate with that profile when the runtime supports named custom agents. Otherwise use `collaboration.spawn_agent` with a bounded task explicitly instructing the child to read and follow that file’s `developer_instructions`. Pass the user’s request, relevant authorization, task shape, and repository path. Do not assume a custom agent selector exists. If delegation is unavailable, follow the profile inline.
+
+Forward unresolved human decisions to the parent; the parent asks the user and relays the answer. Preserve every approval gate. Background execution does not remove user interaction or imply approval.

@@ -9,7 +9,6 @@ Skill entry point for driving a feature end-to-end — pickup → commits (via T
 
 ## Routing
 
-
 Spawn the `dev` subagent using the available Codex subagent tool, passing the user's input plus a one-line shape hint. Pick the shape from the arguments:
 
 - `$dev validate #N` or a request to review and QA an existing PR → **Validate / resume validation**. Pass the existing reference; the profile owns review → verified handoff → QA → human sign-off routing.

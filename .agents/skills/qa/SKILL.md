@@ -29,7 +29,6 @@ If the argument is genuinely ambiguous, ask the user with a direct user question
 
 The agent definition is the canonical behavioural spec. Both invocation paths — `$qa …` and natural-language ("QA agent, please assess the test pyramid") — route to the same instructions, so there is one source of truth and no drift between the skill invocation and the subagent.
 
-
 ## Codex delegation
 
 Read `.codex/agents/qa.toml` and delegate with that profile when the runtime supports named custom agents. Otherwise use `collaboration.spawn_agent` with a bounded task explicitly instructing the child to read and follow that file’s `developer_instructions`. Pass the user’s request, relevant authorization, task shape, and repository path. Do not assume a custom agent selector exists. If delegation is unavailable, follow the profile inline.

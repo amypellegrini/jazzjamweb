@@ -1,6 +1,6 @@
 ---
 name: assess-pre-commit
-description: "Assess pre-commit hooks against the project quality bar and write a timestamped report under .codex/reports/."
+description: "Use whenever the user asks to check whether pre-commit hooks are configured, audit what local quality gates are enforced before a commit lands, or assess whether those gates can be bypassed. Detects hook frameworks (pre-commit, husky, lefthook, lint-staged), classifies what each hook enforces against the project quality bar, checks for bypassability, and writes a timestamped plain-language markdown report under .codex/reports/."
 ---
 
 # Assess pre-commit hygiene

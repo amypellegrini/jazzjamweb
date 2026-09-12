@@ -1,6 +1,6 @@
 ---
 name: qa-assessment
-description: "Run a full static quality assessment of test distribution, CI coverage and pre-commit hygiene through the QA profile, producing a consolidated report for backlog refinement."
+description: "Use whenever the user asks to run a full static quality assessment of the repo — test distribution, CI coverage and pre-commit hygiene — and produce a consolidated findings report. Spawns the `qa` subagent with an explicit full-sweep instruction: runs all three installed assessment skills, applies the quality-bar gate per dimension, and writes a timestamped plain-language markdown report under .codex/reports/ ready for $business-analyst to convert gaps into issues."
 ---
 
 # Assess — full quality sweep

@@ -1,6 +1,6 @@
 ---
 name: qa
-description: "Route quality assessments and feature QA to the QA profile. Static assessments produce timestamped reports under .codex/reports/; feature verification preserves review and human-acceptance gates."
+description: "Use whenever the user asks to assess a repo's quality posture or to QA-test a feature — `$qa` runs a full sweep (test pyramid, CI coverage, pre-commit hygiene) and consolidates the findings, `$qa` with a single dimension runs one assessment, and an issue or feature reference routes to feature verification. Also responds to \"QA agent\" / \"QA\" aliases in natural-language requests. Routes to the `qa` subagent, which composes the QA assessment skills (assess-test-pyramid, assess-ci, assess-pre-commit) with load-bearing discipline: the quality-bar gate (surface the project's own standard rather than imposing generic defaults), a strict read-only constraint on the code under test, graceful degradation on missing skills, timestamped reports under .codex/reports/, and feature verification that preserves the review and human-acceptance gates."
 ---
 
 # QA orchestrator

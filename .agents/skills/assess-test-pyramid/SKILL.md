@@ -1,6 +1,6 @@
 ---
 name: assess-test-pyramid
-description: "Assess test distribution against the project quality bar and write a timestamped report under .codex/reports/."
+description: "Use whenever the user asks to assess the test pyramid, audit test distribution, check for ice-cream-cone or hourglass anti-patterns, or generate a static report on the unit/integration/e2e balance. First locates the project's own test-pyramid definition (TESTING.md, CONTRIBUTING.md testing section, ADR, etc.) — recommends creating one if absent. Then classifies each test against the project's own layer definitions, computes percentages, and emits a timestamped self-contained HTML report under .codex/reports/ with an auditable per-test classification table and threshold-driven recommendations."
 ---
 
 # Assess test pyramid

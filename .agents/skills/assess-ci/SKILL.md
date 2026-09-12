@@ -1,6 +1,6 @@
 ---
 name: assess-ci
-description: "Assess CI coverage against the project quality bar and write a timestamped report under .codex/reports/."
+description: "Use whenever the user asks to check whether CI is configured, audit what the pipeline verifies, or identify gaps in automated quality gates. Locates the repo's CI configuration files, classifies what each pipeline step covers (build, test, lint, typecheck, security), surfaces any uncovered gates against the project quality bar, and writes a timestamped plain-language markdown report under .codex/reports/."
 ---
 
 # Assess CI coverage

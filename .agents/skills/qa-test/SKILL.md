@@ -1,21 +1,20 @@
 ---
 name: qa-test
-description: "Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a sign-off-or-address-gaps recommendation, and — on a clean pass only — moves the issue to \"Ready For Sign Off\" on the active project board (never closing or merging it). Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's /dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable."
-model: sonnet
+description: "Use whenever the user asks to QA-test or verify a feature that's being worked, by issue number or feature reference — `qa-test #N`. Locates and checks out the feature branch (refusing to clobber uncommitted work, never testing main or a fabricated branch), fetches the issue, builds a test plan covering every acceptance criterion with happy-path, edge, and negative scenarios, posts the plan to the issue, runs the feature to execute the plan, and posts the final assessment to both the issue and the PR with a sign-off-or-address-gaps recommendation, and — on a clean pass only — moves the issue to \"Ready For Sign Off\" on the active project board (never closing or merging it). Dynamic verification, but strictly read-only on the code under test — failing scenarios are recorded as gaps, never fixed (that's $dev). Posts the test plan and assessment autonomously without per-action confirmation; they're the skill's deliverable."
 ---
 
 # QA test a feature
 
 Verify a feature that's being worked, end-to-end, against the acceptance criteria of its driving issue. Given an issue number (or a feature reference), locate and check out the feature branch, fetch the issue, build a test plan that covers every AC — including edge cases and negative scenarios — post the plan to the issue, execute it against the running feature, and post a final assessment to the PR with a clear recommendation for **human sign-off** or **address gaps**.
 
-This is **dynamic verification**, not a static assessment. You will run the feature. But you remain QA, not DEV: **never modify the code under test to make a scenario pass.** A failing scenario is a recorded gap, not something you fix — recommending the fix is QA; applying it is `/dev`.
+This is **dynamic verification**, not a static assessment. You will run the feature. But you remain QA, not DEV: **never modify the code under test to make a scenario pass.** A failing scenario is a recorded gap, not something you fix — recommending the fix is QA; applying it is `$dev`.
 
 ## Inputs
 
 `qa-test [ISSUE NUMBER OR FEATURE]`:
 
 - An **issue reference** — `#N`, a bare number (GitHub), or a Jira key (`PROJ-123`). The primary path.
-- A **feature reference** — free text describing the feature. Resolve it to an issue and/or branch (search the tracker, scan branch names). If it maps to more than one candidate, **ask via AskUserQuestion** — do not guess.
+- A **feature reference** — free text describing the feature. Resolve it to an issue and/or branch (search the tracker, scan branch names). If it maps to more than one candidate, **ask the user directly** — do not guess.
 
 If you can't resolve the input to a concrete issue, stop and ask.
 
@@ -34,7 +33,7 @@ You can't test a feature that isn't on a branch yet. Find the branch for the iss
 
 If you find more than one candidate branch, surface them and **ask** which to test.
 
-**If no branch exists:** stop and surface it. There is nothing to verify — the feature isn't in progress. Recommend the user confirm the issue is actually being worked (or run `/dev #N` to start it). Do not fabricate a branch or test `main`.
+**If no branch exists:** stop and surface it. There is nothing to verify — the feature isn't in progress. Recommend the user confirm the issue is actually being worked (or run `$dev #N` to start it). Do not fabricate a branch or test `main`.
 
 ## 2. Check out the branch safely
 
@@ -49,7 +48,7 @@ This is a working-tree state change — note it in your report and offer to swit
 - GitHub: `gh issue view <N>` (title, body, labels). Jira: `acli` equivalent.
 - Parse the structured sections the repo's checklist uses: **Context**, **Scope**, **Acceptance criteria**, **Out of scope**, **Manual verification**, **Dependencies**.
 
-**Issue-quality gate.** If the issue has no acceptance criteria, or they're too thin to derive concrete scenarios, you can't build a meaningful test plan. Stop and surface it; offer to proceed by deriving *provisional* ACs from the Scope section (clearly marked as provisional in the plan), or to pause for a BA refinement pass (`/business-analyst #N`). Don't invent ACs silently.
+**Issue-quality gate.** If the issue has no acceptance criteria, or they're too thin to derive concrete scenarios, you can't build a meaningful test plan. Stop and surface it; offer to proceed by deriving *provisional* ACs from the Scope section (clearly marked as provisional in the plan), or to pause for a BA refinement pass (`$business-analyst #N`). Don't invent ACs silently.
 
 ## 4. Build the test plan
 
@@ -131,7 +130,7 @@ Human acceptance follows; QA never merges, closes, or moves an item to Done.
 ## 10. Clean up and report
 
 - Return to the branch you started on (from §2) — don't leave the user on a checked-out feature branch they didn't ask to be on.
-- Report back: the issue and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (ready for sign-off vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
+- Report back: the issue, tested SHA, and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (ready for sign-off vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
 
 ## Out of scope (do not do these)
 
@@ -144,7 +143,7 @@ Human acceptance follows; QA never merges, closes, or moves an item to Done.
 ## Next step
 
 Read the applicable outcome from the workbench `docs/board-columns.md` and say it last.
-A verified promotion means **Ready For Sign Off**, next run `/sign-off jazzjamweb#<N>`
+A verified promotion means **Ready For Sign Off**, next run `$sign-off jazzjamweb#<N>`
 from the workbench after its migration lands, or collect per-criterion human acceptance
 using `docs/workflow-lifecycle.md` in a child-only checkout. Gaps or blocks remain
 **In Testing**: clear the environment or pick up development rework, then repeat CI,

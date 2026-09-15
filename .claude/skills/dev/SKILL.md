@@ -1,16 +1,17 @@
 ---
 name: dev
-description: Use whenever the user asks to drive a feature end-to-end — `/dev #N` picks up an existing issue, `/dev <description>` drives from scratch (BA handoff first), no arguments asks what to drive. Also responds to "dev agent" / "dev" aliases in natural-language requests. Routes to the `dev` subagent, which composes the DEV workflow (pickup → /tdd loop → commits → open-pr → /check-ci → address-pr-comments → close-issue) with load-bearing gates including repo-readiness (flags missing test harness / CI / issue tracker rather than silently skipping process), plan-mode, and AC-verification.
+description: "Use whenever the user asks to develop a feature through an open PR and review — `/dev #N` picks up an existing issue, `/dev <description>` drives from scratch (BA handoff first), no arguments asks what to drive. Also responds to \"dev agent\" / \"dev\" aliases in natural-language requests. Routes to the `dev` subagent, which composes the DEV workflow (pickup → /tdd loop → commits → open-pr → /check-ci → address-pr-comments; validation and close are later passes) with load-bearing gates including repo-readiness (flags missing test harness / CI / issue tracker rather than silently skipping process), plan-mode, and AC-verification."
 ---
 
 # Dev orchestrator
 
-Slash-command entry point for driving a feature end-to-end — pickup → commits (via TDD) → PR → review handling → close. This skill is a routing layer; the actual workflow, gates, and skill composition are owned by the `dev` subagent (`.claude/agents/dev.md`). Keep this file thin so the two surfaces never drift.
+Slash-command entry point for developing a feature through review — pickup → commits (via TDD) → PR → review handling, ending at the review gate. This skill is a routing layer; the actual workflow, gates, and skill composition are owned by the `dev` subagent (`.claude/agents/dev.md`). Keep this file thin so the two surfaces never drift.
 
 ## Routing
 
 Spawn the `dev` subagent via the Agent tool, passing the user's input plus a one-line shape hint. Pick the shape from the arguments:
 
+- `/dev validate #N` or a request to review and QA an existing PR → **Validate / resume validation**. Pass the existing reference; resume review → verified In Testing handoff → QA using the profile. Never route this shape to business-analyst, pickup or new-issue creation.
 - `/dev #N` (or a bare issue number / Jira key) → **Pickup**. Pass the issue reference. The subagent will read the issue, validate it against the checklist, summarise it back, branch, and gate on plan-mode before any code.
 - `/dev <free-text description>` → **Drive from scratch**. Pass the description verbatim. The subagent will route the BA → DEV handoff (file the issue via `/business-analyst` first if one doesn't exist yet), then drive the resulting issue end-to-end.
 - `/dev` (no arguments) → **Ask**. The subagent will ask the user what to drive (pickup an existing issue or start from a description) via `AskUserQuestion` before doing anything else.
@@ -19,7 +20,7 @@ If the argument is genuinely ambiguous (e.g. could be a description *or* a stale
 
 ## What the subagent owns (do not duplicate here)
 
-- The full DEV workflow composition: `pickup-issue` → repeated `/tdd` (once per AC) → `commit` / `commit-and-push` → `open-pr` → `/check-ci` → `address-pr-comments` → `close-issue`.
+- The full DEV workflow composition: `pickup-issue` → repeated `/tdd` (once per AC) → `commit` / `commit-and-push` → `open-pr` → `/check-ci` → `address-pr-comments`; a requested validation pass runs review/handoff/QA, and `close-issue` requires a later authorized invocation.
 - All load-bearing gates: repo-readiness, issue-quality, plan-mode, TDD loop, atomic-commits, review-comment classification, AC-verification, CI, post-PR CI checkpoint.
 - Graceful degradation when a required atomised skill isn't installed — surface the missing skill (`.claude/skills/<skill>/SKILL.md`) and stop.
 - Reporting back: per-stage outcomes, gates that paused for approval, skills that ran, missing prerequisites.

@@ -94,7 +94,7 @@ Then sync the board. GitHub Projects rotate as milestones change — **never har
 - List open projects: `gh project list --owner "$owner" --format json` (filter to `closed: false`).
 - If **no open projects** exist, skip this step — note it in the final report.
 - If **exactly one** open project exists, use it.
-- If **more than one** open project exists, ask the user via `AskUserQuestion` which is the active roadmap project for this repo.
+- If **more than one** open project exists, ask the user directly which is the active roadmap project for this repo.
 - Fetch the chosen project's field IDs fresh: `gh project field-list <number> --owner "$owner" --format json` — capture the **Status** field ID and the **"In Review"** option ID. Require the exact "In Review" option; if absent, report board drift and skip the mutation.
 - Resolve the issue's item on the board. Re-fetch with `gh issue view <number> --json projectItems`; if the issue was picked up via `pickup-issue` it is already on the board. If it is **not** on the board (e.g. `open-pr` was invoked directly without a prior pickup), add it: `gh project item-add <number> --owner "$owner" --url <issue-url> --format json` — capture the returned item `id`.
 - Re-fetch status before linking or changing the board. Never move an item into or out of Blocked or regress In Testing, Ready For Sign Off or Done. Report any link-automation status change instead of overwriting a human decision.

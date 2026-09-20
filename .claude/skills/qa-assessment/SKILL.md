@@ -1,6 +1,6 @@
 ---
 name: qa-assessment
-description: Use whenever the user asks to run a full quality assessment of the repo — test distribution, CI coverage, and pre-commit hygiene — and produce a consolidated findings report. Spawns the `qa` subagent with an explicit full-sweep instruction: runs all three installed assessment skills, applies the quality-bar gate per dimension, and writes a plain-language markdown report at .claude/reports/qa-<timestamp>.md ready for the BA agent to convert gaps into Jira issues.
+description: "Use whenever the user asks to run a full quality assessment of the repo — test distribution, CI coverage, and pre-commit hygiene — and produce a consolidated findings report. Spawns the `qa` subagent with an explicit full-sweep instruction: runs all three installed assessment skills, applies the quality-bar gate per dimension, and writes a plain-language markdown report at .claude/reports/qa-<timestamp>.md ready for the BA agent to convert gaps into Jira issues."
 model: haiku
 ---
 

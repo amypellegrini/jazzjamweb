@@ -1,7 +1,5 @@
 ---
 name: release-notes
-disable-model-invocation: true
-argument-hint: "[project-number]"
 description: "Route Play Store release-note requests to musicpracticepro's release-notes skill and tooling. Website-only release announcements require a specified destination and format."
 ---
 

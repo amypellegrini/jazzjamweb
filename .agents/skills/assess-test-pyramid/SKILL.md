@@ -1,12 +1,11 @@
 ---
 name: assess-test-pyramid
-description: Use whenever the user asks to assess the test pyramid, audit test distribution, check for ice-cream-cone or hourglass anti-patterns, or generate a static report on the unit/integration/e2e balance. First locates the project's own test-pyramid definition (TESTING.md, CONTRIBUTING.md testing section, ADR, etc.) — recommends creating one if absent. Then classifies each test against the project's layer definitions, computes percentages, and emits a self-contained HTML report at .claude/reports/test-pyramid-<timestamp>.html with an auditable per-test classification table and threshold-driven recommendations.
-model: sonnet
+description: "Use whenever the user asks to assess the test pyramid, audit test distribution, check for ice-cream-cone or hourglass anti-patterns, or generate a static report on the unit/integration/e2e balance. First locates the project's own test-pyramid definition (TESTING.md, CONTRIBUTING.md testing section, ADR, etc.) — recommends creating one if absent. Then classifies each test against the project's own layer definitions, computes percentages, and emits a timestamped self-contained HTML report under .codex/reports/ with an auditable per-test classification table and threshold-driven recommendations."
 ---
 
 # Assess test pyramid
 
-Scan this repo's test suite, classify each test by pyramid layer, compute the percentage breakdown, and emit an HTML report at `.claude/reports/test-pyramid-<timestamp>.html`. The report's purpose is to surface anti-patterns ("ice cream cone", "hourglass") at a glance and hand the team auditable per-test classifications they can disagree with.
+Scan this repo's test suite, classify each test by pyramid layer, compute the percentage breakdown, and emit an HTML report at `.codex/reports/test-pyramid-<timestamp>.html`. The report's purpose is to surface anti-patterns ("ice cream cone", "hourglass") at a glance and hand the team auditable per-test classifications they can disagree with.
 
 This is **static classification only** — do not run the tests. Cover the host project's primary language; if the repo is multi-language, ask the user which language to assess and document the choice in the report.
 
@@ -82,7 +81,7 @@ Use the project's layer names where a definition exists. Otherwise default to `u
 
 ## 5. Generate the HTML report
 
-Write to `.claude/reports/test-pyramid-<timestamp>.html` where `<timestamp>` is a filesystem-safe ISO-like value (e.g. `2026-05-08T14-30-00Z`). Create the directory if missing — it's gitignored.
+Write to `.codex/reports/test-pyramid-<timestamp>.html` where `<timestamp>` is a filesystem-safe ISO-like value (e.g. `2026-05-08T14-30-00Z`). Create the directory if missing — it's gitignored.
 
 The report **must contain** these sections, in this order:
 

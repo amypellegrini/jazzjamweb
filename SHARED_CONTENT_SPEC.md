@@ -23,7 +23,13 @@ The `Shared Content` workflow (`.github/workflows/shared-content.yml`) runs
 `scripts/check-shared-content.js` — tested in `tests/check-shared-content.spec.ts` — on
 every PR and on pushes to main. It fails any commit in the PR range that touches the
 file above unless that commit's subject starts with `chore(sync):` (the breaking form
-`chore(sync)!:` is also accepted). Use that prefix when committing regenerated output.
+`chore(sync)!:` is also accepted). Use that prefix when committing regenerated output —
+and give the PR that carries it a `chore(sync): …` **title** too. PRs are squash-merged,
+so the PR title becomes the subject of the single commit that reaches main, where the
+check runs again: a feature PR that swallows a sync commit passes its PR check but fails
+the push to main. Sync output therefore gets its own PR; it may include the
+test-expectation updates the Guardrails section describes, while the feature work that
+consumes the new content merges separately.
 
 Design points, shared with musicpracticepro's gate (a change to one belongs in both):
 
@@ -76,7 +82,9 @@ same rule rather than against a literal benefit list.
    here and `benefits.ts` in the app.
 3. Commit the regenerated file(s) in each affected repo following its conventions
    (this repo: branch + PR; pre-commit runs the Playwright suite). Give the commit that
-   carries regenerated output a `chore(sync):` subject — CI requires it.
+   carries regenerated output a `chore(sync):` subject, and land it in its own PR
+   titled `chore(sync): …` — CI requires the subject, and the squash merge takes the
+   subject from the PR title (see CI enforcement above).
 4. Bump the submodule pointers in the workbench.
 
 If you only have this repo checked out (no workbench), do not change the Pro Unlock

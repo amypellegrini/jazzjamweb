@@ -1,0 +1,6 @@
+# Preserve binary assets; normalize repository text on checkout and commit.
+* text=auto
+*.md text eol=lf
+*.toml text eol=lf
+.gitattributes text eol=lf
+.gitignore text eol=lf

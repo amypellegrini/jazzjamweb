@@ -60,7 +60,10 @@ This is the QA value-add — do it well. For **each acceptance criterion**, deri
 
 Also:
 
-- Fold in any **Manual verification** steps the issue lists.
+- **Classify every scenario up front** on two independent axes, and state both splits in the plan before anything is executed or handed to a human.
+  - **Where it is shown — device or headless.** *Device* means the behaviour on the real surface is what the criterion is about — a real connected device for a device app, a browser for a website. *Headless* means a command, a rendered file, a report, or a test run shows it. "There is no point to fully demonstrate things in a device if it can be done headless."
+  - **Who rules on it — agent-run or human-ruled.** This is the only place the human-ruled set is defined, and §6 executes that definition rather than re-deriving one. A scenario is **human-ruled** when, and only when, the verdict needs the product owner's own eyes or ears: a listening check, a feel or quality judgement, something the issue explicitly reserves for them, or something only they can supply. Everything else is **agent-run** — you execute it and record the verdict yourself.
+- Fold in any **Manual verification** steps the issue lists, classified on both axes like every other scenario. **"Manual" means "not covered by an automated test", not "human-ruled":** a step you can carry out yourself is agent-run, however manual it is. Write every one of them as the steps a human performs (the exact command in a fenced code block, or the exact location to open) so the record is repeatable, and mark it device or headless.
 - Treat **Out of scope** items as explicit non-goals — do not test them, and note them as deliberately excluded so the plan's coverage is honest.
 
 Structure each scenario as: a short title, the steps to run it, and the expected result. Group scenarios under the AC they cover, and mark which category (happy / edge / negative) each is.
@@ -82,6 +85,37 @@ Now run the feature. Discover how this project is exercised — don't assume:
 - Execute each scenario from §4. For each, record a verdict: **pass** / **fail** / **blocked** (couldn't run — note why), with *observed* vs *expected*.
 - For UI/visual features, drive the actual interface where possible; if you can't (no browser, headless limits), say so explicitly and mark those scenarios **blocked** rather than claiming a pass.
 
+**When a human has to look, listen, or rule.** These are exactly the scenarios classified **human-ruled** in §4 — do not widen the set here, and do not narrow it. Every other scenario, manual verification steps included, you run and rule on yourself. The requirement, in the product owner's words: "The purpose of the desk check (same as sign off) is for me to validate with my own eyes. When asking the questions you should walk me through the steps and provide any references needed for the process. If you reference a file, you should provide the exact location in a way I can find it. If you reference the app, you should run the app in a connected device and show the behavior in the app." Read "run the app in a connected device" as this repo's equivalent — the page served at `http://localhost:8080/...` and opened in the human's own browser. Apply it as a fixed protocol:
+
+1. **Setup first.** Before asking the human for a scenario verdict, everything they will run or open is ready. Only if a scenario needs a browser, have the site built and **already being served**: `npm start` (`eleventy --serve`, port 8080) running in the background from the checked-out feature branch (§2), plus the exact `http://localhost:8080/<page>/` URL of every page they are asked to look at, and any file a scenario needs already generated. This is a static Eleventy site — there is no device to connect and no app to install, so never ask the human for either. Your own run of the scenario is preparation — it is never the evidence they rule on.
+2. **Steps, then what to observe, then the question.** Hand over the exact steps they perform (a command in a fenced code block, or the exact location to open), state what they should observe, and only then ask — directly in conversation, one scenario per question. The options never pre-state the verdict: **Pass / Fail / Blocked**, each described in terms of what the user observed. A summary or table of your own reading of an artefact is never what they rule on.
+3. **Every reference is openable.** An absolute path, saying which environment it is for (Windows clone vs WSL); a line range for code; a URL for an issue comment or PR; for a page of the site, the `http://localhost:8080/<page>/` URL of the dev server started in step 1. When the human is not on the machine holding a file, a local path is not openable *for them* — publish it using the safe evidence procedure below and hand over the raw GitHub URL. Never a bare filename, and never a path only you can reach.
+
+Record the human's answer as **pass (human-run)** / **fail (human-run)** / **blocked (human-run)**. Never record a human-ruled scenario as a pass on your own reading of it.
+
+If the run is unattended and no human can rule, record the scenario as **blocked
+(awaiting human observation)**, never as passed. List the exact remaining steps,
+openable references and required setup in the assessment. Resume these scenarios
+with the human during QA; until all pass, recommend **address gaps** and leave the
+item in **In Testing**. Do not defer unrun QA to sign-off or change the board to
+Blocked. Sign-off remains the later acceptance gate after a complete clean QA pass.
+
+**Safe evidence publication.** Publish files on the dedicated `qa-evidence` branch under `<issue>/<date>/`
+    from a fresh, task-owned temporary worktree. Check local and remote branch
+    existence first. If the remote branch exists, fetch and reuse it; never replace
+    its history. On first use, run `git worktree add --detach <tmpdir> HEAD`, then
+    **inside that disposable worktree only**, `git switch --orphan qa-evidence`.
+    Unlike `checkout --orphan`, `switch --orphan` removes tracked files and clears
+    the index. Verify `git ls-files` returns nothing before copying evidence.
+    Copy only the intended evidence files; stage only their `<issue>/<date>/` paths.
+    Inspect `git diff --cached --name-only` and require every path to be one of those
+    evidence files before committing. Push without force; if the remote advanced,
+    reconcile that branch without overwriting its evidence. Remove only this task's
+    clean temporary worktree when finished. Never run orphan/index cleanup in the
+    feature checkout. A failed empty-index or path check stops publication.
+
+Use `https://raw.githubusercontent.com/<owner>/<repo>/qa-evidence/<issue>/<date>/<file>` as the published reference. If publication fails and the user cannot open the local file, record the scenario as blocked; a private local path cannot substitute for observation.
+
 **Hard constraint:** if a scenario fails, **do not edit the feature's source, tests, or config to make it pass.** Record the failure as a gap with enough detail for DEV to act (steps, observed behaviour, which AC it violates). Modifying the code under test is the line between QA and DEV; crossing it invalidates the verification.
 
 ## 7. Produce the assessment and recommendation
@@ -90,6 +124,7 @@ Summarise:
 
 - **AC coverage** — each AC with an overall pass/fail, backed by its scenarios.
 - **Scenario results** — counts by category (happy / edge / negative) and by verdict (pass / fail / blocked).
+- **Remaining manual steps** — list each blocked human-ruled scenario with exact steps, openable references, device/headless classification and setup needed to resume QA.
 - **Gaps** — every failing or blocked scenario, with observed vs expected and the AC it maps to.
 
 Then a single, unambiguous **recommendation**:
@@ -130,7 +165,7 @@ Human acceptance follows; QA never merges, closes, or moves an item to Done.
 ## 10. Clean up and report
 
 - Return to the branch you started on (from §2) — don't leave the user on a checked-out feature branch they didn't ask to be on.
-- Report back: the issue, tested SHA, and branch tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (ready for sign-off vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
+- Report back: the issue, branch and commit tested, the test-plan comment URL, the assessment comment URLs (issue + PR if it exists), the headline verdict (ready for sign-off vs. address gaps), the board transition (moved to **Ready For Sign Off**, or skipped and why), and the gap list. Be honest about any scenarios marked **blocked** and why — a verification that quietly skipped half its scenarios is worse than none.
 
 ## Out of scope (do not do these)
 

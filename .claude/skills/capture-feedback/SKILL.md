@@ -1,6 +1,6 @@
 ---
 name: capture-feedback
-description: Use whenever the user wants to record feedback, an idea or an improvement noticed mid-session without stopping the current task ("capture feedback: …", "note this for later", "feedback for the harness"). This repo keeps no feedback store: the skill locates the jazzjam-workbench checkout this repo is a submodule of and runs its capture, which records the exact wording and the date under the workbench's docs/feedback/not-addressed/ and pushes it straight to the workbench main. Stops and says feedback cannot be stored from here when this checkout is not inside a workbench checkout. Never writes under this repo, never triages, never creates issues.
+description: "Use whenever the user wants to record feedback, an idea or an improvement noticed mid-session without stopping the current task (\"capture feedback: …\", \"note this for later\", \"feedback for the harness\"). This repo keeps no feedback store: the skill locates the jazzjam-workbench checkout this repo is a submodule of and runs its capture, which records the exact wording and the date under the workbench's docs/feedback/not-addressed/ and pushes it straight to the workbench main. Stops and says feedback cannot be stored from here when this checkout is not inside a workbench checkout. Never writes under this repo, never triages, never creates issues."
 ---
 
 # Capture feedback (delegates to the workbench)

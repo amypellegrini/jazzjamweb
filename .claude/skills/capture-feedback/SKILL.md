@@ -56,9 +56,10 @@ workbench `main`, and they are back on their task. No clarification, no triage.
      — done.
    - A line starting `feedback:` on stderr — **not done**. Relay the reason verbatim with
      the fix it names, and stop. The script refuses when the workbench checkout is not on
-     `main`, when its `main` carries unpushed commits (it will not bundle them), or when
-     the push is rejected; it never touches this repo either way. Do not route around a
-     refusal.
+     `main`, when it cannot fetch `origin/main`, when local changes block fast-forwarding
+     its `main`, when that `main` carries unpushed commits (it will not bundle them), when
+     the commit fails (a hook, signing), or when the push is rejected; it never touches
+     this repo either way. Do not route around a refusal.
 5. **Report one line** — the workbench path and that it is on `origin/main` — then go
    straight back to the task that was interrupted.
 

@@ -1,6 +1,6 @@
 ---
 name: capture-feedback
-description: "Use whenever the user wants to record feedback, an idea or an improvement noticed mid-session without stopping the current task (\"capture feedback: …\", \"note this for later\", \"feedback for the harness\"). This repo keeps no feedback store: the skill locates the jazzjam-workbench checkout this repo is a submodule of and runs its capture, which records the exact wording and the date under the workbench's docs/feedback/not-addressed/ and pushes it straight to the workbench main. Stops and says feedback cannot be stored from here when this checkout is not inside a workbench checkout. Never writes under this repo, never triages, never creates issues."
+description: "Use whenever the user wants to record feedback, an idea or an improvement noticed mid-session without stopping the current task (\"capture feedback: …\", \"note this for later\", \"feedback for the harness\"). This repo keeps no feedback store: the skill locates the jazzjam-workbench checkout this repo is a submodule of and runs its capture, which records the exact wording and the date under the workbench's docs/feedback/not-addressed/ and pushes it straight to the workbench main. Stops and says feedback cannot be stored from here when this checkout is not inside a workbench checkout, and asks for the workbench to be updated when it predates feedback capture. Never writes under this repo, never triages, never creates issues."
 ---
 
 # Capture feedback (delegates to the workbench)
@@ -16,15 +16,21 @@ workbench `main`, and they are back on their task. No clarification, no triage.
 ## Steps
 
 1. **Locate the workbench.** Walk up from this repo's top level
-   (`git rev-parse --show-toplevel`) through its parent directories until one holds both
-   `scripts/feedback.py` and `content/shared.json`; that directory is the workbench
-   checkout. For the submodule at `<workbench>/jazzjamweb` it is the parent; for a task
-   worktree such as `<workbench>/.scratch/wt<issue>-jazzjamweb` it is two levels up.
+   (`git rev-parse --show-toplevel`) through its parent directories until one holds
+   `content/shared.json`; that directory is the workbench checkout. For the submodule at
+   `<workbench>/jazzjamweb` it is the parent; for a task worktree such as
+   `<workbench>/.scratch/wt<issue>-jazzjamweb` it is two levels up.
 
    If no parent qualifies — a standalone clone, a CI checkout, a worktree outside the
    workbench — **stop** and say: *Feedback can't be stored from here: this checkout is not
    inside a jazzjam-workbench checkout. Capture it from the workbench.* Do not create a
    feedback folder in this repo as a fallback, and do not write it to the issue instead.
+
+   If the workbench is found but has no `scripts/feedback.py`, it is a workbench checkout
+   from before feedback capture existed — not a missing one. **Stop** and say: *The
+   workbench at `<workbench>` predates feedback capture (no `scripts/feedback.py`). Update
+   it — pull its `main` — and capture again.* Do not pull it yourself mid-task, and do not
+   fall back to writing the feedback anywhere else.
 2. **Take the wording exactly as given.** No rephrasing, no summarising, no typo fixes.
    Keep line breaks.
 3. **Run the workbench capture** with the workbench as the script's root (the default

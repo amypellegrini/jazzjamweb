@@ -28,14 +28,23 @@ workbench `main`, and they are back on their task. No clarification, no triage.
 2. **Take the wording exactly as given.** No rephrasing, no summarising, no typo fixes.
    Keep line breaks.
 3. **Run the workbench capture** with the workbench as the script's root (the default
-   when the script is run from where it lives):
+   when the script is run from where it lives), passing the wording on stdin through a
+   quoted heredoc — always, even for one short line:
 
    ```sh
-   python3 "<workbench>/scripts/feedback.py" capture "<the wording>"
+   python3 "<workbench>/scripts/feedback.py" capture --file - <<'FEEDBACK'
+   <the wording, exactly as given, line breaks and all>
+   FEEDBACK
    ```
 
-   Multi-line wording, or wording with quotes: write it to a scratch file and pass
-   `--file <path>` (or `--file -` on stdin). Set `PYTHONIOENCODING=utf-8` on Windows.
+   The quotes around `'FEEDBACK'` are what keep the wording verbatim: inside them the
+   shell expands nothing, so backticks, `$`, quotes and `!` reach the file as typed.
+   Never pass the wording as a command-line argument — inside double quotes,
+   `` `desk-check` `` runs `desk-check` and `$HOME` becomes a path. If a line of the
+   wording is exactly `FEEDBACK`, pick a terminator that does not occur in it. The
+   newline that ends the heredoc is not recorded. With no POSIX shell (PowerShell), write
+   the wording to a scratch file with the file-writing tool, never through a shell
+   command, and pass `--file <path>`. Set `PYTHONIOENCODING=utf-8` on Windows.
 4. **Read the result.**
    - `Captured docs/feedback/not-addressed/<date>-<slug>.md on main, pushed to origin/main`
      — done.

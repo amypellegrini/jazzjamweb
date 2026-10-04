@@ -48,9 +48,13 @@ workbench `main`, and they are back on their task. No clarification, no triage.
    Never pass the wording as a command-line argument — inside double quotes,
    `` `desk-check` `` runs `desk-check` and `$HOME` becomes a path. If a line of the
    wording is exactly `FEEDBACK`, pick a terminator that does not occur in it. The
-   newline that ends the heredoc is not recorded. With no POSIX shell (PowerShell), write
-   the wording to a scratch file with the file-writing tool, never through a shell
-   command, and pass `--file <path>`. Set `PYTHONIOENCODING=utf-8` on Windows.
+   newline that ends the heredoc is not recorded. The script reads the wording as UTF-8
+   whatever the console code page, so on Windows the heredoc works as-is from Git Bash.
+   With no POSIX shell (PowerShell), write the wording to a scratch file with the
+   file-writing tool, never through a shell command, and pass `--file <path>`. Never
+   pipe or redirect the wording in PowerShell: Windows PowerShell 5.1 turns every
+   character outside ASCII piped to a program into `?`, and its `>` and `Set-Content`
+   write UTF-16 or the ANSI code page.
 4. **Read the result.**
    - `Captured docs/feedback/not-addressed/<date>-<slug>.md on main, pushed to origin/main`
      — done.

@@ -73,7 +73,7 @@ workbench `main`, and they are back on their task. No clarification, no triage.
 ## Out of scope
 
 - Addressing feedback: the workbench's `address-feedback` skill, run from the
-  workbench, turns an item into a GitHub issue through `$business-analyst` and
-  then marks it addressed.
+  workbench, turns an item into a GitHub issue through the workbench's
+  `business-analyst` skill, then marks it addressed.
 - Reviewing, ranking or triaging feedback; turning it into a GitHub issue from here.
 - Moving a board item, touching the PR, or committing anything in this repo.

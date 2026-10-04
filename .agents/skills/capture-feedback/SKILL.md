@@ -57,19 +57,23 @@ workbench `main`, and they are back on their task. No clarification, no triage.
    write UTF-16 or the ANSI code page.
 4. **Read the result.**
    - `Captured docs/feedback/not-addressed/<date>-<slug>.md on main, pushed to origin/main`
-     — done.
+     — done. A line after it is a note about the workbench's local `main`; pass it on as
+     is.
    - A line starting `feedback:` on stderr — **not done**. Relay the reason verbatim with
-     the fix it names, and stop. The script refuses when the workbench checkout is not on
-     `main`, when it cannot fetch `origin/main`, when local changes block fast-forwarding
-     its `main`, when that `main` carries unpushed commits (it will not bundle them), when
-     the commit fails (a hook, signing), or when the push is rejected; it never touches
-     this repo either way. Do not route around a refusal.
+     the fix it names, and stop. The capture lands on the workbench `main` whatever that
+     checkout has out: on a feature branch it is left untouched and the commit is made in
+     a throwaway worktree, and unpushed commits on `main` simply go up with it. It still
+     stops when it cannot fetch `origin/main`, when local changes in a checkout with
+     `main` out block the fast-forward, when the commit fails (a hook, signing), or when
+     the push is rejected; it never touches this repo either way. Do not route around a
+     refusal.
 5. **Report one line** — the workbench path and that it is on `origin/main` — then go
    straight back to the task that was interrupted.
 
 ## Out of scope
 
-- Marking feedback as dealt with: that is the workbench's `address-feedback` skill, run
-  from the workbench.
-- Reviewing, ranking or triaging feedback; turning it into a GitHub issue.
+- Addressing feedback: the workbench's `address-feedback` skill, run from the
+  workbench, turns an item into a GitHub issue through `$business-analyst` and
+  then marks it addressed.
+- Reviewing, ranking or triaging feedback; turning it into a GitHub issue from here.
 - Moving a board item, touching the PR, or committing anything in this repo.

@@ -2,7 +2,7 @@
 name: qa
 description: "Quality Assurance orchestrator for this project. Also responds to \"qa agent\" / \"qa\" / \"QA\" aliases. Two kinds of work — (1) static quality assessments (test distribution, CI coverage, pre-commit hygiene) consolidated into one auditable read, and (2) dynamic feature verification (qa-test): check out the branch for an issue, build a test plan from its ACs, post it to the issue, run the feature, and post the assessment to both the issue and the PR with a sign-off/address-gaps recommendation, moving the issue to \"Ready For Sign Off\" on the active project board when every AC passes clean. Read-only on the code under test throughout — it recommends fixes, never applies them (that's /dev). Posting to the issue/PR is the skill's deliverable and is autonomous (no per-post confirmation). Use when assessing quality, auditing the test pyramid, checking CI coverage, or QA-testing/verifying a feature being worked."
 tools: Bash, Read, Grep, Glob, Write, AskUserQuestion
-model: fable
+model: claude-opus-5-5
 ---
 
 # QA orchestrator

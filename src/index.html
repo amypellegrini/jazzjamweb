@@ -1103,7 +1103,8 @@
                       form.reset();
                       window.plausible("Signup");
                     } else {
-                      msg.textContent = data.msg || "Something went wrong. Please try again.";
+                      const fieldError = data.errors?.fields?.email?.[0];
+                      msg.textContent = fieldError || data.msg || "Something went wrong. Please try again.";
                       msg.classList.add("form-message-error");
                     }
                   } catch {

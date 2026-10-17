@@ -79,6 +79,20 @@ test.describe("MailerLite signup form", () => {
     await expect(page.locator(".form-message")).toHaveClass(/form-message-error/);
     expect(await plausibleEvents(page)).not.toContain("Signup");
   });
+
+  test("shows MailerLite's field error when it rejects the email", async ({ page }) => {
+    await stubMailerLite(page, {
+      success: false,
+      errors: { fields: { email: ["The email must be a valid email address."] } },
+    });
+    await page.goto("/");
+
+    await submitEmail(page, "player@example.com");
+
+    await expect(page.locator(".form-message")).toHaveText(
+      "The email must be a valid email address."
+    );
+  });
 });
 
 async function plausibleEvents(page: Page): Promise<string[]> {

@@ -95,6 +95,22 @@ test.describe("MailerLite signup form", () => {
   });
 });
 
+// The intercepted tests above cannot tell whether MailerLite still knows the
+// form. This one asks the live endpoint, but with an empty email: MailerLite
+// rejects it at validation, so no subscriber is ever created. A deleted or
+// mistyped form answers 404 instead of the validation error.
+test("the live MailerLite form accepts submissions (validation-only probe)", async ({ request }) => {
+  const res = await request.post(MAILERLITE_SUBSCRIBE_URL, {
+    multipart: { "fields[email]": "", "ml-submit": "1", anticsrf: "true" },
+  });
+
+  expect(res.status(), "MailerLite form endpoint status").toBe(200);
+  // Match the shape, not MailerLite's exact wording, which it may reword.
+  const data = await res.json();
+  expect(data.success).toBe(false);
+  expect(data.errors?.fields?.email?.length, "email validation error").toBeGreaterThan(0);
+});
+
 async function plausibleEvents(page: Page): Promise<string[]> {
   return page.evaluate(() => {
     const queue = (window as unknown as { plausible: { q?: unknown[][] } }).plausible.q ?? [];

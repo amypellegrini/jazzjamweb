@@ -1,6 +1,6 @@
 ---
 name: capture-feedback
-description: "Use whenever the user wants to record feedback, an idea or an improvement noticed mid-session without stopping the current task (\"capture feedback: …\", \"note this for later\", \"feedback for the harness\"). This repo keeps no feedback store: the skill locates the jazzjam-workbench checkout this repo is a submodule of and runs its capture, which records the exact wording and the date under the workbench's docs/feedback/not-addressed/ and pushes it straight to the workbench main. Stops and says feedback cannot be stored from here when this checkout is not inside a workbench checkout, and asks for the workbench to be updated when it predates feedback capture. Never writes under this repo, never triages, never creates issues."
+description: "Use whenever the user wants to record feedback, an idea or an improvement noticed mid-session without stopping the current task (\"capture feedback: …\", \"note this for later\", \"feedback for the harness\"). This repo keeps no feedback store: the skill locates the jazzjam-workbench checkout this repo is a submodule of and runs its capture, which records the exact wording and the date under the workbench's docs/feedback/not-addressed/ and pushes it straight to the workbench main. The wording must open with a subject (`<subject>: …`), which names the file; the workbench refuses a capture without one. Stops and says feedback cannot be stored from here when this checkout is not inside a workbench checkout, and asks for the workbench to be updated when it predates feedback capture. Never writes under this repo, never triages, never creates issues."
 ---
 
 # Capture feedback (delegates to the workbench)
@@ -32,7 +32,10 @@ workbench `main`, and they are back on their task. No clarification, no triage.
    it — pull its `main` — and capture again.* Do not pull it yourself mid-task, and do not
    fall back to writing the feedback anywhere else.
 2. **Take the wording exactly as given.** No rephrasing, no summarising, no typo fixes.
-   Keep line breaks.
+   Keep line breaks. The wording must open with a subject — `<subject>: <feedback>`,
+   e.g. `store: update the listing` — which names the file and stays part of the
+   wording. **Never supply a subject yourself**: if the user gave none, run the capture
+   anyway and let the workbench refuse it (step 4).
 3. **Run the workbench capture** with the workbench as the script's root (the default
    when the script is run from where it lives), passing the wording on stdin through a
    quoted heredoc — always, even for one short line:
@@ -56,14 +59,15 @@ workbench `main`, and they are back on their task. No clarification, no triage.
    character outside ASCII piped to a program into `?`, and its `>` and `Set-Content`
    write UTF-16 or the ANSI code page.
 4. **Read the result.**
-   - `Captured docs/feedback/not-addressed/<date>-<slug>.md on main, pushed to origin/main`
+   - `Captured docs/feedback/not-addressed/<date>-<subject>.md on main, pushed to origin/main`
      — done. A line after it is a note about the workbench's local `main`; pass it on as
      is.
    - A line starting `feedback:` on stderr — **not done**. Relay the reason verbatim with
      the fix it names, and stop. The capture lands on the workbench `main` whatever that
      checkout has out: on a feature branch it is left untouched and the commit is made in
      a throwaway worktree, and unpushed commits on `main` simply go up with it. It still
-     stops when it cannot fetch `origin/main`, when local changes in a checkout with
+     stops when the wording has no subject (`No subject: …` — ask the user to say it
+     again with one), when it cannot fetch `origin/main`, when local changes in a checkout with
      `main` out block the fast-forward, when the commit fails (a hook, signing), or when
      the push is rejected; it never touches this repo either way. Do not route around a
      refusal.

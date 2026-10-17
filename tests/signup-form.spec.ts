@@ -51,4 +51,39 @@ test.describe("MailerLite signup form", () => {
     expect(body).toMatch(/name="ml-submit"\r\n\r\n1\r\n/);
     expect(body).toMatch(/name="anticsrf"\r\n\r\ntrue\r\n/);
   });
+
+  // Plausible's automatic "Form: Submission" goal fires on every valid submit,
+  // before MailerLite has answered — it counts attempts, not signups. The
+  // "Signup" event is the one that only fires once MailerLite accepts the email.
+  test("sends a Plausible Signup event once MailerLite accepts the email", async ({ page }) => {
+    await stubMailerLite(page, { success: true });
+    await page.goto("/");
+
+    await submitEmail(page, "player@example.com");
+
+    await expect(page.locator(".form-message")).toHaveText(
+      "Thanks for subscribing! Check your email (and spam folder)."
+    );
+    expect(await plausibleEvents(page)).toContain("Signup");
+  });
+
+  test("does not send a Plausible Signup event when MailerLite rejects the email", async ({ page }) => {
+    await stubMailerLite(page, {
+      success: false,
+      errors: { fields: { email: ["The email must be a valid email address."] } },
+    });
+    await page.goto("/");
+
+    await submitEmail(page, "player@example.com");
+
+    await expect(page.locator(".form-message")).toHaveClass(/form-message-error/);
+    expect(await plausibleEvents(page)).not.toContain("Signup");
+  });
 });
+
+async function plausibleEvents(page: Page): Promise<string[]> {
+  return page.evaluate(() => {
+    const queue = (window as unknown as { plausible: { q?: unknown[][] } }).plausible.q ?? [];
+    return queue.map((args) => String(args[0]));
+  });
+}

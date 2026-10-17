@@ -1101,6 +1101,7 @@
                       msg.textContent = "Thanks for subscribing! Check your email (and spam folder).";
                       msg.classList.add("form-message-success");
                       form.reset();
+                      window.plausible("Signup");
                     } else {
                       msg.textContent = data.msg || "Something went wrong. Please try again.";
                       msg.classList.add("form-message-error");

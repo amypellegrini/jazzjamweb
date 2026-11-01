@@ -24,11 +24,18 @@
       rel="stylesheet"
     />
     <style>
+      @font-face {
+        /* Serif fonts lack ♭ ♯ ♮, and the browser's fallback glyph is a full em wide ("A ♭").
+           Route just those three characters to a symbol font with sensible metrics. */
+        font-family: "Accidentals";
+        src: local("Apple Symbols"), local("Arial Unicode MS"), local("Segoe UI Symbol");
+        unicode-range: U+266D-266F;
+      }
       body {
         max-width: 46rem;
         margin: 0 auto;
         padding: 2rem 1rem 4rem;
-        font: 1.0625rem/1.65 Georgia, "Times New Roman", serif;
+        font: 1.0625rem/1.65 "Accidentals", Georgia, "Times New Roman", serif;
         color: #1d1d1f;
         background: #fff;
       }
@@ -39,7 +46,7 @@
       figure { margin: 1.5rem 0; }
       figure img { width: 100%; height: auto; display: block; }
       figure audio { width: 100%; margin-top: 0.5rem; }
-      figcaption { font: 0.875rem/1.4 system-ui, sans-serif; color: #666; margin-top: 0.25rem; }
+      figcaption { font: 0.875rem/1.4 "Accidentals", system-ui, sans-serif; color: #666; margin-top: 0.25rem; }
       .lede { font-size: 1.2rem; color: #333; }
       .passing { color: #2563eb; font-weight: 600; }
 

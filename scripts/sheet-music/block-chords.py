@@ -123,13 +123,14 @@ def write_cursor(k, measures):
         t += d * eighth
     json.dump(events, open(os.path.join(OUT, f"{k}.cursor.json"), "w"))
 
-for k, (t, m) in E.items():
-    src = os.path.join(OUT, f"{k}.musicxml")
-    open(src, "w").write(build(t, m))
-    for ext in ("svg", "mp3"):
-        subprocess.run([MSCORE, "-o", os.path.join(OUT, f"{k}.{ext}"), "-T", "10", src],
-                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-    # MuseScore suffixes page numbers on SVG output; examples are one page each.
-    os.replace(os.path.join(OUT, f"{k}-1.svg"), os.path.join(OUT, f"{k}.svg"))
-    write_cursor(k, m)
-    print("rendered", k)
+if __name__ == "__main__":  # importable by scripts/video for its own snippets
+    for k, (t, m) in E.items():
+        src = os.path.join(OUT, f"{k}.musicxml")
+        open(src, "w").write(build(t, m))
+        for ext in ("svg", "mp3"):
+            subprocess.run([MSCORE, "-o", os.path.join(OUT, f"{k}.{ext}"), "-T", "10", src],
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        # MuseScore suffixes page numbers on SVG output; examples are one page each.
+        os.replace(os.path.join(OUT, f"{k}-1.svg"), os.path.join(OUT, f"{k}.svg"))
+        write_cursor(k, m)
+        print("rendered", k)

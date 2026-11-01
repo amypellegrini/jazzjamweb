@@ -16,8 +16,12 @@ CHORD_TONES = {'C', 'E', 'G', 'A'}
 PASSING_COLOR = '#2563EB'
 def is_passing(rh): return rh[0][:-1] not in CHORD_TONES
 def notes(chord,dur,staff,voice,color=None):
+    if not chord:  # empty hand: a rest for the duration
+        return f"<note><rest/><duration>{dur}</duration><voice>{voice}</voice><type>{TYPES[dur]}</type><staff>{staff}</staff></note>"
+    colors = color if isinstance(color, list) else [color] * len(chord)
     out=[]
-    for i,n in enumerate(sorted(chord,key=lambda x:-0)):
+    for i,n in enumerate(chord):
+        color = colors[i]
         dot='<dot/>' if dur in (3,6) else ''
         out.append(f"<note{f' color=\"{color}\"' if color else ''}>{'<chord/>' if i else ''}{pitch(n)}<duration>{dur}</duration><voice>{voice}</voice><type>{TYPES[dur]}</type>{dot}<staff>{staff}</staff></note>")
     return ''.join(out)
@@ -27,14 +31,24 @@ def harmony(sym):
     kind={'6':('major-sixth','6'),'dim7':('diminished-seventh','o7'),'maj9':('major-ninth','maj9'),'m7':('minor-seventh','m7'),'':('major','')}[k]
     alt={'b':-1,'#':1,None:0}[a]
     return f"<harmony><root><root-step>{r}</root-step>{f'<root-alter>{alt}</root-alter>' if alt else ''}</root><kind text=\"{kind[1]}\">{kind[0]}</kind></harmony>"
+def o(c): return c[4] if len(c) > 4 else {}  # optional per-chord overrides
+def default_color(rh): return PASSING_COLOR if is_passing(rh) else None
+def label(opts):
+    """Optional coloured text under the score, e.g. a step in a build-up sequence."""
+    if 'text' not in opts: return ''
+    words, color = opts['text']
+    # Below the left-hand staff: clear of chord symbols, so the steps line up on one baseline.
+    return (f'<direction placement="below"><direction-type><words color="{color}" font-weight="bold">'
+            f'{words}</words></direction-type><staff>2</staff></direction>')
 def build(title, measures):
-    # measures: list of list of (dur, symbol, rh_notes(top first), lh_notes)
+    # measures: list of list of (dur, symbol, rh_notes(top first), lh_notes[, overrides])
+    # overrides: {'rh': colour or per-note colours, 'lh': colour, 'text': (words, colour)}
     body=[]
     for mi,meas in enumerate(measures,1):
         attrs = "<attributes><divisions>2</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><staves>2</staves><clef number=\"1\"><sign>G</sign><line>2</line></clef><clef number=\"2\"><sign>G</sign><line>2</line></clef></attributes>" if mi==1 else ''
-        rh=''.join(harmony(s)+notes(r,d,1,1,PASSING_COLOR if is_passing(r) else None) for d,s,r,l in meas)
-        tot=sum(d for d,*_ in meas)
-        lh=''.join(notes(l,d,2,5,PASSING_COLOR if is_passing(r) else None) for d,s,r,l in meas)
+        rh=''.join(label(o(c))+harmony(c[1])+notes(c[2],c[0],1,1,o(c).get('rh',default_color(c[2]))) for c in meas)
+        tot=sum(c[0] for c in meas)
+        lh=''.join(notes(c[3],c[0],2,5,o(c).get('lh',default_color(c[2]))) for c in meas)
         bar='<barline location="right"><bar-style>light-heavy</bar-style></barline>' if mi==len(measures) else ''
         body.append(f'<measure number="{mi}">{attrs}{tempo if mi==1 else ""}{rh}<backup><duration>{tot}</duration></backup>{lh}{bar}</measure>')
     return f'''<?xml version="1.0" encoding="UTF-8"?>
@@ -47,6 +61,13 @@ tempo = f"<direction placement=\"above\"><direction-type><words/></direction-typ
 def oct_down(n): return n[:-1]+str(int(n[-1])-1)
 def blk(d,sym,rh): return (d,sym,rh,[oct_down(rh[0])])
 E={}
+# Build-up steps, colour-coded: melody, then the chord tones beneath it, then the doubling.
+MELODY, CHORD, DOUBLE = '#C2255C', '#2F9E44', '#7048E8'
+E['basic-shape']=("The basic shape",[
+ [(8,None,['C5'],[], {'rh':[MELODY], 'text':('1. Melody', MELODY)})],
+ [(8,'C6',['C5','A4','G4','E4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD], 'text':('2. Chord tones below', CHORD)})],
+ [(8,None,['C5','A4','G4','E4'],['C4'], {'rh':[MELODY,CHORD,CHORD,CHORD], 'lh':DOUBLE,
+   'text':('3. Double in left hand', DOUBLE)})]])
 E['diminished']=("Diminished",[[
  blk(1,'C6',['C5','A4','G4','E4']), blk(1,'Bdim7',['D5','B4','Ab4','F4']),
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'Bdim7',['F5','D5','B4','Ab4']),
@@ -77,20 +98,27 @@ MSCORE = os.environ.get("MSCORE", "/Applications/MuseScore 4.app/Contents/MacOS/
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "src", "assets", "articles", "block-chords")
 os.makedirs(OUT, exist_ok=True)
 def write_cursor(k, measures):
-    """Chord timings (from the score durations) + x positions (from the SVG's left-hand
-    noteheads: one per chord, unlike the right hand, whose seconds displace noteheads)."""
+    """Chord timings (from the score durations) + x positions (from the SVG's right-hand
+    noteheads: every chord has a right hand, while the left hand may rest). A chord with a
+    second displaces one head sideways, so heads are clustered per chord and the cluster's
+    cursor sits at the cluster's centre."""
     import json
     svg = open(os.path.join(OUT, f"{k}.svg")).read()
     width = float(re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).group(1))
     # Each notehead path starts at its left edge; centre the cursor on it (heads are ~107 units wide).
     heads = [(float(x) + 54, float(y)) for x, y in re.findall(r'class="Note"[^>]*? d="M([\d.]+),([\d.]+)', svg)]
     mid = (min(y for _, y in heads) + max(y for _, y in heads)) / 2
-    xs = sorted(x for x, y in heads if y > mid)  # left-hand staff sits below the midpoint
+    rh = sorted(x for x, y in heads if y < mid)  # right-hand staff sits above the midpoint
+    xs = []
+    for x in rh:
+        if not xs or x - xs[-1][-1] > 200: xs.append([x])
+        else: xs[-1].append(x)
+    xs = [(c[0] + c[-1]) / 2 for c in xs]  # centre of the chord, displaced heads included
     chords = [c for meas in measures for c in meas]
     assert len(xs) == len(chords), (k, len(xs), len(chords))
     eighth = 60 / BPM / 2
     t, events = 0.0, []
-    for (d, *_), x in zip(chords, xs):
+    for (d, *_rest), x in zip(chords, xs):
         events.append({"t": round(t, 3), "end": round(t + d * eighth, 3), "x": round(x / width * 100, 2)})
         t += d * eighth
     json.dump(events, open(os.path.join(OUT, f"{k}.cursor.json"), "w"))

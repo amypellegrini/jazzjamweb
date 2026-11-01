@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Pre-record an article's narration with Kokoro TTS (Apache-2.0), plus per-word timings.
 
-Narrates every <h1>, <h2>, <h3> and direct <p> child of the page's <article>, in document
+Narrates every <h1>, <h2>, <h3>, <aside> and direct <p> child of the page's <article>, in document
 order: block i becomes narration/<i>.mp3, and narration/narration.json holds, per block, the
 start/end time of each whitespace-separated word as displayed on the page. The page's
 read-along script walks the same elements in the same order and highlights word by word.
@@ -27,13 +27,13 @@ VOICE, LANG, RATE = "bf_emma", "b", 24000
 # ---- what gets narrated --------------------------------------------------------------------
 
 class Blocks(HTMLParser):
-    """Collect the text of article > h1/h2/h3/p, in order (figure captions are skipped)."""
+    """Collect the text of article > h1/h2/h3/p/aside, in order (figure captions are skipped)."""
     def __init__(self):
         super().__init__(); self.depth = None; self.stack = []; self.blocks = []; self.buf = None
     def handle_starttag(self, tag, attrs):
         parent = self.stack[-1] if self.stack else None
         self.stack.append(tag)
-        if self.buf is None and parent == "article" and tag in ("h1", "h2", "h3", "p"):
+        if self.buf is None and parent == "article" and tag in ("h1", "h2", "h3", "p", "aside"):
             self.buf, self.depth = [], len(self.stack)
     def handle_endtag(self, tag):
         if self.buf is not None and len(self.stack) == self.depth:

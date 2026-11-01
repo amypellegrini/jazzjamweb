@@ -10,11 +10,16 @@ def acc(n):
     a = 'flat' if 'b' in n[1:] else 'sharp' if '#' in n else None
     return a
 TYPES={1:'eighth',2:'quarter',3:'quarter',4:'half',6:'half',8:'whole'}
-def notes(chord,dur,staff,voice):
+# Passing tones: any melody note outside the C6 chord tones. Their whole block (both hands)
+# is painted in PASSING_COLOR so the harmonised passing tones stand out in the notation.
+CHORD_TONES = {'C', 'E', 'G', 'A'}
+PASSING_COLOR = '#2563EB'
+def is_passing(rh): return rh[0][:-1] not in CHORD_TONES
+def notes(chord,dur,staff,voice,color=None):
     out=[]
     for i,n in enumerate(sorted(chord,key=lambda x:-0)):
         dot='<dot/>' if dur in (3,6) else ''
-        out.append(f"<note>{'<chord/>' if i else ''}{pitch(n)}<duration>{dur}</duration><voice>{voice}</voice><type>{TYPES[dur]}</type>{dot}<staff>{staff}</staff></note>")
+        out.append(f"<note{f' color=\"{color}\"' if color else ''}>{'<chord/>' if i else ''}{pitch(n)}<duration>{dur}</duration><voice>{voice}</voice><type>{TYPES[dur]}</type>{dot}<staff>{staff}</staff></note>")
     return ''.join(out)
 def harmony(sym):
     if not sym: return ''
@@ -27,9 +32,9 @@ def build(title, measures):
     body=[]
     for mi,meas in enumerate(measures,1):
         attrs = "<attributes><divisions>2</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><staves>2</staves><clef number=\"1\"><sign>G</sign><line>2</line></clef><clef number=\"2\"><sign>G</sign><line>2</line></clef></attributes>" if mi==1 else ''
-        rh=''.join(harmony(s)+notes(r,d,1,1) for d,s,r,l in meas)
+        rh=''.join(harmony(s)+notes(r,d,1,1,PASSING_COLOR if is_passing(r) else None) for d,s,r,l in meas)
         tot=sum(d for d,*_ in meas)
-        lh=''.join(notes(l,d,2,5) for d,s,r,l in meas)
+        lh=''.join(notes(l,d,2,5,PASSING_COLOR if is_passing(r) else None) for d,s,r,l in meas)
         bar='<barline location="right"><bar-style>light-heavy</bar-style></barline>' if mi==len(measures) else ''
         body.append(f'<measure number="{mi}">{attrs}{tempo if mi==1 else ""}{rh}<backup><duration>{tot}</duration></backup>{lh}{bar}</measure>')
     return f'''<?xml version="1.0" encoding="UTF-8"?>
@@ -78,7 +83,7 @@ def write_cursor(k, measures):
     svg = open(os.path.join(OUT, f"{k}.svg")).read()
     width = float(re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).group(1))
     # Each notehead path starts at its left edge; centre the cursor on it (heads are ~107 units wide).
-    heads = [(float(x) + 54, float(y)) for x, y in re.findall(r'class="Note" d="M([\d.]+),([\d.]+)', svg)]
+    heads = [(float(x) + 54, float(y)) for x, y in re.findall(r'class="Note"[^>]*? d="M([\d.]+),([\d.]+)', svg)]
     mid = (min(y for _, y in heads) + max(y for _, y in heads)) / 2
     xs = sorted(x for x, y in heads if y > mid)  # left-hand staff sits below the midpoint
     chords = [c for meas in measures for c in meas]

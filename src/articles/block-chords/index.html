@@ -9,6 +9,20 @@
       content="Three ways to harmonise passing tones when playing block chords at the piano: diminished, diatonic and chromatic, with playable examples."
     />
     <link rel="canonical" href="https://jazzjam.app/articles/block-chords/" />
+
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init()
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       body {
         max-width: 46rem;
@@ -29,6 +43,26 @@
       .lede { font-size: 1.2rem; color: #333; }
       .passing { color: #2563eb; font-weight: 600; }
 
+      /* Side notes: asides to the main explanation. The label is CSS-only, so it is not narrated. */
+      .note {
+        margin: 1.5rem 0;
+        padding: 0.9rem 1.1rem;
+        border-left: 4px solid #4a90c4;
+        border-radius: 0 6px 6px 0;
+        background: #f1f6fb;
+        font-size: 0.975rem;
+        color: #333;
+      }
+      .note::before {
+        content: "Note";
+        display: block;
+        margin-bottom: 0.25rem;
+        font: 600 0.75rem system-ui, sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #3670a0;
+      }
+
       /* Read-along mode */
       .score { position: relative; }
       .cursor {
@@ -41,7 +75,7 @@
       .reading { background: #fffbea; box-shadow: 0 0 0 0.5rem #fffbea; border-radius: 2px; }
       .w { border-radius: 3px; }
       .w.on { background: #ffe066; }
-      body.readalong article > :is(h1, h2, h3, p, figure) { cursor: pointer; }
+      body.readalong article > :is(h1, h2, h3, p, aside, figure) { cursor: pointer; }
       #listen {
         position: fixed; right: 1rem; bottom: 1rem; z-index: 1;
         font: 600 1rem system-ui, sans-serif; padding: 0.75rem 1.25rem;
@@ -49,13 +83,56 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); cursor: pointer;
       }
       #listen[hidden] { display: none; }
+
+      /* Header: a minimal bar in the footer's colours, linking home. */
+      .site-header {
+        background: #0a1420;
+        border-bottom: 1px solid rgba(74, 144, 196, 0.1);
+        width: 100vw;
+        margin: -2rem 0 2.5rem calc(50% - 50vw);
+      }
+      .site-header .container {
+        max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem;
+      }
+      .site-header a {
+        font: 600 1.25rem "Outfit", sans-serif;
+        color: #ffffff;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+      }
+      .site-header a:hover { color: #c4d8ea; }
+
+      /* Footer: same as the home page (src/index.html), stretched to the full viewport
+         width since this page's body is a narrow reading column. */
+      footer {
+        background: #0a1420;
+        border-top: 1px solid rgba(74, 144, 196, 0.1);
+        padding: 2rem 0;
+        text-align: center;
+        width: 100vw;
+        margin: 4rem 0 -4rem calc(50% - 50vw);
+      }
+      footer .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+      footer a {
+        font-family: "Outfit", sans-serif;
+        color: #6a8faa;
+        text-decoration: none;
+        margin: 0 1rem;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+      footer a:hover { color: #c4d8ea; text-decoration: underline; }
+      html { overflow-x: hidden; }
     </style>
   </head>
   <body>
+    <header class="site-header">
+      <div class="container"><a href="/">JazzJam</a></div>
+    </header>
     <article>
       <h1>Piano Block Chords</h1>
       <p class="lede">
-        In this article we’ll learn three different harmonisation techniques for playing block
+        In this lesson we’ll learn three different harmonisation techniques for playing block
         chords at the piano.
       </p>
       <p>
@@ -78,19 +155,25 @@
       <p>
         When the melody lands on a chord tone, that's all there is to it. The interesting question
         is what to do with the notes in between: the passing tones that don't belong to the chord.
-        Each technique below is a different answer to that question. All the examples are in C.
+        Each of the techniques we’ll look at next is a different answer to that question. All the examples are in C.
       </p>
 
       <h2>Diminished</h2>
       <p>Harmonise passing tones as diminished chords.</p>
       <p>
-        Between the notes of C6 (C–E–G–A) sit D, F, G♯ and B, and together those four notes spell a
-        diminished seventh chord: B°7. So whenever the melody hits a passing tone, voice it as B°7
+        Between the notes of C6 (C–E–G–A) sit D, F, G♯ (or A♭) and B, and together those four notes
+        spell a diminished seventh chord. For this explanation we'll use B°7. So whenever the melody
+        hits a passing tone, voice it as B°7
         with the melody on top; when it returns to a chord tone, go back to C6. Played up the scale,
         the two chords alternate on every step, and the diminished chord pulls back into C6 the same
         way G7♭9 resolves to the tonic. This pairing of a sixth chord with its diminished neighbour
         is the heart of Barry Harris's sixth-diminished scale.
       </p>
+      <aside class="note">
+        A diminished seventh is built from equal minor thirds, so the same four notes can be named as
+        four different diminished chords: B°7, D°7, F°7 or A♭°7, depending on which note you treat
+        as the root.
+      </aside>
       <figure>
         <img src="/assets/articles/block-chords/diminished.svg" alt="C6 and B diminished seventh block chords alternating up the C scale" />
         <audio controls preload="none" src="/assets/articles/block-chords/diminished.mp3"></audio>
@@ -109,8 +192,7 @@
       <h3>Rootless major ninth</h3>
       <p>
         Drop the root from Cmaj9 and you're left with E–G–B–D. That shape contains both D and B, so
-        use it for those two passing tones: on D the block reads D–E–G–B–D, and on B it reads
-        B–D–E–G–B, with the melody doubled in the left hand as usual. Because the rootless voicing
+        use it for those two passing tones: on D the block is voiced D–E–G–B–D, and on B it is voiced B–D–E–G–B, with the melody doubled in the left hand as usual. Because the rootless voicing
         shares E and G with C6, the passing chords barely move away from home.
       </p>
       <figure>
@@ -157,6 +239,13 @@
         <figcaption>A♭m7 approaching Am7, and B6 approaching C6, each from a half step below. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
     </article>
+    <footer>
+      <div class="container">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="/license">License</a>
+      </div>
+    </footer>
     <button id="listen" type="button" hidden>▶ Listen</button>
 
     <script>
@@ -167,8 +256,8 @@
       (async () => {
         const BASE = "/assets/articles/block-chords/";
         const article = document.querySelector("article");
-        const blocks = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p)")];
-        const items = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, figure)")];
+        const blocks = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside)")];
+        const items = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside, figure)")];
 
         // Every example gets a chord cursor and lights up the sounding notes, whether played
         // by read-along or by hand. The SVG is inlined so its noteheads can be styled.

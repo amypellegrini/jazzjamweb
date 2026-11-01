@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Piano Block Chords - Jazz Jam Studio</title>
+    <meta
+      name="description"
+      content="Three ways to harmonise passing tones when playing block chords at the piano: diminished, diatonic and chromatic, with playable examples."
+    />
+    <link rel="canonical" href="https://jazzjam.app/articles/block-chords/" />
+    <style>
+      body {
+        max-width: 46rem;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+        font: 1.0625rem/1.65 Georgia, "Times New Roman", serif;
+        color: #1d1d1f;
+        background: #fff;
+      }
+      h1, h2, h3 { font-family: system-ui, -apple-system, sans-serif; line-height: 1.25; }
+      h1 { font-size: 2.25rem; margin-bottom: 0.5rem; }
+      h2 { margin-top: 2.5rem; }
+      h3 { margin-top: 1.75rem; color: #444; }
+      figure { margin: 1.5rem 0; }
+      figure img { width: 100%; height: auto; display: block; }
+      figure audio { width: 100%; margin-top: 0.5rem; }
+      figcaption { font: 0.875rem/1.4 system-ui, sans-serif; color: #666; margin-top: 0.25rem; }
+      .lede { font-size: 1.2rem; color: #333; }
+
+      /* Read-along mode */
+      .score { position: relative; }
+      .cursor {
+        position: absolute; top: 4%; bottom: 4%; width: 2.6%;
+        transform: translateX(-50%); border-radius: 4px;
+        background: rgba(255, 196, 0, 0.35); pointer-events: none; display: none;
+      }
+      .reading { background: #fffbea; box-shadow: 0 0 0 0.5rem #fffbea; border-radius: 2px; }
+      .w { border-radius: 3px; }
+      .w.on { background: #ffe066; }
+      body.readalong article > :is(h1, h2, h3, p, figure) { cursor: pointer; }
+      #listen {
+        position: fixed; right: 1rem; bottom: 1rem; z-index: 1;
+        font: 600 1rem system-ui, sans-serif; padding: 0.75rem 1.25rem;
+        border: 0; border-radius: 999px; background: #1d1d1f; color: #fff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); cursor: pointer;
+      }
+      #listen[hidden] { display: none; }
+    </style>
+  </head>
+  <body>
+    <article>
+      <h1>Piano Block Chords</h1>
+      <p class="lede">
+        In this article we’ll learn three different harmonisation techniques for playing block
+        chords at the piano.
+      </p>
+      <p>
+        Block chords, also called locked hands, harmonise a melody so that every note gets its own
+        chord, moving in parallel with the tune. The sound is closely associated with George
+        Shearing, Red Garland and Oscar Peterson, and it's one of the quickest ways to make a melody
+        sound like a full horn section at the piano.
+      </p>
+      <p>
+        The basic shape is simple: play the melody note on top with the right hand, fill in three
+        chord tones directly beneath it in close position, and double the melody an octave lower
+        with the left hand. Both hands move together as one block, which is where the name comes
+        from.
+      </p>
+      <p>
+        When the melody lands on a chord tone, that's all there is to it. The interesting question
+        is what to do with the notes in between: the passing tones that don't belong to the chord.
+        Each technique below is a different answer to that question. All the examples are in C.
+      </p>
+
+      <h2>Diminished</h2>
+      <p>Harmonise passing tones as diminished chords.</p>
+      <p>
+        Between the notes of C6 (C–E–G–A) sit D, F, G♯ and B, and together those four notes spell a
+        diminished seventh chord: B°7. So whenever the melody hits a passing tone, voice it as B°7
+        with the melody on top; when it returns to a chord tone, go back to C6. Played up the scale,
+        the two chords alternate on every step, and the diminished chord pulls back into C6 the same
+        way G7♭9 resolves to the tonic. This pairing of a sixth chord with its diminished neighbour
+        is the heart of Barry Harris's sixth-diminished scale.
+      </p>
+      <figure>
+        <img src="/assets/articles/block-chords/diminished.svg" alt="C6 and B diminished seventh block chords alternating up the C scale" />
+        <audio controls preload="none" src="/assets/articles/block-chords/diminished.mp3"></audio>
+        <figcaption>C6 and B°7 alternating up the scale.</figcaption>
+      </figure>
+
+      <h2>Diatonic</h2>
+      <p>Harmonise passing tones as diatonic chords.</p>
+      <p>
+        Instead of a diminished chord, you can stay inside the key and harmonise passing tones with
+        another diatonic chord. The result is smoother and less dramatic than the diminished
+        approach. The chord tones C, E, G and A are still harmonised as C6, each in its own
+        position; only the passing tones change.
+      </p>
+
+      <h3>Rootless major ninth</h3>
+      <p>
+        Drop the root from Cmaj9 and you're left with E–G–B–D. That shape contains both D and B, so
+        use it for those two passing tones: on D the block reads D–E–G–B–D, and on B it reads
+        B–D–E–G–B, with the melody doubled in the left hand as usual. Because the rootless voicing
+        shares E and G with C6, the passing chords barely move away from home.
+      </p>
+      <figure>
+        <img src="/assets/articles/block-chords/rootless-major-ninth.svg" alt="A C major melody from C to C harmonised with C6 on chord tones and rootless C major ninth on D and B" />
+        <audio controls preload="none" src="/assets/articles/block-chords/rootless-major-ninth.mp3"></audio>
+        <figcaption>C6 on the chord tones, rootless Cmaj9 on D and B.</figcaption>
+      </figure>
+
+      <h3>Minor seventh or major sixth</h3>
+      <p>
+        The fourth degree is the exception. In C that's F, which the rootless Cmaj9 shape doesn't
+        contain, so it gets its own voicing: F–A–C–D–F, with F on top and doubled in the left hand.
+        You can read those notes as an inverted Dm7 or as F6, depending on the harmonic context and
+        how you prefer to think about it; the result under your hands is the same.
+      </p>
+      <p>
+        With that last piece in place, every note of the C major scale has a block chord: C6 on the
+        chord tones, rootless Cmaj9 on D and B, and Dm7/F6 on F. Keep the A♭ from the diminished
+        technique as a passing tone between G and A: harmonised as B°7, it holds the shape of the
+        scale in place, just like a bebop scale, so the chord tones keep landing on the beat.
+      </p>
+      <figure>
+        <img src="/assets/articles/block-chords/minor-seventh.svg" alt="A C bebop scale from C to C harmonised with C6, rootless C major ninth, F6 and B diminished seventh block chords" />
+        <audio controls preload="none" src="/assets/articles/block-chords/minor-seventh.mp3"></audio>
+        <figcaption>The full scale: C6, rootless Cmaj9, Dm7/F6 on the fourth degree, and B°7 on A♭.</figcaption>
+      </figure>
+
+      <h2>Chromatic</h2>
+      <p>
+        Harmonise the passing tone with the target chord's own voicing, shifted by a half step.
+        This technique only works when approaching the target note chromatically.
+      </p>
+      <p>
+        Take the same bebop scale and treat A♭ and B as passing tones that approach their targets
+        chromatically, always ascending. With A in the melody, the C6 voicing (C–E–G–A) can just as
+        well be read as Am7 (C6 over A). A♭ leads to A, so it takes that voicing a half step lower:
+        C♭–E♭–G♭–A♭, an A♭m7. B leads to C, so it takes the C6 voicing (E–G–A–C) a half step lower:
+        D♯–F♯–G♯–B, a B6. Each approach block then slides up into place, A♭m7 into Am7 and B6 into
+        C6.
+      </p>
+      <figure>
+        <img src="/assets/articles/block-chords/chromatic.svg" alt="A C bebop scale where A flat is harmonised as A flat minor seventh approaching A minor seventh, and B as B6 approaching C6" />
+        <audio controls preload="none" src="/assets/articles/block-chords/chromatic.mp3"></audio>
+        <figcaption>A♭m7 approaching Am7, and B6 approaching C6, each from a half step below.</figcaption>
+      </figure>
+    </article>
+    <button id="listen" type="button" hidden>▶ Listen</button>
+
+    <script>
+      // Read-along: narrates the article (pre-recorded with Kokoro TTS, see
+      // scripts/narration/narrate.py), highlights each word as it is spoken, and plays each
+      // example in turn with a cursor following the chords (timings from
+      // scripts/sheet-music/block-chords.py).
+      (async () => {
+        const BASE = "/assets/articles/block-chords/";
+        const article = document.querySelector("article");
+        const blocks = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p)")];
+        const items = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, figure)")];
+
+        // Every example gets a chord cursor, whether played by read-along or by hand.
+        for (const fig of article.querySelectorAll("figure")) {
+          const img = fig.querySelector("img"), audio = fig.querySelector("audio");
+          const wrap = document.createElement("div");
+          wrap.className = "score";
+          img.replaceWith(wrap);
+          wrap.append(img);
+          const cursor = document.createElement("div");
+          cursor.className = "cursor";
+          wrap.append(cursor);
+          let events = [];
+          fetch(img.getAttribute("src").replace(/\.svg$/, ".cursor.json"))
+            .then((r) => r.json()).then((e) => (events = e)).catch(() => {});
+          const tick = () => {
+            const t = audio.currentTime;
+            const ev = events.find((e) => t >= e.t && t < e.end);
+            cursor.style.display = ev && !audio.paused ? "block" : "none";
+            if (ev) cursor.style.left = ev.x + "%";
+            if (!audio.paused) requestAnimationFrame(tick);
+          };
+          audio.addEventListener("play", () => requestAnimationFrame(tick));
+          audio.addEventListener("pause", tick);
+          audio.addEventListener("ended", () => (cursor.style.display = "none"));
+        }
+
+        let manifest;
+        try {
+          manifest = await (await fetch(BASE + "narration/narration.json")).json();
+        } catch {
+          return; // no narration: the page still works as a plain article
+        }
+        if (manifest.length !== blocks.length) return;
+
+        // Wrap each displayed word in a span, matching the narration's word list.
+        blocks.forEach((el, i) => {
+          const words = el.textContent.trim().split(/\s+/);
+          if (words.length !== manifest[i].words.length) return (manifest[i] = null);
+          el.textContent = "";
+          words.forEach((w, j) => {
+            if (j) el.append(" ");
+            const s = document.createElement("span");
+            s.className = "w";
+            s.textContent = w;
+            el.append(s);
+          });
+        });
+
+        const button = document.getElementById("listen");
+        const voice = new Audio();
+        let current = -1, playing = false, media = null, raf = 0;
+
+        const clear = () => {
+          cancelAnimationFrame(raf);
+          document.querySelectorAll(".reading").forEach((e) => e.classList.remove("reading"));
+          document.querySelectorAll(".w.on").forEach((e) => e.classList.remove("on"));
+        };
+        const setButton = () => (button.textContent = playing ? "❚❚ Pause" : "▶ Listen");
+
+        const follow = (el, timings) => {
+          const spans = el.querySelectorAll(".w");
+          const step = () => {
+            const t = voice.currentTime;
+            timings.forEach(([s, e], j) => spans[j].classList.toggle("on", t >= s && t < e));
+            if (!voice.paused) raf = requestAnimationFrame(step);
+          };
+          raf = requestAnimationFrame(step);
+        };
+
+        const playItem = (i) => {
+          clear();
+          if (media) media.onended = null;
+          voice.pause();
+          items.forEach((it) => it.querySelector("audio")?.pause());
+          current = i;
+          if (i >= items.length) return stop();
+          const el = items[i];
+          el.classList.add("reading");
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (el.tagName === "FIGURE") {
+            media = el.querySelector("audio");
+            media.currentTime = 0;
+          } else {
+            const n = blocks.indexOf(el);
+            if (!manifest[n]) return playItem(i + 1); // text changed since narration was recorded
+            media = voice;
+            voice.src = BASE + `narration/${n}.mp3`;
+            voice.onplay = () => follow(el, manifest[n].words);
+          }
+          media.onended = () => playItem(i + 1);
+          media.play();
+        };
+
+        const stop = () => {
+          clear();
+          playing = false;
+          current = -1;
+          document.body.classList.remove("readalong");
+          setButton();
+        };
+
+        button.addEventListener("click", () => {
+          if (!playing && current < 0) {
+            document.body.classList.add("readalong");
+            playing = true;
+            playItem(0);
+          } else if (playing) {
+            media?.pause();
+            playing = false;
+          } else {
+            media?.play();
+            playing = true;
+          }
+          setButton();
+        });
+
+        // While read-along is on, clicking any block jumps there.
+        article.addEventListener("click", (e) => {
+          if (!document.body.classList.contains("readalong")) return;
+          if (e.target.closest("audio")) return;
+          const i = items.findIndex((it) => it.contains(e.target));
+          if (i < 0) return;
+          playing = true;
+          setButton();
+          playItem(i);
+        });
+
+        button.hidden = false;
+      })();
+    </script>
+  </body>
+</html>

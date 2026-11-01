@@ -1,0 +1,27 @@
+[
+  {
+    "file": "shearing.jpg",
+    "name": "George Shearing",
+    "source": "https://commons.wikimedia.org/wiki/File:George_Shearing_1959.JPG",
+    "licence": "Public domain",
+    "author": "Associated Booking Corporation-management/photographer-James Kriegsmann, New York",
+    "credit_required": false
+  },
+  {
+    "file": "garland.jpg",
+    "name": "Red Garland",
+    "source": "https://commons.wikimedia.org/wiki/File:Red_Garland_9A.jpg",
+    "licence": "CC BY-SA 3.0",
+    "author": "Brian McMillen",
+    "credit_required": true,
+    "note": "Red Garland at Keystone Korner, San Francisco, 1977 or 1978"
+  },
+  {
+    "file": "peterson.jpg",
+    "name": "Oscar Peterson",
+    "source": "https://commons.wikimedia.org/wiki/File:Oscar_Peterson_-_1950.JPG",
+    "licence": "Public domain",
+    "author": "Unknown author",
+    "credit_required": false
+  }
+]

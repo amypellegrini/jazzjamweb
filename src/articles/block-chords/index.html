@@ -27,6 +27,7 @@
       figure audio { width: 100%; margin-top: 0.5rem; }
       figcaption { font: 0.875rem/1.4 system-ui, sans-serif; color: #666; margin-top: 0.25rem; }
       .lede { font-size: 1.2rem; color: #333; }
+      .passing { color: #2563eb; font-weight: 600; }
 
       /* Read-along mode */
       .score { position: relative; }
@@ -35,6 +36,8 @@
         transform: translateX(-50%); border-radius: 4px;
         background: rgba(255, 196, 0, 0.35); pointer-events: none; display: none;
       }
+      .score svg { width: 100%; height: auto; display: block; }
+      .score svg path.Note.sounding { fill: #e8590c; }
       .reading { background: #fffbea; box-shadow: 0 0 0 0.5rem #fffbea; border-radius: 2px; }
       .w { border-radius: 3px; }
       .w.on { background: #ffe066; }
@@ -86,7 +89,7 @@
       <figure>
         <img src="/assets/articles/block-chords/diminished.svg" alt="C6 and B diminished seventh block chords alternating up the C scale" />
         <audio controls preload="none" src="/assets/articles/block-chords/diminished.mp3"></audio>
-        <figcaption>C6 and B°7 alternating up the scale.</figcaption>
+        <figcaption>C6 and B°7 alternating up the scale. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
 
       <h2>Diatonic</h2>
@@ -108,7 +111,7 @@
       <figure>
         <img src="/assets/articles/block-chords/rootless-major-ninth.svg" alt="A C major melody from C to C harmonised with C6 on chord tones and rootless C major ninth on D and B" />
         <audio controls preload="none" src="/assets/articles/block-chords/rootless-major-ninth.mp3"></audio>
-        <figcaption>C6 on the chord tones, rootless Cmaj9 on D and B.</figcaption>
+        <figcaption>C6 on the chord tones, rootless Cmaj9 on D and B. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
 
       <h3>Minor seventh or major sixth</h3>
@@ -127,7 +130,7 @@
       <figure>
         <img src="/assets/articles/block-chords/minor-seventh.svg" alt="A C bebop scale from C to C harmonised with C6, rootless C major ninth, F6 and B diminished seventh block chords" />
         <audio controls preload="none" src="/assets/articles/block-chords/minor-seventh.mp3"></audio>
-        <figcaption>The full scale: C6, rootless Cmaj9, Dm7/F6 on the fourth degree, and B°7 on A♭.</figcaption>
+        <figcaption>The full scale: C6, rootless Cmaj9, Dm7/F6 on the fourth degree, and B°7 on A♭. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
 
       <h2>Chromatic</h2>
@@ -146,7 +149,7 @@
       <figure>
         <img src="/assets/articles/block-chords/chromatic.svg" alt="A C bebop scale where A flat is harmonised as A flat minor seventh approaching A minor seventh, and B as B6 approaching C6" />
         <audio controls preload="none" src="/assets/articles/block-chords/chromatic.mp3"></audio>
-        <figcaption>A♭m7 approaching Am7, and B6 approaching C6, each from a half step below.</figcaption>
+        <figcaption>A♭m7 approaching Am7, and B6 approaching C6, each from a half step below. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
     </article>
     <button id="listen" type="button" hidden>▶ Listen</button>
@@ -162,7 +165,8 @@
         const blocks = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p)")];
         const items = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, figure)")];
 
-        // Every example gets a chord cursor, whether played by read-along or by hand.
+        // Every example gets a chord cursor and lights up the sounding notes, whether played
+        // by read-along or by hand. The SVG is inlined so its noteheads can be styled.
         for (const fig of article.querySelectorAll("figure")) {
           const img = fig.querySelector("img"), audio = fig.querySelector("audio");
           const wrap = document.createElement("div");
@@ -172,19 +176,53 @@
           const cursor = document.createElement("div");
           cursor.className = "cursor";
           wrap.append(cursor);
-          let events = [];
-          fetch(img.getAttribute("src").replace(/\.svg$/, ".cursor.json"))
-            .then((r) => r.json()).then((e) => (events = e)).catch(() => {});
+          let events = [], heads = []; // heads[i] = noteheads of chord i
+          const src = img.getAttribute("src");
+          Promise.all([
+            fetch(src.replace(/\.svg$/, ".cursor.json")).then((r) => r.json()),
+            fetch(src).then((r) => r.text()),
+          ]).then(([ev, text]) => {
+            events = ev;
+            const svg = new DOMParser().parseFromString(text, "image/svg+xml").documentElement;
+            svg.removeAttribute("width");
+            svg.removeAttribute("height");
+            svg.setAttribute("role", "img");
+            svg.setAttribute("aria-label", img.alt);
+            img.replaceWith(svg);
+            // Assign each notehead to the chord whose cursor x is nearest (paths start at the
+            // head's left edge; heads are ~107 units wide, chords several hundred apart).
+            const width = svg.viewBox.baseVal.width;
+            heads = events.map(() => []);
+            for (const head of svg.querySelectorAll("path.Note")) {
+              const x = ((parseFloat(head.getAttribute("d").slice(1)) + 54) / width) * 100;
+              let best = 0;
+              events.forEach((e, i) => {
+                if (Math.abs(e.x - x) < Math.abs(events[best].x - x)) best = i;
+              });
+              heads[best].push(head);
+            }
+          }).catch(() => {}); // keep the plain <img> if anything fails
+          let lit = -1;
+          const light = (i) => {
+            if (i === lit) return;
+            heads[lit]?.forEach((h) => h.classList.remove("sounding"));
+            heads[i]?.forEach((h) => h.classList.add("sounding"));
+            lit = i;
+          };
           const tick = () => {
             const t = audio.currentTime;
-            const ev = events.find((e) => t >= e.t && t < e.end);
-            cursor.style.display = ev && !audio.paused ? "block" : "none";
-            if (ev) cursor.style.left = ev.x + "%";
+            const i = audio.paused ? -1 : events.findIndex((e) => t >= e.t && t < e.end);
+            cursor.style.display = i >= 0 ? "block" : "none";
+            if (i >= 0) cursor.style.left = events[i].x + "%";
+            light(i);
             if (!audio.paused) requestAnimationFrame(tick);
           };
           audio.addEventListener("play", () => requestAnimationFrame(tick));
           audio.addEventListener("pause", tick);
-          audio.addEventListener("ended", () => (cursor.style.display = "none"));
+          audio.addEventListener("ended", () => {
+            cursor.style.display = "none";
+            light(-1);
+          });
         }
 
         let manifest;

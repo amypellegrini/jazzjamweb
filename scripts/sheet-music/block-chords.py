@@ -45,7 +45,6 @@ def label(opts):
     # Below the left-hand staff: clear of chord symbols, so the steps line up on one baseline.
     return (f'<direction placement="below"><direction-type><words color="{color}" font-weight="bold">'
             f'{words}</words></direction-type><staff>2</staff></direction>')
-SYSTEM_BARS = 2  # the exercises break onto a new line every two bars
 def build(title, measures, lines=False):
     # measures: list of list of (dur, symbol, rh_notes(top first), lh_notes[, overrides])
     # overrides: {'rh': colour or per-note colours, 'lh': colour, 'text': (words, colour)}
@@ -55,7 +54,7 @@ def build(title, measures, lines=False):
         rh=''.join(label(o(c))+harmony(c[1])+notes(c[2],c[0],1,1,o(c).get('rh',default_color(c[2]))) for c in meas)
         tot=sum(c[0] for c in meas)
         lh=''.join(notes(c[3],c[0],2,5,o(c).get('lh',default_color(c[2]))) for c in meas)
-        brk='<print new-system="yes"/>' if lines and mi > 1 and (mi - 1) % SYSTEM_BARS == 0 else ''
+        brk='<print new-system="yes"/>' if lines and mi == 2 else ''  # exercises: the way up on its own line, then down + the final chord
         bar='<barline location="right"><bar-style>light-heavy</bar-style></barline>' if mi==len(measures) else ''
         body.append(f'<measure number="{mi}">{brk}{attrs}{tempo if mi==1 else ""}{rh}<backup><duration>{tot}</duration></backup>{lh}{bar}</measure>')
     return f'''<?xml version="1.0" encoding="UTF-8"?>
@@ -150,7 +149,9 @@ E['chromatic-descending']=("Chromatic, descending", bars_of(run(CHROM_DOWN, 1)) 
 
 # Exercises: each technique up the C bebop scale and back down, one block per eighth note.
 def up_down(up, down):
-    return bars_of(run(up + down, 1)) + [[blk(8,'C6',V['C'])]]
+    """Plain black, and only the opening C6 named: the voicings are explained in the text."""
+    blocks = [(d, sym if i == 0 else None, rh, lh, PLAIN) for i, (d, sym, rh, lh, *_) in enumerate(run(up + down, 1))]
+    return bars_of(blocks) + [[(8, None, V['C'], [oct_down(V['C'][0])], PLAIN)]]
 DIM_UP = [('C','C6'),('D.dim','Bdim7'),('E','C6'),('F.dim','Bdim7'),('G','C6'),('Ab.dim','Bdim7'),('A','C6'),('B.dim','Bdim7')]
 DIA_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','Bdim7'),('A','C6'),('B.maj9','Cmaj9')]
 CHR_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.m7','Abm7'),('A','Am7'),('B.6','B6')]

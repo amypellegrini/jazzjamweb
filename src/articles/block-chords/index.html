@@ -70,6 +70,49 @@
         color: #3670a0;
       }
 
+      /* Exercises: collapsible practice tasks, set apart from the explanation in a warm tint. */
+      .exercise {
+        margin: 1.75rem 0;
+        border: 1px solid #e6c98f;
+        border-radius: 8px;
+        background: #fdf6e7;
+      }
+      .exercise summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.85rem 1.1rem;
+        font: 600 1rem/1.3 system-ui, sans-serif;
+        color: #5b3d07;
+      }
+      .exercise summary::-webkit-details-marker { display: none; }
+      .exercise summary::after {
+        content: "";
+        margin-left: auto;
+        width: 0.55rem;
+        height: 0.55rem;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+        transition: transform 0.15s;
+      }
+      .exercise[open] summary::after { transform: rotate(-135deg); }
+      .exercise summary:focus-visible { outline: 2px solid #b7791f; outline-offset: 2px; border-radius: 8px; }
+      .exercise-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: #b7791f;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+      }
+      .exercise-body { padding: 0 1.1rem 1rem; }
+      .exercise-body p:first-child { margin-top: 0; }
+      .exercise figure { background: #fff; border-radius: 6px; padding: 0.5rem; }
+
       /* Read-along mode */
       .score { position: relative; }
       .cursor {
@@ -139,8 +182,8 @@
     <article>
       <h1>Piano Block Chords</h1>
       <p class="lede">
-        In this lesson we’ll learn three different harmonisation techniques for playing block
-        chords at the piano.
+        In this lesson we’ll learn different harmonisation techniques for playing block chords
+        at the piano.
       </p>
       <p>
         Block chords, also called locked hands, harmonise a melody so that every note gets its own
@@ -159,6 +202,26 @@
         <audio controls preload="none" src="/assets/articles/block-chords/basic-shape.mp3"></audio>
         <figcaption>Building the block on C: <strong style="color: #c2255c">the melody</strong>, then <strong style="color: #2f9e44">three chord tones beneath it</strong>, then <strong style="color: #7048e8">the melody doubled in the left hand</strong>.</figcaption>
       </figure>
+      <details class="exercise">
+        <summary><span class="exercise-label">Exercise</span> Diatonic block chords in C</summary>
+        <div class="exercise-body">
+          <p>
+            Play a block chord on every chord of the C major scale, one chord per beat: C6, Dm7,
+            Em7, F6, G7, Am7, B°7 and back to C6. In each block the melody is the chord's root,
+            doubled an octave lower in the left hand, so every chord sits in root position from the
+            left hand up.
+          </p>
+          <p>
+            The goal is to get familiar with the block chord voicing of every chord the major scale
+            gives you, so you can find each shape without thinking.
+          </p>
+          <figure>
+            <img src="/assets/articles/block-chords/diatonic-chords.svg" alt="Block chords on the diatonic chords of C major in root position: C6, Dm7, Em7, F6, G7, Am7, B diminished 7, C6, one per beat" />
+            <audio controls preload="none" src="/assets/articles/block-chords/diatonic-chords.mp3"></audio>
+            <figcaption>One block per beat, up the C major scale.</figcaption>
+          </figure>
+        </div>
+      </details>
       <p>
         When the melody lands on a chord tone, that's all there is to it. The interesting question
         is what to do with the notes in between: the passing tones that don't belong to the chord.
@@ -244,6 +307,28 @@
         <img src="/assets/articles/block-chords/chromatic.svg" alt="A C bebop scale where A flat is harmonised as A flat minor seventh approaching A minor seventh, and B as B6 approaching C6" />
         <audio controls preload="none" src="/assets/articles/block-chords/chromatic.mp3"></audio>
         <figcaption>A♭m7 approaching Am7, and B6 approaching C6, each from a half step below. <span class="passing">Passing tones in blue.</span></figcaption>
+      </figure>
+
+      <h2>2 5 1 passing tones</h2>
+      <p>Harmonise passing tones with the chords of a major 2 5 1.</p>
+      <p>
+        In C, those chords are Dm7, G7 and C6. The chord tones C, E and G stay on C6, the 1 chord.
+        The second, fourth and seventh degrees of the scale, D, F and B, all belong to G7, the
+        dominant built on the fifth degree, so each one is harmonised as G7 in the inversion that
+        puts it on top: on D the block is D–F–G–B–D, on F it is F–G–B–D–F, and on B it is
+        B–D–F–G–B. The sixth degree, A, is harmonised as Dm7, the 2 chord, inverted the same way:
+        A–C–D–F–A.
+      </p>
+      <p>
+        Keep the A♭ between G and A as a diminished passing tone, harmonised as B°7 just like in
+        Barry Harris's sixth-diminished scale, so the scale keeps its bebop shape and the chord
+        tones land on the beat. Played up the scale, every passing tone becomes a small cadence:
+        G7, B°7 and Dm7 lead back to C6 each time the melody lands on a chord tone.
+      </p>
+      <figure>
+        <img src="/assets/articles/block-chords/two-five-one.svg" alt="A C bebop scale harmonised with C6 on the chord tones, G7 on D, F and B, B diminished seventh on A flat, and Dm7 on A" />
+        <audio controls preload="none" src="/assets/articles/block-chords/two-five-one.mp3"></audio>
+        <figcaption>C6 on C, E and G; G7 on D, F and B; B°7 on A♭; Dm7 on A. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
     </article>
     <footer>

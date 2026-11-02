@@ -28,7 +28,7 @@ def notes(chord,dur,staff,voice,color=None):
 def harmony(sym):
     if not sym: return ''
     m=re.fullmatch(r'([A-G])(b|#)?(.*)',sym); r,a,k=m.groups()
-    kind={'6':('major-sixth','6'),'dim7':('diminished-seventh','o7'),'maj9':('major-ninth','maj9'),'m7':('minor-seventh','m7'),'':('major','')}[k]
+    kind={'6':('major-sixth','6'),'dim7':('diminished-seventh','o7'),'maj9':('major-ninth','maj9'),'m7':('minor-seventh','m7'),'7':('dominant','7'),'maj7':('major-seventh','maj7'),'m7b5':('half-diminished','m7b5'),'':('major','')}[k]
     alt={'b':-1,'#':1,None:0}[a]
     return f"<harmony><root><root-step>{r}</root-step>{f'<root-alter>{alt}</root-alter>' if alt else ''}</root><kind text=\"{kind[1]}\">{kind[0]}</kind></harmony>"
 def o(c): return c[4] if len(c) > 4 else {}  # optional per-chord overrides
@@ -68,6 +68,16 @@ E['basic-shape']=("The basic shape",[
  [(8,None,['C5','A4','G4','E4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD], 'text':('2. Chord tones below', CHORD)})],
  [(8,None,['C5','A4','G4','E4'],['C4'], {'rh':[MELODY,CHORD,CHORD,CHORD], 'lh':DOUBLE,
    'text':('3. Double in left hand', DOUBLE)})]])
+# Exercise: every chord of C major as a block with its root as the melody, doubled an octave lower
+# in the left hand, so each block reads in root position from the left hand up; one per beat. Plain black: here
+# the point is the chord shapes, not passing tones.
+PLAIN = {'rh': [None] * 4, 'lh': None}
+def ex_blk(sym, rh): return (2, sym, rh, [oct_down(rh[0])], PLAIN)
+E['diatonic-chords']=("Diatonic block chords",[
+ [ex_blk('C6',   ['C5','A4','G4','E4']), ex_blk('Dm7',  ['D5','C5','A4','F4']),
+  ex_blk('Em7',  ['E5','D5','B4','G4']), ex_blk('F6',   ['F5','D5','C5','A4'])],
+ [ex_blk('G7',   ['G5','F5','D5','B4']), ex_blk('Am7',  ['A5','G5','E5','C5']),
+  ex_blk('Bdim7',['B5','Ab5','F5','D5']), ex_blk('C6',  ['C6','A5','G5','E5'])]])
 E['diminished']=("Diminished",[[
  blk(1,'C6',['C5','A4','G4','E4']), blk(1,'Bdim7',['D5','B4','Ab4','F4']),
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'Bdim7',['F5','D5','B4','Ab4']),
@@ -90,6 +100,18 @@ E['chromatic']=("Chromatic",[[
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'F6',['F5','D5','C5','A4']),
  blk(1,'C6',['G5','E5','C5','A4']), blk(1,'Abm7',['Ab5','Gb5','Eb5','Cb5']),
  blk(1,'Am7',['A5','G5','E5','C5']), blk(1,'B6',['B5','G#5','F#5','D#5'])],
+ [blk(8,'C6',['C6','A5','G5','E5'])]])
+
+# 2 5 1: chord tones C, E, G on C6 (the I); the 2nd, 4th and 7th degrees (D, F, B) on G7, the
+# dominant of the 5th degree; the 6th degree (A) on Dm7, the ii. Each inverted to put the melody on
+# top. Here A is a passing tone too, so its Dm7 block is marked like the others. The bebop
+# scale's A-flat stays a diminished passing tone (B°7), as in the sixth-diminished scale.
+def p_blk(d, sym, rh): return blk(d, sym, rh) + ({'rh': [PASSING_COLOR] * 4, 'lh': PASSING_COLOR},)
+E['two-five-one']=("2 5 1 passing tones",[[
+ blk(1,'C6',['C5','A4','G4','E4']), blk(1,'G7',['D5','B4','G4','F4']),
+ blk(1,'C6',['E5','C5','A4','G4']), blk(1,'G7',['F5','D5','B4','G4']),
+ blk(1,'C6',['G5','E5','C5','A4']), blk(1,'Bdim7',['Ab5','F5','D5','B4']),
+ p_blk(1,'Dm7',['A5','F5','D5','C5']), blk(1,'G7',['B5','G5','F5','D5'])],
  [blk(8,'C6',['C6','A5','G5','E5'])]])
 
 # Render: MusicXML source -> SVG (notation) + MP3 (playback) with MuseScore 4's CLI.

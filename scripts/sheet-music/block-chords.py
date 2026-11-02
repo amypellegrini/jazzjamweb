@@ -64,8 +64,8 @@ E={}
 # Build-up steps, colour-coded: melody, then the chord tones beneath it, then the doubling.
 MELODY, CHORD, DOUBLE = '#C2255C', '#2F9E44', '#7048E8'
 E['basic-shape']=("The basic shape",[
- [(8,None,['C5'],[], {'rh':[MELODY], 'text':('1. Melody', MELODY)})],
- [(8,'C6',['C5','A4','G4','E4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD], 'text':('2. Chord tones below', CHORD)})],
+ [(8,'C6',['C5'],[], {'rh':[MELODY], 'text':('1. Melody', MELODY)})],
+ [(8,None,['C5','A4','G4','E4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD], 'text':('2. Chord tones below', CHORD)})],
  [(8,None,['C5','A4','G4','E4'],['C4'], {'rh':[MELODY,CHORD,CHORD,CHORD], 'lh':DOUBLE,
    'text':('3. Double in left hand', DOUBLE)})]])
 E['diminished']=("Diminished",[[

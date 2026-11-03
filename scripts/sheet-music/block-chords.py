@@ -176,9 +176,10 @@ GREEN = {'rh': CHORD, 'lh': CHORD}
 E['detail-c6-bdim7'] = ("C6 and B°7", [
  [chord(8, 'C6', ['A4','G4','E4','C4'], GREEN)], [chord(8, 'Bdim7', ['B4','Ab4','F4','D4'], BLUE)],
  [chord(1, None, [n], BLUE if is_passing([n]) else GREEN) for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']]])
+# Ascending from D4, each chord stacked from the next note up: D°7, F°7, A♭°7, B°7.
 E['detail-dim-names'] = ("Four names for one diminished chord", [
- [chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE), chord(4, 'Ddim7', ['B5','Ab5','F5','D5'], BLUE)],
- [chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE), chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE)]])
+ [chord(4, 'Ddim7', ['B4','Ab4','F4','D4'], BLUE), chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE)],
+ [chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE), chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
 E['detail-rootless'] = ("Rootless major ninth", [
  [chord(4, 'Cmaj9', ['D5','B4','G4','E4','C4'], {**BLACK, 'text': ('Cmaj9', '#555')}),
   chord(4, 'Cmaj9', ['D5','B4','G4','E4'], {**BLUE, 'text': ('without the root', PASSING_COLOR)})],

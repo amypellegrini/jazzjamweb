@@ -157,6 +157,11 @@ E['chromatic-descending']=("Chromatic, descending", bars_of(run(CHROM_DOWN, 1)) 
 # notes. Spelled chords (no melody) sit in the right hand alone; blocks keep the left-hand doubling.
 BLACK, BLUE = {'rh': None, 'lh': None}, {'rh': PASSING_COLOR, 'lh': PASSING_COLOR}
 def chord(d, sym, notes_, opts=BLACK): return (d, sym, notes_, [], opts)
+# Barry Harris's sixth-diminished scale (the C major bebop scale), melody only: in eighth notes the
+# C6 chord tones fall on the beat and the passing tones (blue) on the offbeats.
+E['sixth-diminished-scale'] = ("The sixth-diminished scale", [
+ [(1, 'C6' if n == 'C4' else None, [n], [], {'rh': PASSING_COLOR if is_passing([n]) else None})
+  for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']], [chord(8, None, ['C5'])]])  # from middle C
 E['detail-c6-bdim7'] = ("C6 and B°7", [
  [chord(8, 'C6', ['A4','G4','E4','C4'])], [chord(8, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
 E['detail-dim-names'] = ("Four names for one diminished chord", [
@@ -199,9 +204,9 @@ OUT = os.path.join(os.path.dirname(__file__), "..", "..", "src", "assets", "arti
 os.makedirs(OUT, exist_ok=True)
 def write_cursor(k, measures):
     """Chord timings (from the score durations) + x positions (from the SVG's right-hand
-    noteheads: every chord has a right hand, while the left hand may rest). A chord with a
-    second displaces one head sideways, so heads are clustered per chord and the cluster's
-    cursor sits at the cluster's centre."""
+    noteheads: every chord has a right hand, while the left hand may rest). The heads, in
+    reading order, are dealt out to the chords by each chord's note count; a chord with a
+    second displaces one head sideways, so the cursor sits at the centre of the chord's heads."""
     import json
     svg = open(os.path.join(OUT, f"{k}.svg")).read()
     width = float(re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', svg).group(1))
@@ -216,15 +221,16 @@ def write_cursor(k, measures):
     systems = [(staves[i][0], staves[i][-1], staves[i + per - 1][0], staves[i + per - 1][-1]) for i in range(0, len(staves), per)]
     def system_of(y):  # nearest system, so heads on ledger lines still count
         return min(range(len(systems)), key=lambda i: abs((systems[i][0] + systems[i][3]) / 2 - y))
-    xs = []  # (system, chord centre x)
+    rh = []  # (system, x) of every right-hand head, in reading order
     for i, (rh_top, rh_bot, lh_top, lh_bot) in enumerate(systems):
-        rh = sorted(x for x, y in heads if system_of(y) == i and (per == 1 or y < (rh_bot + lh_top) / 2))
-        cl = []
-        for x in rh:
-            if not cl or x - cl[-1][-1] > 200: cl.append([x])
-            else: cl[-1].append(x)
-        xs += [(i, (c[0] + c[-1]) / 2) for c in cl]  # centre of the chord, displaced heads included
+        rh += [(i, x) for x in sorted(x for x, y in heads if system_of(y) == i and (per == 1 or y < (rh_bot + lh_top) / 2))]
     chords = [c for meas in measures for c in meas]
+    assert len(rh) == sum(len(c[2]) for c in chords), (k, len(rh), sum(len(c[2]) for c in chords))
+    xs, n = [], 0  # (system, chord centre x)
+    for c in chords:
+        group = rh[n:n + len(c[2])]; n += len(c[2])
+        assert len({i for i, _ in group}) == 1, (k, 'chord split across lines')
+        xs.append((group[0][0], (group[0][1] + group[-1][1]) / 2))
     assert len(xs) == len(chords), (k, len(xs), len(chords))
     eighth = 60 / BPM / 2
     t, events = 0.0, []

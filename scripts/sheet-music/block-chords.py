@@ -38,25 +38,30 @@ def harmony(sym):
     return f"<harmony><root><root-step>{r}</root-step>{f'<root-alter>{alt}</root-alter>' if alt else ''}</root><kind text=\"{kind[1]}\">{kind[0]}</kind>{b}</harmony>"
 def o(c): return c[4] if len(c) > 4 else {}  # optional per-chord overrides
 def default_color(rh): return PASSING_COLOR if is_passing(rh) else None
-def label(opts):
+def label(opts, staff=2):
     """Optional coloured text under the score, e.g. a step in a build-up sequence."""
     if 'text' not in opts: return ''
     words, color = opts['text']
-    # Below the left-hand staff: clear of chord symbols, so the steps line up on one baseline.
+    # Below the lowest staff: clear of chord symbols, so the steps line up on one baseline.
     return (f'<direction placement="below"><direction-type><words color="{color}" font-weight="bold">'
-            f'{words}</words></direction-type><staff>2</staff></direction>')
+            f'{words}</words></direction-type><staff>{staff}</staff></direction>')
+def one_staff(measures): return all(not c[3] for meas in measures for c in meas)
 def build(title, measures, lines=False):
     # measures: list of list of (dur, symbol, rh_notes(top first), lh_notes[, overrides])
     # overrides: {'rh': colour or per-note colours, 'lh': colour, 'text': (words, colour)}
+    # Right hand only (no left-hand note anywhere): one treble staff instead of the grand staff.
+    single = one_staff(measures)
+    staves = '<clef><sign>G</sign><line>2</line></clef>' if single else '<staves>2</staves><clef number="1"><sign>G</sign><line>2</line></clef><clef number="2"><sign>G</sign><line>2</line></clef>'
     body=[]
     for mi,meas in enumerate(measures,1):
-        attrs = "<attributes><divisions>2</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time><staves>2</staves><clef number=\"1\"><sign>G</sign><line>2</line></clef><clef number=\"2\"><sign>G</sign><line>2</line></clef></attributes>" if mi==1 else ''
-        rh=''.join(label(o(c))+harmony(c[1])+notes(c[2],c[0],1,1,o(c).get('rh',default_color(c[2]))) for c in meas)
+        attrs = f"<attributes><divisions>2</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time>{staves}</attributes>" if mi==1 else ''
+        rh=''.join(label(o(c), 1 if single else 2)+harmony(c[1])+notes(c[2],c[0],1,1,o(c).get('rh',default_color(c[2]))) for c in meas)
         tot=sum(c[0] for c in meas)
         lh=''.join(notes(c[3],c[0],2,5,o(c).get('lh',default_color(c[2]))) for c in meas)
         brk='<print new-system="yes"/>' if lines and mi == 2 else ''  # exercises: the way up on its own line, then down + the final chord
         bar='<barline location="right"><bar-style>light-heavy</bar-style></barline>' if mi==len(measures) else ''
-        body.append(f'<measure number="{mi}">{brk}{attrs}{tempo if mi==1 else ""}{rh}<backup><duration>{tot}</duration></backup>{lh}{bar}</measure>')
+        hands = rh if single else f'{rh}<backup><duration>{tot}</duration></backup>{lh}'
+        body.append(f'<measure number="{mi}">{brk}{attrs}{tempo if mi==1 else ""}{hands}{bar}</measure>')
     return f'''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">
 <score-partwise version="4.0">
@@ -72,7 +77,8 @@ MELODY, CHORD, DOUBLE = '#C2255C', '#2F9E44', '#7048E8'
 E['basic-shape']=("The basic shape",[
  [(8,'C6',['C5'],[], {'rh':[MELODY], 'text':('1. Melody', MELODY)})],
  [(8,None,['C5','A4','G4','E4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD], 'text':('2. Chord tones below', CHORD)})],
- [(8,None,['C5','A4','G4','E4'],['C4'], {'rh':[MELODY,CHORD,CHORD,CHORD], 'lh':DOUBLE,
+ # One treble staff: the left-hand doubling (C4) sits on a ledger line under the right hand.
+ [(8,None,['C5','A4','G4','E4','C4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD,DOUBLE],
    'text':('3. Double in left hand', DOUBLE)})]])
 # Exercise: every chord of C major as a block with its root as the melody, doubled an octave lower
 # in the left hand, so each block reads in root position from the left hand up; one per beat. Plain black: here
@@ -147,6 +153,29 @@ CHROM_DOWN = [("C'",'C6'), ('B.maj9','Cmaj9'), ('A','C6'), ('Ab.Bbm7','Bbm7/Ab')
               ('G','Am7/G'), ('F.Bbm7','Bbm7/F'), ('E','Am7/E'), ('D.maj9','Cmaj9')]
 E['chromatic-descending']=("Chromatic, descending", bars_of(run(CHROM_DOWN, 1)) + [[blk(8,'C6',V['C'])]])
 
+# Detail figures: the chords the text spells out or compares, shown side by side, half or whole
+# notes. Spelled chords (no melody) sit in the right hand alone; blocks keep the left-hand doubling.
+BLACK, BLUE = {'rh': None, 'lh': None}, {'rh': PASSING_COLOR, 'lh': PASSING_COLOR}
+def chord(d, sym, notes_, opts=BLACK): return (d, sym, notes_, [], opts)
+E['detail-c6-bdim7'] = ("C6 and B°7", [
+ [chord(8, 'C6', ['A4','G4','E4','C4'])], [chord(8, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
+E['detail-dim-names'] = ("Four names for one diminished chord", [
+ [chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE), chord(4, 'Ddim7', ['B5','Ab5','F5','D5'], BLUE)],
+ [chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE), chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE)]])
+E['detail-rootless'] = ("Rootless major ninth", [
+ [chord(4, 'Cmaj9', ['D5','B4','G4','E4','C4'], {**BLACK, 'text': ('Cmaj9', '#555')}),
+  chord(4, 'Cmaj9', ['D5','B4','G4','E4'], {**BLUE, 'text': ('without the root', PASSING_COLOR)})],
+ [blk(4, 'Cmaj9', V['D.maj9']), blk(4, 'Cmaj9', V['B.maj9'])]])
+E['detail-g7-maj9'] = ("Rootless Cmaj9 and G7", [[blk(4, 'Cmaj9', V['D.maj9']), blk(4, 'G7', V['F.G7'])]])
+E['detail-chromatic-up'] = ("Chromatic approaches from below", [
+ [blk(4, 'Abm7', V['Ab.m7']), blk(4, 'Am7', V['A'])], [blk(4, 'B6', V['B.6']), blk(4, 'C6', V["C'"])]])
+E['detail-chromatic-down'] = ("Chromatic approaches from above", [
+ [blk(4, 'Bbm7/Ab', V['Ab.Bbm7']), blk(4, 'Am7/G', V['G'])], [blk(4, 'Bbm7/F', V['F.Bbm7']), blk(4, 'Am7/E', V['E'])]])
+E['detail-two-five-one-voicings'] = ("G7 and Dm7 inversions", [
+ [blk(4, 'G7', V['D.G7']), blk(4, 'G7', V['F.G7'])], [blk(4, 'G7', V['B.G7']), p_blk(4, 'Dm7', V['A.Dm7'])]])
+E['detail-two-five-one-cadence'] = ("A 2 5 1 at the top of the scale", [
+ [p_blk(4, 'Dm7', V['A.Dm7']), blk(4, 'G7', V['B.G7'])], [blk(8, 'C6', V["C'"])]])
+
 # Exercises: each technique up the C bebop scale and back down, one block per eighth note.
 def up_down(up, down):
     """Plain black, and only the opening C6 named: the voicings are explained in the text."""
@@ -179,15 +208,17 @@ def write_cursor(k, measures):
     # Each notehead path starts at its left edge; centre the cursor on it (heads are ~107 units wide).
     height = float(re.search(r'viewBox="0 0 [\d.]+ ([\d.]+)"', svg).group(1))
     heads = [(float(x) + 54, float(y)) for x, y in re.findall(r'class="Note"[^>]*? d="M([\d.]+),([\d.]+)', svg)]
-    # Systems from the staff lines: five lines a staff, two staves (right hand, left hand) a system.
+    # Systems from the staff lines: five lines a staff, two staves (right hand, left hand) a system,
+    # or a single treble staff when there is no left hand.
     lines = sorted({round(float(y), 1) for y in re.findall(r'class="StaffLines"[^>]*? points="[\d.]+,([\d.]+)', svg)})
     staves = [lines[i:i + 5] for i in range(0, len(lines), 5)]
-    systems = [(staves[i][0], staves[i][-1], staves[i + 1][0], staves[i + 1][-1]) for i in range(0, len(staves), 2)]
+    per = 1 if one_staff(measures) else 2
+    systems = [(staves[i][0], staves[i][-1], staves[i + per - 1][0], staves[i + per - 1][-1]) for i in range(0, len(staves), per)]
     def system_of(y):  # nearest system, so heads on ledger lines still count
         return min(range(len(systems)), key=lambda i: abs((systems[i][0] + systems[i][3]) / 2 - y))
     xs = []  # (system, chord centre x)
     for i, (rh_top, rh_bot, lh_top, lh_bot) in enumerate(systems):
-        rh = sorted(x for x, y in heads if system_of(y) == i and y < (rh_bot + lh_top) / 2)
+        rh = sorted(x for x, y in heads if system_of(y) == i and (per == 1 or y < (rh_bot + lh_top) / 2))
         cl = []
         for x in rh:
             if not cl or x - cl[-1][-1] > 200: cl.append([x])
@@ -213,7 +244,8 @@ for k, (t, m) in E.items():
     open(src, "w").write(build(t, m, lines=multi))
     # The exercises keep their lines close together (multi-line.mss; MuseScore ignores
     # layout settings in MusicXML).
-    style = ["-S", os.path.join(os.path.dirname(__file__), "multi-line.mss")] if multi else []
+    mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else None
+    style = ["-S", os.path.join(os.path.dirname(__file__), mss)] if mss else []
     for ext in ("svg", "mp3"):
         subprocess.run([MSCORE, *style, "-o", os.path.join(OUT, f"{k}.{ext}"), "-T", "10", src],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)

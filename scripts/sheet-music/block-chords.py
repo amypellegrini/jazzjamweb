@@ -46,12 +46,12 @@ def label(opts, staff=2):
     return (f'<direction placement="below"><direction-type><words color="{color}" font-weight="bold">'
             f'{words}</words></direction-type><staff>{staff}</staff></direction>')
 def one_staff(measures): return all(not c[3] for meas in measures for c in meas)
-def build(title, measures, lines=False):
+def build(title, measures, lines=False, bass=False):
     # measures: list of list of (dur, symbol, rh_notes(top first), lh_notes[, overrides])
     # overrides: {'rh': colour or per-note colours, 'lh': colour, 'text': (words, colour)}
     # Right hand only (no left-hand note anywhere): one treble staff instead of the grand staff.
     single = one_staff(measures)
-    staves = '<clef><sign>G</sign><line>2</line></clef>' if single else '<staves>2</staves><clef number="1"><sign>G</sign><line>2</line></clef><clef number="2"><sign>G</sign><line>2</line></clef>'
+    staves = '<clef><sign>G</sign><line>2</line></clef>' if single else '<staves>2</staves><clef number="1"><sign>G</sign><line>2</line></clef>' + ('<clef number="2"><sign>F</sign><line>4</line></clef>' if bass else '<clef number="2"><sign>G</sign><line>2</line></clef>')
     body=[]
     for mi,meas in enumerate(measures,1):
         attrs = f"<attributes><divisions>2</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time>{staves}</attributes>" if mi==1 else ''
@@ -180,10 +180,14 @@ E['detail-c6-bdim7'] = ("C6 and B°7", [
 E['detail-dim-names'] = ("Four names for one diminished chord", [
  [chord(4, 'Ddim7', ['B4','Ab4','F4','D4'], BLUE), chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE)],
  [chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE), chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
+# Cmaj9 with its root, then without it: the rootless shape E-G-B-D.
 E['detail-rootless'] = ("Rootless major ninth", [
- [chord(4, 'Cmaj9', ['D5','B4','G4','E4','C4'], {**BLACK, 'text': ('Cmaj9', '#555')}),
-  chord(4, 'Cmaj9', ['D5','B4','G4','E4'], {**BLUE, 'text': ('without the root', PASSING_COLOR)})],
- [blk(4, 'Cmaj9', V['D.maj9']), blk(4, 'Cmaj9', V['B.maj9'])]])
+ [chord(4, 'Cmaj9', ['D5','B4','G4','E4','C4']), chord(4, 'Cmaj9', ['D5','B4','G4','E4'], BLUE)]])
+# The rootless shape as blocks on B and on D, as close to middle C as they go: B3-D4-E4-G4-B4 and
+# D4-E4-G4-B4-D5, on a grand staff with the left-hand doubling in the bass clef (BASS_CLEF).
+E['detail-rootless-blocks'] = ("Rootless major ninth blocks", [
+ [blk(4, 'Cmaj9', ['B4','G4','E4','D4']), blk(4, 'Cmaj9', ['D5','B4','G4','E4'])]])
+BASS_CLEF = {'detail-rootless-blocks'}  # grand staff with the left hand in F clef
 E['detail-g7-maj9'] = ("Rootless Cmaj9 and G7", [[blk(4, 'Cmaj9', V['D.maj9']), blk(4, 'G7', V['F.G7'])]])
 E['detail-chromatic-up'] = ("Chromatic approaches from below", [
  [blk(4, 'Abm7', V['Ab.m7']), blk(4, 'Am7', V['A'])], [blk(4, 'B6', V['B.6']), blk(4, 'C6', V["C'"])]])
@@ -262,7 +266,7 @@ for k, (t, m) in E.items():
     if only and k not in only: continue
     src = os.path.join(OUT, f"{k}.musicxml")
     multi = k.startswith('exercise-')
-    open(src, "w").write(build(t, m, lines=multi))
+    open(src, "w").write(build(t, m, lines=multi, bass=k in BASS_CLEF))
     # The exercises keep their lines close together (multi-line.mss; MuseScore ignores
     # layout settings in MusicXML).
     mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else None

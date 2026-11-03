@@ -80,6 +80,13 @@ E['basic-shape']=("The basic shape",[
  # One treble staff: the left-hand doubling (C4) sits on a ledger line under the right hand.
  [(8,None,['C5','A4','G4','E4','C4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD,DOUBLE],
    'text':('3. Double in left hand', DOUBLE)})]])
+# The same block built from the bottom up: the left-hand root, the chord tones stacked above it,
+# then the melody doubled on top. Same colours as the basic shape, so the two read as one block.
+E['basic-shape-from-below']=("The basic shape, from below",[
+ [(8,'C6',['C4'],[], {'rh':[DOUBLE], 'text':('1. Root in left hand', DOUBLE)})],
+ [(8,None,['A4','G4','E4','C4'],[], {'rh':[CHORD,CHORD,CHORD,DOUBLE], 'text':('2. Chord tones above', CHORD)})],
+ [(8,None,['C5','A4','G4','E4','C4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD,DOUBLE],
+   'text':('3. Melody on top', MELODY)})]])
 # Exercise: every chord of C major as a block with its root as the melody, doubled an octave lower
 # in the left hand, so each block reads in root position from the left hand up; one per beat. Plain black: here
 # the point is the chord shapes, not passing tones.
@@ -162,8 +169,13 @@ def chord(d, sym, notes_, opts=BLACK): return (d, sym, notes_, [], opts)
 E['sixth-diminished-scale'] = ("The sixth-diminished scale", [
  [(1, 'C6' if n == 'C4' else None, [n], [], {'rh': PASSING_COLOR if is_passing([n]) else None})
   for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']], [chord(8, None, ['C5'])]])  # from middle C
+# C6 (green, the chord-tone colour of the basic shape) against B°7 (blue) voiced from D4, the
+# inversion closest to C6: each note sits a step from a C6 note. Then the scale, each note in the
+# colour of the chord it belongs to.
+GREEN = {'rh': CHORD, 'lh': CHORD}
 E['detail-c6-bdim7'] = ("C6 and B°7", [
- [chord(8, 'C6', ['A4','G4','E4','C4'])], [chord(8, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
+ [chord(8, 'C6', ['A4','G4','E4','C4'], GREEN)], [chord(8, 'Bdim7', ['B4','Ab4','F4','D4'], BLUE)],
+ [chord(1, None, [n], BLUE if is_passing([n]) else GREEN) for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']]])
 E['detail-dim-names'] = ("Four names for one diminished chord", [
  [chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE), chord(4, 'Ddim7', ['B5','Ab5','F5','D5'], BLUE)],
  [chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE), chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE)]])
@@ -244,7 +256,9 @@ def write_cursor(k, measures):
         t += d * eighth
     json.dump(events, open(os.path.join(OUT, f"{k}.cursor.json"), "w"))
 
+only = set(sys.argv[1:])  # optional example keys: render just those
 for k, (t, m) in E.items():
+    if only and k not in only: continue
     src = os.path.join(OUT, f"{k}.musicxml")
     multi = k.startswith('exercise-')
     open(src, "w").write(build(t, m, lines=multi))

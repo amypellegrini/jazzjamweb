@@ -20,7 +20,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,wght@1,600&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -47,7 +47,17 @@
       figure img { width: 100%; height: auto; display: block; }
       figure audio { width: 100%; margin-top: 0.5rem; }
       figcaption { font: 0.875rem/1.4 "Accidentals", system-ui, sans-serif; color: #666; margin-top: 0.25rem; }
-      .lede { font-size: 1.2rem; color: #333; }
+      /* Lesson goal: set apart with a target icon (drawn in CSS so the narration text is unchanged). */
+      .lede {
+        font-size: 1.2rem; color: #6b7280; font-style: italic; font-weight: 600;
+        /* Georgia has only regular and bold; Source Serif 4 has a true semibold italic. */
+        font-family: "Accidentals", "Source Serif 4", Georgia, serif;
+        position: relative; padding-left: 2.4rem;
+      }
+      .lede::before {
+        content: ""; position: absolute; left: 0; top: 0.1em; width: 1.8rem; height: 1.8rem;
+        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>") no-repeat center / contain;
+      }
       .passing { color: #2563eb; font-weight: 600; }
 
       /* Side notes: asides to the main explanation. The label is CSS-only, so it is not narrated. */

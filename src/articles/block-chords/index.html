@@ -131,6 +131,12 @@
       }
 
       /* Side notes: asides to the main explanation. The label is CSS-only, so it is not narrated. */
+      .note > p {
+        margin: 0 0 0.75rem;
+      }
+      .note > p:last-child {
+        margin-bottom: 0;
+      }
       .note {
         margin: 1.5rem 0;
         padding: 0.9rem 1.1rem;
@@ -432,11 +438,9 @@
       <p>
         To build and practise every technique, we'll use Barry Harris's
         sixth-diminished scale, also known as the major bebop scale. In C, it's
-        the C major scale with an extra semitone between G and A (G♯ or A♭): C,
-        D, E, F, G, A♭ (or G♯), A, B. With eight notes instead of seven, the
+        the C major scale with an extra semitone between G and A (G♯ or A♭): C, D, E, F, G, A♭ (or G♯), A, B. With eight notes instead of seven, the
         scale lines up with the beat: played in eighth notes, the four notes of
-        C6 (C, E, G and A) land on the beat, and the four passing tones (D, F,
-        A♭ and B) fall on the upbeat.
+        C6 (C, E, G and A) land on the beat, and the four passing tones (D, F, A♭ and B) fall on the upbeat.
       </p>
       <figure>
         <img
@@ -471,7 +475,7 @@
         ></audio>
         <figcaption>
           The scale in the left hand, C6 in the right hand on the chord tones
-          only. <span class="passing">Passing tones in blue.</span>
+          only.
         </figcaption>
       </figure>
       <details class="exercise">
@@ -530,33 +534,9 @@
         </figcaption>
       </figure>
       <p>
-        So whenever the melody hits a passing tone (or non-chord tone), voice it
-        as B°7 with the melody on top; when it returns to a chord tone, go back
-        to C6. The two chords alternate on every step, and the diminished chord
-        pulls back into C6 the same way G7♭9 resolves to the tonic. This pairing
-        of a sixth chord with its diminished neighbour is the heart of Barry
-        Harris's sixth-diminished scale.
+        So whenever the melody hits a passing tone, voice it as B°7 with the
+        melody on top; when it returns to a chord tone, go back to C6.
       </p>
-      <aside class="note">
-        A diminished seventh is built from equal minor thirds, so the same four
-        notes can be named as four different diminished chords: D°7, F°7, A♭°7
-        or B°7, depending on which note you treat as the root.
-      </aside>
-      <figure class="detail">
-        <img
-          src="/assets/articles/block-chords/detail-dim-names.svg"
-          alt="The same four notes stacked from each of them in turn, ascending from D: D diminished seventh, F diminished seventh, A flat diminished seventh and B diminished seventh"
-        />
-        <audio
-          controls
-          preload="none"
-          src="/assets/articles/block-chords/detail-dim-names.mp3"
-        ></audio>
-        <figcaption>
-          The same four notes, named from each one in turn, ascending from D:
-          D°7, F°7, A♭°7 and B°7.
-        </figcaption>
-      </figure>
       <figure>
         <img
           src="/assets/articles/block-chords/diminished.svg"
@@ -573,18 +553,61 @@
         </figcaption>
       </figure>
       <p>
+        The two chords alternate on every step, and the diminished chord pulls
+        back into C6 the same way G7♭9 resolves to the tonic. This pairing of a
+        sixth chord with its diminished neighbour is the heart of Barry Harris's
+        sixth-diminished scale.
+      </p>
+      <figure class="detail">
+        <img
+          src="/assets/articles/block-chords/detail-g7b9-c6.svg"
+          alt="G7 flat 9, with D F A flat B in the right hand over a G bass, resolving to C6, C E G A over a C bass"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-g7b9-c6.mp3"
+        ></audio>
+        <figcaption>
+          <strong>G7♭9 (D–F–A♭–B over G)</strong>
+          resolving to <strong>C6</strong>: the B°7 notes over a G bass.
+        </figcaption>
+      </figure>
+      <aside class="note">
+        <p>
+          A diminished seventh is built from equal minor thirds, so the same
+          four notes can be named as four different diminished chords: D°7, F°7,
+          A♭°7 or B°7, depending on which note you treat as the root.
+        </p>
+        <figure class="detail">
+          <img
+            src="/assets/articles/block-chords/detail-dim-names.svg"
+            alt="The same four notes stacked from each of them in turn, ascending from D: D diminished seventh, F diminished seventh, A flat diminished seventh and B diminished seventh"
+          />
+          <audio
+            controls
+            preload="none"
+            src="/assets/articles/block-chords/detail-dim-names.mp3"
+          ></audio>
+          <figcaption>
+            The same four notes, named from each one in turn, ascending from D:
+            D°7, F°7, A♭°7 and B°7.
+          </figcaption>
+        </figure>
+      </aside>
+      <p>
         Coming down the scale works exactly the same way: C6 on the chord tones
         and B°7 on the passing tones.
       </p>
       <details class="exercise">
         <summary>
-          <span class="exercise-label">Exercise</span> Diminished passing tones,
-          up and down
+          <span class="exercise-label">Exercise</span> C major bebop scale with
+          block chords, ascending and descending
         </summary>
         <div class="exercise-body">
           <p>
             Play the C bebop scale up and back down in eighth notes, one block
-            per note: C6 on the chord tones and B°7 on every passing tone.
+            chord per note: C6 on the chord tones and B°7 on every passing tone.
           </p>
           <p>
             The goal is to switch between the C6 and B°7 shapes without
@@ -616,6 +639,10 @@
       </p>
 
       <h3>Rootless major ninth voicing</h3>
+      <p>
+        You can use a rootless major ninth voicing to harmonise the second and
+        seventh degrees of the major scale.
+      </p>
       <p>Drop the root from Cmaj9 and you're left with E–G–B–D.</p>
       <figure class="detail">
         <img
@@ -628,7 +655,8 @@
           src="/assets/articles/block-chords/detail-rootless.mp3"
         ></audio>
         <figcaption>
-          Cmaj9 (<strong style="color: #e03131">C</strong>–E–G–B–D), then without its root: E–G–B–D.
+          Cmaj9 (<strong style="color: #e03131">C</strong>–E–G–B–D), then
+          without its root: E–G–B–D.
         </figcaption>
       </figure>
       <p>
@@ -656,12 +684,10 @@
 
       <h3>Dominant seventh voicing</h3>
       <p>
-        The fourth degree is the exception. In C that's F, which the rootless
-        Cmaj9 shape doesn't contain, so it takes a plain dominant seventh
-        instead: G7, voiced F–G–B–D–F, with F on top and doubled in the left
-        hand. The two shapes are very close: both are stacked thirds sharing G,
-        B and D. So as the melody climbs, the hands alternate between C6 on the
-        chord tones and two similar shapes on the passing tones.
+        In a C major scale the fourth degree is F, which the rootless Cmaj9
+        shape doesn't contain. So it takes a plain dominant seventh instead: G7,
+        voiced F–G–B–D–F, with F on top and doubled in the left hand. The two
+        shapes are very close: both are stacked thirds sharing G, B and D.
       </p>
       <figure class="detail">
         <img
@@ -676,7 +702,6 @@
         <figcaption>
           Rootless Cmaj9 (E–G–B–D) and G7 (F–G–B–D–F): both stacked thirds,
           sharing G, B and D.
-          <span class="passing">Passing tones in blue.</span>
         </figcaption>
       </figure>
       <p>
@@ -697,8 +722,7 @@
           src="/assets/articles/block-chords/dominant-seventh.mp3"
         ></audio>
         <figcaption>
-          The full scale: C6, rootless Cmaj9, G7 on the fourth degree, and B°7
-          on A♭. <span class="passing">Passing tones in blue.</span>
+          The full scale: C6, rootless Cmaj9, G7 on the fourth degree, and B°7 on A♭. <span class="passing">Passing tones in blue.</span>
         </figcaption>
       </figure>
       <p>
@@ -713,8 +737,7 @@
         <div class="exercise-body">
           <p>
             Play the C bebop scale up and back down in eighth notes, one block
-            per note: C6 on the chord tones, the rootless Cmaj9 on D and B, G7
-            on F, and B°7 on A♭.
+            per note: C6 on the chord tones, the rootless Cmaj9 on D and B, G7 on F, and B°7 on A♭.
           </p>
           <p>
             The goal is to find each of these voicings by hand, going up and
@@ -742,18 +765,19 @@
         note chromatically.
       </p>
       <p>
-        Take the same bebop scale and treat A♭ and B as passing tones that
-        approach their targets chromatically, always ascending. With A in the
-        melody, the C6 voicing (C–E–G–A) can just as well be read as Am7 (C6
-        over A). A♭ leads to A, so it takes that voicing a half step lower:
-        C♭–E♭–G♭–A♭, an A♭m7. B leads to C, so it takes the C6 voicing (E–G–A–C)
-        a half step lower: D♯–F♯–G♯–B, a B6. Each approach block then slides up
-        into place, A♭m7 into Am7 and B6 into C6.
+        Take the same bebop scale and treat G♯ (A♭) and B as passing
+        tones that approach their targets chromatically, always
+        ascending. With A in the melody, the C6 voicing (C–E–G–A) can
+        just as well be read as Am7 (C6 over A). G♯ leads to A, so it
+        takes that voicing a half step lower: B–D♯–F♯–G♯, a G♯m7. B
+        leads to C, so it takes the C6 voicing (E–G–A–C) a half step
+        lower: D♯–F♯–G♯–B, a B6. Each approach block then slides up into
+        place, G♯m7 into Am7 and B6 into C6.
       </p>
       <figure class="detail">
         <img
           src="/assets/articles/block-chords/detail-chromatic-up.svg"
-          alt="A flat minor seventh, C flat E flat G flat A flat, moving up a half step to A minor seventh, C E G A; then B6, D sharp F sharp G sharp B, moving up to C6, E G A C"
+          alt="G sharp minor seventh, B D sharp F sharp G sharp, moving up a half step to A minor seventh, C E G A; then B6, D sharp F sharp G sharp B, moving up to C6, E G A C"
         />
         <audio
           controls
@@ -761,14 +785,14 @@
           src="/assets/articles/block-chords/detail-chromatic-up.mp3"
         ></audio>
         <figcaption>
-          A♭m7 (C♭–E♭–G♭–A♭) up to Am7 (C–E–G–A); B6 (D♯–F♯–G♯–B) up to C6
-          (E–G–A–C). <span class="passing">Passing tones in blue.</span>
+          G♯m7 (B–D♯–F♯–G♯) up to Am7 (C–E–G–A); B6 (D♯–F♯–G♯–B) up to C6
+          (E–G–A–C).
         </figcaption>
       </figure>
       <figure>
         <img
           src="/assets/articles/block-chords/chromatic.svg"
-          alt="A C bebop scale where A flat is harmonised as A flat minor seventh approaching A minor seventh, and B as B6 approaching C6"
+          alt="A C bebop scale where G sharp is harmonised as G sharp minor seventh approaching A minor seventh, and B as B6 approaching C6"
         />
         <audio
           controls
@@ -776,7 +800,7 @@
           src="/assets/articles/block-chords/chromatic.mp3"
         ></audio>
         <figcaption>
-          A♭m7 approaching Am7, and B6 approaching C6, each from a half step
+          G♯m7 approaching Am7, and B6 approaching C6, each from a half step
           below. <span class="passing">Passing tones in blue.</span>
         </figcaption>
       </figure>
@@ -804,7 +828,6 @@
         <figcaption>
           B♭m7/A♭ (B♭–D♭–F–A♭) down to Am7/G (A–C–E–G); B♭m7/F (A♭–B♭–D♭–F) down
           to Am7/E (G–A–C–E).
-          <span class="passing">Passing tones in blue.</span>
         </figcaption>
       </figure>
       <figure>
@@ -831,8 +854,7 @@
         <div class="exercise-body">
           <p>
             Play the C bebop scale up and back down in eighth notes, one block
-            per note. Going up, A♭ and B approach A and C from a half step
-            below, as A♭m7 and B6; coming down, A♭ and F approach G and E from a
+            per note. Going up, G♯ and B approach A and C from a half step below, as G♯m7 and B6; coming down, A♭ and F approach G and E from a
             half step above, as B♭m7/A♭ and B♭m7/F, and B falls back to the
             rootless Cmaj9.
           </p>
@@ -878,7 +900,7 @@
         ></audio>
         <figcaption>
           G7 on D (D–F–G–B–D), on F (F–G–B–D–F) and on B (B–D–F–G–B); Dm7 on A
-          (A–C–D–F–A). <span class="passing">Passing tones in blue.</span>
+          (A–C–D–F–A).
         </figcaption>
       </figure>
       <p>
@@ -906,7 +928,6 @@
         ></audio>
         <figcaption>
           A, B and C as Dm7, G7 and C6: a 2 5 1 into the top of the scale.
-          <span class="passing">Passing tones in blue.</span>
         </figcaption>
       </figure>
       <figure>
@@ -935,8 +956,7 @@
         <div class="exercise-body">
           <p>
             Play the C bebop scale up and back down in eighth notes, one block
-            per note: C6 on C, E and G; G7 on D, F and B; B°7 on A♭; and Dm7 on
-            A.
+            per note: C6 on C, E and G; G7 on D, F and B; B°7 on A♭; and Dm7 on A.
           </p>
           <p>
             The goal is to hear every passing tone resolve back to C6, as a
@@ -977,11 +997,19 @@
         const blocks = [
           ...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside)"),
         ];
+        // A note (aside) may hold an example: it plays right after the note's text.
         const items = [
           ...article.querySelectorAll(
             ":scope > :is(h1, h2, h3, p, aside, figure)",
           ),
-        ];
+        ].flatMap((el) =>
+          el.tagName === "ASIDE"
+            ? [el, ...el.querySelectorAll("figure")]
+            : [el],
+        );
+        // The narrated text of a block: a note with an example narrates only its paragraph.
+        const textOf = (el) =>
+          (el.tagName === "ASIDE" && el.querySelector(":scope > p")) || el;
 
         // Number the examples in page order so each one can be referred to as "Example N".
         // Exercises are not examples: they keep their own count, "Exercise N", on their label.
@@ -1106,7 +1134,8 @@
         if (manifest.length !== blocks.length) return;
 
         // Wrap each displayed word in a span, matching the narration's word list.
-        blocks.forEach((el, i) => {
+        blocks.forEach((block, i) => {
+          const el = textOf(block);
           const words = el.textContent.trim().split(/\s+/);
           if (words.length !== manifest[i].words.length)
             return (manifest[i] = null);

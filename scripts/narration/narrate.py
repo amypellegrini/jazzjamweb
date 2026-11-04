@@ -27,7 +27,7 @@ VOICE, LANG, RATE = "bf_emma", "b", 24000
 # ---- what gets narrated --------------------------------------------------------------------
 
 class Blocks(HTMLParser):
-    """Collect the text of article > h1/h2/h3/p/aside, in order (figure captions are skipped)."""
+    """Collect the text of article > h1/h2/h3/p/aside, in order (figures, even inside a note, are skipped)."""
     def __init__(self):
         super().__init__(); self.depth = None; self.stack = []; self.blocks = []; self.buf = None
     def handle_starttag(self, tag, attrs):
@@ -40,7 +40,8 @@ class Blocks(HTMLParser):
             self.blocks.append(" ".join("".join(self.buf).split())); self.buf = None
         if self.stack: self.stack.pop()
     def handle_data(self, data):
-        if self.buf is not None: self.buf.append(data)
+        # An example inside a block (a note holding a figure) is not part of the narration.
+        if self.buf is not None and "figure" not in self.stack: self.buf.append(data)
 
 # ---- how it is spoken ----------------------------------------------------------------------
 

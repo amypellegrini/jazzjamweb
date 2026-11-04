@@ -29,6 +29,11 @@ def harmony(sym):
     if not sym: return ''
     sym, _, bass = sym.partition('/')   # slash chord: "Bbm7/Ab" plays Bbm7 over A-flat
     m=re.fullmatch(r'([A-G])(b|#)?(.*)',sym); r,a,k=m.groups()
+    if k == '7b9':  # dominant seventh with a flattened ninth
+        alt={'b':-1,'#':1,None:0}[a]
+        return (f"<harmony><root><root-step>{r}</root-step>{f'<root-alter>{alt}</root-alter>' if alt else ''}</root>"
+                f"<kind text=\"7(b9)\">dominant</kind><degree><degree-value>9</degree-value><degree-alter>-1</degree-alter>"
+                f"<degree-type>add</degree-type></degree></harmony>")
     kind={'6':('major-sixth','6'),'dim7':('diminished-seventh','o7'),'maj9':('major-ninth','maj9'),'m7':('minor-seventh','m7'),'7':('dominant','7'),'maj7':('major-seventh','maj7'),'m7b5':('half-diminished','m7b5'),'':('major','')}[k]
     alt={'b':-1,'#':1,None:0}[a]
     b=''
@@ -46,12 +51,12 @@ def label(opts, staff=2):
     return (f'<direction placement="below"><direction-type><words color="{color}" font-weight="bold">'
             f'{words}</words></direction-type><staff>{staff}</staff></direction>')
 def one_staff(measures): return all(not c[3] for meas in measures for c in meas)
-def build(title, measures, lines=False):
+def build(title, measures, lines=False, bass=False):
     # measures: list of list of (dur, symbol, rh_notes(top first), lh_notes[, overrides])
     # overrides: {'rh': colour or per-note colours, 'lh': colour, 'text': (words, colour)}
     # Right hand only (no left-hand note anywhere): one treble staff instead of the grand staff.
     single = one_staff(measures)
-    staves = '<clef><sign>G</sign><line>2</line></clef>' if single else '<staves>2</staves><clef number="1"><sign>G</sign><line>2</line></clef><clef number="2"><sign>G</sign><line>2</line></clef>'
+    staves = '<clef><sign>G</sign><line>2</line></clef>' if single else '<staves>2</staves><clef number="1"><sign>G</sign><line>2</line></clef>' + ('<clef number="2"><sign>F</sign><line>4</line></clef>' if bass else '<clef number="2"><sign>G</sign><line>2</line></clef>')
     body=[]
     for mi,meas in enumerate(measures,1):
         attrs = f"<attributes><divisions>2</divisions><key><fifths>0</fifths></key><time><beats>4</beats><beat-type>4</beat-type></time>{staves}</attributes>" if mi==1 else ''
@@ -117,7 +122,7 @@ E['dominant-seventh']=("Dominant seventh",[[
 E['chromatic']=("Chromatic",[[
  blk(1,'C6',['C5','A4','G4','E4']), blk(1,'Cmaj9',['D5','B4','G4','E4']),
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'G7',['F5','D5','B4','G4']),
- blk(1,'C6',['G5','E5','C5','A4']), blk(1,'Abm7',['Ab5','Gb5','Eb5','Cb5']),
+ blk(1,'C6',['G5','E5','C5','A4']), blk(1,'G#m7',['G#5','F#5','D#5','B4']),
  blk(1,'Am7',['A5','G5','E5','C5']), blk(1,'B6',['B5','G#5','F#5','D#5'])],
  [blk(8,'C6',['C6','A5','G5','E5'])]])
 
@@ -140,7 +145,7 @@ V = {
  'D.maj9': ['D5','B4','G4','E4'], 'B.maj9': ['B5','G5','E5','D5'],
  'D.dim': ['D5','B4','Ab4','F4'], 'F.dim': ['F5','D5','B4','Ab4'], 'Ab.dim': ['Ab5','F5','D5','B4'], 'B.dim': ['B5','Ab5','F5','D5'],
  'D.G7': ['D5','B4','G4','F4'], 'F.G7': ['F5','D5','B4','G4'], 'B.G7': ['B5','G5','F5','D5'], 'A.Dm7': ['A5','F5','D5','C5'],
- 'Ab.m7': ['Ab5','Gb5','Eb5','Cb5'], 'B.6': ['B5','G#5','F#5','D#5'], 'Ab.Bbm7': ['Ab5','F5','Db5','Bb4'], 'F.Bbm7': ['F5','Db5','Bb4','Ab4'],
+ 'Ab.m7': ['Ab5','Gb5','Eb5','Cb5'], 'G#.m7': ['G#5','F#5','D#5','B4'], 'B.6': ['B5','G#5','F#5','D#5'], 'Ab.Bbm7': ['Ab5','F5','Db5','Bb4'], 'F.Bbm7': ['F5','Db5','Bb4','Ab4'],
 }
 def run(steps, dur):
     """Blocks for a list of (voicing, chord symbol) steps, each `dur` eighths long."""
@@ -183,6 +188,12 @@ E['detail-c6-bdim7'] = ("C6 and B°7", [
  [chord(8, 'C6', ['A4','G4','E4','C4'], GREEN)], [chord(8, 'Bdim7', ['B4','Ab4','F4','D4'], BLUE)],
  [chord(1, None, [n], BLUE if is_passing([n]) else GREEN) for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']]])
 # Ascending from D4, each chord stacked from the next note up: D°7, F°7, A♭°7, B°7.
+# G7(b9) resolving to C6: the B°7 notes (D-F-Ab-B) over a G bass are G7(b9) without its root,
+# so the diminished chord resolves to C6 just as the dominant does. Grand staff, bass in F clef.
+E['detail-g7b9-c6'] = ("G7(b9) to C6", [
+ [(4, 'G7b9', ['B4','Ab4','F4','D4'], ['G2'], {'rh': PASSING_COLOR, 'lh': None}),
+  (4, 'C6', ['C5','A4','G4','E4'], ['C3'], BLACK)]])
+BASS_CLEF = {'detail-g7b9-c6'}  # grand staff with the left hand in F clef
 E['detail-dim-names'] = ("Four names for one diminished chord", [
  [chord(4, 'Ddim7', ['B4','Ab4','F4','D4'], BLUE), chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE)],
  [chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE), chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
@@ -192,14 +203,27 @@ E['detail-rootless'] = ("Rootless major ninth", [
  [chord(4, 'Cmaj9', ['D5','B4','G4','E4','C4'], {'rh': [None] * 4 + [ROOT_RED], 'lh': None}), chord(4, 'Cmaj9', ['D5','B4','G4','E4'], {**BLUE, 'text': ('Rootless', PASSING_COLOR)})]])
 # The two passing shapes spelled out on one treble staff: rootless Cmaj9 (E-G-B-D) and G7 with F on top and below (F-G-B-D-F).
 E['detail-g7-maj9'] = ("Rootless Cmaj9 and G7", [[chord(4, 'Cmaj9', ['D5','B4','G4','E4'], BLUE), chord(4, 'G7', ['F5','D5','B4','G4','F4'], BLUE)]])
+# Ascending, so the approach to A is spelled with sharps: G#m7, not Abm7.
 E['detail-chromatic-up'] = ("Chromatic approaches from below", [
- [blk(4, 'Abm7', V['Ab.m7']), blk(4, 'Am7', V['A'])], [blk(4, 'B6', V['B.6']), blk(4, 'C6', V["C'"])]])
+ [blk(4, 'G#m7', V['G#.m7']), blk(4, 'Am7', V['A'])], [blk(4, 'B6', V['B.6']), blk(4, 'C6', V["C'"])]])
 E['detail-chromatic-down'] = ("Chromatic approaches from above", [
  [blk(4, 'Bbm7/Ab', V['Ab.Bbm7']), blk(4, 'Am7/G', V['G'])], [blk(4, 'Bbm7/F', V['F.Bbm7']), blk(4, 'Am7/E', V['E'])]])
 E['detail-two-five-one-voicings'] = ("G7 and Dm7 inversions", [
  [blk(4, 'G7', V['D.G7']), blk(4, 'G7', V['F.G7'])], [blk(4, 'G7', V['B.G7']), p_blk(4, 'Dm7', V['A.Dm7'])]])
 E['detail-two-five-one-cadence'] = ("A 2 5 1 at the top of the scale", [
  [p_blk(4, 'Dm7', V['A.Dm7']), blk(4, 'G7', V['B.G7'])], [blk(8, 'C6', V["C'"])]])
+
+# Examples shown without the passing-tone highlight: blue becomes black, other colours stay.
+def unhighlight(measures):
+    def clear(col):
+        if isinstance(col, list): return [None if x == PASSING_COLOR else x for x in col]
+        return None if col == PASSING_COLOR else col
+    return [[c[:4] + ({**o(c), 'rh': clear(o(c).get('rh')), 'lh': clear(o(c).get('lh'))},) for c in meas]
+            for meas in measures]
+for _k in ['scale-chord-tones', 'detail-g7b9-c6', 'detail-dim-names', 'detail-g7-maj9',
+           'detail-chromatic-up', 'detail-chromatic-down', 'detail-two-five-one-voicings',
+           'detail-two-five-one-cadence']:
+    E[_k] = (E[_k][0], unhighlight(E[_k][1]))
 
 # Exercises: each technique up the C bebop scale and back down, one block per eighth note.
 def up_down(up, down):
@@ -208,7 +232,7 @@ def up_down(up, down):
     return bars_of(blocks) + [[(8, None, V['C'], [oct_down(V['C'][0])], PLAIN)]]
 DIM_UP = [('C','C6'),('D.dim','Bdim7'),('E','C6'),('F.dim','Bdim7'),('G','C6'),('Ab.dim','Bdim7'),('A','C6'),('B.dim','Bdim7')]
 DIA_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','Bdim7'),('A','C6'),('B.maj9','Cmaj9')]
-CHR_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.m7','Abm7'),('A','Am7'),('B.6','B6')]
+CHR_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('G#.m7','G#m7'),('A','Am7'),('B.6','B6')]
 TFO_UP = [('C','C6'),('D.G7','G7'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','Bdim7'),('A.Dm7','Dm7'),('B.G7','G7')]
 top = [("C'",'C6')]
 desc = lambda up: top + list(reversed(up[1:]))   # same voicings as ascending, top C down to D
@@ -281,7 +305,7 @@ for k, (t, m) in E.items():
     if only and k not in only: continue
     src = os.path.join(OUT, f"{k}.musicxml")
     multi = k.startswith('exercise-')
-    open(src, "w").write(build(t, m, lines=multi))
+    open(src, "w").write(build(t, m, lines=multi, bass=k in BASS_CLEF))
     # The exercises keep their lines close together (multi-line.mss; MuseScore ignores
     # layout settings in MusicXML).
     mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else None

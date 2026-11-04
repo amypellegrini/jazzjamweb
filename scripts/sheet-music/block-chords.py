@@ -3,8 +3,8 @@
 import re, sys
 STEP={'C':0,'D':2,'E':4,'F':5,'G':7,'A':9,'B':11}
 def pitch(n):
-    m=re.fullmatch(r'([A-G])(b|#)?(\d)',n); s,a,o=m.groups()
-    alt={'b':-1,'#':1,None:0}[a]
+    m=re.fullmatch(r'([A-G])(bb|b|#)?(\d)',n); s,a,o=m.groups()  # bb: double flat (Ebb, Gbb)
+    alt={'bb':-2,'b':-1,'#':1,None:0}[a]
     return f"<pitch><step>{s}</step>{f'<alter>{alt}</alter>' if alt else ''}<octave>{o}</octave></pitch>"
 def acc(n):
     a = 'flat' if 'b' in n[1:] else 'sharp' if '#' in n else None
@@ -194,9 +194,11 @@ E['detail-g7b9-c6'] = ("G7(b9) to C6", [
  [(4, 'G7b9', ['B4','Ab4','F4','D4'], ['G2'], {'rh': PASSING_COLOR, 'lh': None}),
   (4, 'C6', ['C5','A4','G4','E4'], ['C3'], BLACK)]])
 BASS_CLEF = {'detail-g7b9-c6'}  # grand staff with the left hand in F clef
+# Ascending from D4, each chord stacked from the next note up and spelled as its own chord, in
+# minor thirds from its root: D°7 D-F-Ab-Cb, F°7 F-Ab-Cb-Ebb, A♭°7 Ab-Cb-Ebb-Gbb, B°7 B-D-F-Ab.
 E['detail-dim-names'] = ("Four names for one diminished chord", [
- [chord(4, 'Ddim7', ['B4','Ab4','F4','D4'], BLUE), chord(4, 'Fdim7', ['D5','B4','Ab4','F4'], BLUE)],
- [chord(4, 'Abdim7', ['F5','D5','B4','Ab4'], BLUE), chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
+ [chord(4, 'Ddim7', ['Cb5','Ab4','F4','D4'], BLUE), chord(4, 'Fdim7', ['Ebb5','Cb5','Ab4','F4'], BLUE)],
+ [chord(4, 'Abdim7', ['Gbb5','Ebb5','Cb5','Ab4'], BLUE), chord(4, 'Bdim7', ['Ab5','F5','D5','B4'], BLUE)]])
 # Cmaj9 with its root (in red, for contrast), then without it: the rootless shape E-G-B-D.
 ROOT_RED = '#E03131'
 E['detail-rootless'] = ("Rootless major ninth", [

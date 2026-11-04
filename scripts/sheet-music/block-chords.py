@@ -14,7 +14,7 @@ TYPES={1:'eighth',2:'quarter',3:'quarter',4:'half',6:'half',8:'whole'}
 # is painted in PASSING_COLOR so the harmonised passing tones stand out in the notation.
 CHORD_TONES = {'C', 'E', 'G', 'A'}
 PASSING_COLOR = '#2563EB'
-def is_passing(rh): return rh[0][:-1] not in CHORD_TONES
+def is_passing(rh): return bool(rh) and rh[0][:-1] not in CHORD_TONES
 def notes(chord,dur,staff,voice,color=None):
     if not chord:  # empty hand: a rest for the duration
         return f"<note><rest/><duration>{dur}</duration><voice>{voice}</voice><type>{TYPES[dur]}</type><staff>{staff}</staff></note>"
@@ -87,16 +87,16 @@ E['basic-shape-from-below']=("The basic shape, from below",[
  [(8,None,['A4','G4','E4','C4'],[], {'rh':[CHORD,CHORD,CHORD,DOUBLE], 'text':('2. Chord tones above', CHORD)})],
  [(8,None,['C5','A4','G4','E4','C4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD,DOUBLE],
    'text':('3. Melody on top', MELODY)})]])
-# Exercise: every chord of C major as a block with its root as the melody, doubled an octave lower
-# in the left hand, so each block reads in root position from the left hand up; one per beat. Plain black: here
-# the point is the chord shapes, not passing tones.
+# Exercise: the C6 block in each of its positions, the melody on C, E, G and A, up to the top C and
+# back down, one block per beat. Plain black, chord symbol on the first block only.
 PLAIN = {'rh': [None] * 4, 'lh': None}
-def ex_blk(sym, rh): return (2, sym, rh, [oct_down(rh[0])], PLAIN)
-E['diatonic-chords']=("Diatonic block chords",[
- [ex_blk('C6',   ['C5','A4','G4','E4']), ex_blk('Dm7',  ['D5','C5','A4','F4']),
-  ex_blk('Em7',  ['E5','D5','B4','G4']), ex_blk('F6',   ['F5','D5','C5','A4'])],
- [ex_blk('G7',   ['G5','F5','D5','B4']), ex_blk('Am7',  ['A5','G5','E5','C5']),
-  ex_blk('Bdim7',['B5','Ab5','F5','D5']), ex_blk('C6',  ['C6','A5','G5','E5'])]])
+def ex_blk(sym, rh, d=2): return (d, sym, rh, [oct_down(rh[0])], PLAIN)
+C6_POS = {'C': ['C5','A4','G4','E4'], 'E': ['E5','C5','A4','G4'], 'G': ['G5','E5','C5','A4'],
+          'A': ['A5','G5','E5','C5'], "C'": ['C6','A5','G5','E5']}
+E['c6-positions']=("C6 in every position",[
+ [ex_blk('C6', C6_POS['C'])] + [ex_blk(None, C6_POS[n]) for n in 'EGA'],
+ [ex_blk(None, C6_POS[n]) for n in ["C'", 'A', 'G', 'E']],
+ [ex_blk(None, C6_POS['C'], 8)]])
 E['diminished']=("Diminished",[[
  blk(1,'C6',['C5','A4','G4','E4']), blk(1,'Bdim7',['D5','B4','Ab4','F4']),
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'Bdim7',['F5','D5','B4','Ab4']),
@@ -169,6 +169,12 @@ def chord(d, sym, notes_, opts=BLACK): return (d, sym, notes_, [], opts)
 E['sixth-diminished-scale'] = ("The sixth-diminished scale", [
  [(1, 'C6' if n == 'C4' else None, [n], [], {'rh': PASSING_COLOR if is_passing([n]) else None})
   for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']], [chord(8, None, ['C5'])]])  # from middle C
+# Building up: the whole scale in the left hand, an octave below where the melody will be, and the
+# right hand adding the C6 block only on the chord tones (rests on the passing tones, in blue).
+def lh_only(n): return (1, None, [], [n], {'lh': PASSING_COLOR})
+E['scale-chord-tones'] = ("Scale in the left hand, C6 on the chord tones", [
+ [(blk(1, 'C6' if n == 'C' else None, V[n]) + (BLACK,)) if n in V else lh_only(n + '4')
+  for n in ['C','D','E','F','G','Ab','A','B']], [blk(8, None, V["C'"]) + (BLACK,)]])
 # C6 (green, the chord-tone colour of the basic shape) against B°7 (blue) voiced from D4, the
 # inversion closest to C6: each note sits a step from a C6 note. Then the scale, each note in the
 # colour of the chord it belongs to.
@@ -204,6 +210,15 @@ CHR_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab
 TFO_UP = [('C','C6'),('D.G7','G7'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','Bdim7'),('A.Dm7','Dm7'),('B.G7','G7')]
 top = [("C'",'C6')]
 desc = lambda up: top + list(reversed(up[1:]))   # same voicings as ascending, top C down to D
+# Exercise: the left-hand scale with C6 on the chord tones (Example 4), up and back down.
+# Plain black like the other exercises, chord symbol on the first block only.
+def lh_step(n, first=False):
+    if n in V: return blk(1, 'C6' if first else None, V[n]) + (PLAIN,)
+    return (1, None, [], [n + ('5' if n == "C'" else '4')], PLAIN)
+E['exercise-scale-chord-tones'] = ("Exercise: scale in the left hand", [
+ [lh_step(n, i == 0) for i, n in enumerate(['C','D','E','F','G','Ab','A','B'])],
+ [lh_step(n) for n in ["C'",'B','A','Ab','G','F','E','D']],
+ [(8, None, V['C'], [oct_down(V['C'][0])], PLAIN)]])
 E['exercise-diminished'] = ("Exercise: diminished", up_down(DIM_UP, desc(DIM_UP)))
 E['exercise-diatonic']   = ("Exercise: diatonic",   up_down(DIA_UP, desc(DIA_UP)))
 E['exercise-chromatic']  = ("Exercise: chromatic",  up_down(CHR_UP, CHROM_DOWN))
@@ -233,14 +248,17 @@ def write_cursor(k, measures):
     systems = [(staves[i][0], staves[i][-1], staves[i + per - 1][0], staves[i + per - 1][-1]) for i in range(0, len(staves), per)]
     def system_of(y):  # nearest system, so heads on ledger lines still count
         return min(range(len(systems)), key=lambda i: abs((systems[i][0] + systems[i][3]) / 2 - y))
-    rh = []  # (system, x) of every right-hand head, in reading order
+    rh, lh = [], []  # (system, x) of every right-/left-hand head, in reading order
     for i, (rh_top, rh_bot, lh_top, lh_bot) in enumerate(systems):
         rh += [(i, x) for x in sorted(x for x, y in heads if system_of(y) == i and (per == 1 or y < (rh_bot + lh_top) / 2))]
+        lh += [(i, x) for x in sorted(x for x, y in heads if system_of(y) == i and per == 2 and y >= (rh_bot + lh_top) / 2)]
     chords = [c for meas in measures for c in meas]
     assert len(rh) == sum(len(c[2]) for c in chords), (k, len(rh), sum(len(c[2]) for c in chords))
-    xs, n = [], 0  # (system, chord centre x)
+    xs, n, m = [], 0, 0  # (system, chord centre x); a right-hand rest takes its left-hand heads
     for c in chords:
-        group = rh[n:n + len(c[2])]; n += len(c[2])
+        group = rh[n:n + len(c[2])] if c[2] else lh[m:m + len(c[3])]
+        n += len(c[2])
+        if per == 2: m += len(c[3])
         assert len({i for i, _ in group}) == 1, (k, 'chord split across lines')
         xs.append((group[0][0], (group[0][1] + group[-1][1]) / 2))
     assert len(xs) == len(chords), (k, len(xs), len(chords))

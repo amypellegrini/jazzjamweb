@@ -226,30 +226,27 @@
         <figcaption>The same block from below: <strong style="color: #7048e8">the root in the left hand</strong>, then <strong style="color: #2f9e44">three chord tones above it</strong>, then <strong style="color: #c2255c">the melody doubled on top</strong>.</figcaption>
       </figure>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> Diatonic block chords in C</summary>
+        <summary><span class="exercise-label">Exercise</span> C6 in every position</summary>
         <div class="exercise-body">
           <p>
-            Play a block chord on every chord of the C major scale, one chord per beat: C6, Dm7,
-            Em7, F6, G7, Am7, B°7 and back to C6. In each block the melody is the chord's root,
-            doubled an octave lower in the left hand, so every chord sits in root position from the
-            left hand up.
+            Play the C6 block with each of its notes on top in turn, one block per beat: the melody
+            on C, E, G and A, up to the C an octave higher and back down again. The four notes stay
+            the same; only their order changes, with the melody always doubled an octave lower in the
+            left hand.
           </p>
           <p>
-            The goal is to get familiar with the block chord voicing of every chord the major scale
-            gives you, so you can find each shape without thinking.
+            The goal is to know every position of the C6 block by feel, since every technique that
+            follows returns to one of them on each chord tone.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/diatonic-chords.svg" alt="Block chords on the diatonic chords of C major in root position: C6, Dm7, Em7, F6, G7, Am7, B diminished 7, C6, one per beat" />
-            <audio controls preload="none" src="/assets/articles/block-chords/diatonic-chords.mp3"></audio>
-            <figcaption>One block per beat, up the C major scale.</figcaption>
+            <img src="/assets/articles/block-chords/c6-positions.svg" alt="The C6 block chord with the melody on C, E, G, A and the top C, then back down to C, one per beat" />
+            <audio controls preload="none" src="/assets/articles/block-chords/c6-positions.mp3"></audio>
+            <figcaption>The C6 block in every position, up and back down.</figcaption>
           </figure>
         </div>
       </details>
-      <p>
-        When the melody lands on a chord tone, that's all there is to it. The interesting question
-        is what to do with the notes in between: the passing tones that don't belong to the chord.
-        Each of the techniques we’ll look at next is a different answer to that question. All the examples are in C.
-      </p>
+
+      <h2>Harmonising the sixth diminished scale</h2>
       <p>
         To build and practise every technique, we'll use Barry Harris's sixth-diminished scale,
         also known as the major bebop scale. In C, it's the C major scale with one extra note,
@@ -264,6 +261,35 @@
         <audio controls preload="none" src="/assets/articles/block-chords/sixth-diminished-scale.mp3"></audio>
         <figcaption>The C sixth-diminished scale: C6 on the beat, passing tones in between. <span class="passing">Passing tones in blue.</span></figcaption>
       </figure>
+      <p>
+        Before harmonising every note, build the blocks up in two steps. Play the whole scale with
+        the left hand, and let the right hand add the C6 block only on the chord tones, in the
+        position that puts the melody on top. On the passing tones the right hand rests, and the left
+        hand carries the line on its own.
+      </p>
+      <figure>
+        <img src="/assets/articles/block-chords/scale-chord-tones.svg" alt="The sixth-diminished scale ascending in eighth notes in the left hand, with the right hand adding C6 blocks on C, E, G and A and resting on the passing tones, ending on C6" />
+        <audio controls preload="none" src="/assets/articles/block-chords/scale-chord-tones.mp3"></audio>
+        <figcaption>The scale in the left hand, C6 in the right hand on the chord tones only. <span class="passing">Passing tones in blue.</span></figcaption>
+      </figure>
+      <details class="exercise">
+        <summary><span class="exercise-label">Exercise</span> Scale in the left hand, up and down</summary>
+        <div class="exercise-body">
+          <p>
+            Play the C bebop scale up and back down in eighth notes with the left hand, and add the C6
+            block with the right hand on every chord tone, resting on the passing tones.
+          </p>
+          <p>
+            The goal is to land each C6 position on the beat while the left hand keeps the line
+            moving, in both directions.
+          </p>
+          <figure>
+            <img src="/assets/articles/block-chords/exercise-scale-chord-tones.svg" alt="The C bebop scale up and back down in eighth notes in the left hand, with C6 blocks in the right hand on C, E, G and A and rests on the passing tones" />
+            <audio controls preload="none" src="/assets/articles/block-chords/exercise-scale-chord-tones.mp3"></audio>
+            <figcaption>Up and back down in eighth notes.</figcaption>
+          </figure>
+        </div>
+      </details>
 
       <h2>Diminished passing tones</h2>
       <p>Harmonise passing tones as diminished chords.</p>
@@ -524,7 +550,7 @@
         const items = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside, figure)")];
 
         // Number the examples in page order so each one can be referred to as "Example N".
-        // Exercises are not examples and stay unnumbered.
+        // Exercises are not examples: they keep their own count, "Exercise N", on their label.
         [...article.querySelectorAll("figure")]
           .filter((fig) => !fig.closest(".exercise"))
           .forEach((fig, i) => {
@@ -533,6 +559,9 @@
             title.textContent = `Example ${i + 1}`;
             fig.prepend(title);
           });
+        article.querySelectorAll(".exercise-label").forEach((label, i) => {
+          label.textContent = `Exercise ${i + 1}`;
+        });
 
         // Every example gets a chord cursor and lights up the sounding notes, whether played
         // by read-along or by hand. The SVG is inlined so its noteheads can be styled.

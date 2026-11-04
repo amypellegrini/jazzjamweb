@@ -11,10 +11,22 @@
     <link rel="canonical" href="https://jazzjam.app/articles/block-chords/" />
 
     <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"></script>
+    <script
+      async
+      src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"
+    ></script>
     <script>
-      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-      plausible.init()
+      ((window.plausible =
+        window.plausible ||
+        function () {
+          (plausible.q = plausible.q || []).push(arguments);
+        }),
+        (plausible.init =
+          plausible.init ||
+          function (i) {
+            plausible.o = i || {};
+          }));
+      plausible.init();
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -28,38 +40,95 @@
         /* Serif fonts lack ♭ ♯ ♮, and the browser's fallback glyph is a full em wide ("A ♭").
            Route just those three characters to a symbol font with sensible metrics. */
         font-family: "Accidentals";
-        src: local("Apple Symbols"), local("Arial Unicode MS"), local("Segoe UI Symbol");
+        src:
+          local("Apple Symbols"), local("Arial Unicode MS"),
+          local("Segoe UI Symbol");
         unicode-range: U+266D-266F;
       }
       body {
         max-width: 46rem;
         margin: 0 auto;
         padding: 2rem 1rem 4rem;
-        font: 1.0625rem/1.65 "Accidentals", Georgia, "Times New Roman", serif;
+        font:
+          1.0625rem/1.65 "Accidentals",
+          Georgia,
+          "Times New Roman",
+          serif;
         color: #1d1d1f;
         background: #fff;
       }
-      h1, h2, h3 { font-family: system-ui, -apple-system, sans-serif; line-height: 1.25; }
-      h1 { font-size: 2.25rem; margin-bottom: 0.5rem; }
-      h2 { margin-top: 2.5rem; }
-      h3 { margin-top: 1.75rem; color: #444; }
-      figure { margin: 1.5rem 0; }
-      .example-title { font: 700 0.95rem/1.3 system-ui, -apple-system, sans-serif; margin-bottom: 0.4rem; }
-      figure img { width: 100%; height: auto; display: block; }
-      figure audio { width: 100%; margin-top: 0.5rem; }
-      figcaption { font: 0.875rem/1.4 "Accidentals", system-ui, sans-serif; color: #666; margin-top: 0.25rem; }
+      h1,
+      h2,
+      h3 {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.25;
+      }
+      h1 {
+        font-size: 2.25rem;
+        margin-bottom: 0.5rem;
+      }
+      h2 {
+        margin-top: 2.5rem;
+      }
+      h3 {
+        margin-top: 1.75rem;
+        color: #444;
+      }
+      figure {
+        margin: 1.5rem 0;
+      }
+      .example-title {
+        font:
+          700 0.95rem/1.3 system-ui,
+          -apple-system,
+          sans-serif;
+        margin-bottom: 0.4rem;
+      }
+      figure img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      figure audio {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      figcaption {
+        font:
+          0.875rem/1.4 "Accidentals",
+          system-ui,
+          sans-serif;
+        color: #666;
+        margin-top: 0.25rem;
+      }
       /* Lesson goal: set apart with a target icon (drawn in CSS so the narration text is unchanged). */
       .lede {
-        font-size: 1.2rem; color: #6b7280; font-style: italic; font-weight: 600;
+        font-size: 1.2rem;
+        color: #6b7280;
+        font-style: italic;
+        font-weight: 600;
         /* Georgia has only regular and bold; Source Serif 4 has a true semibold italic. */
         font-family: "Accidentals", "Source Serif 4", Georgia, serif;
-        position: relative; padding-left: 2.4rem;
+        position: relative;
+        padding-left: 2.4rem;
       }
       .lede::before {
-        content: ""; position: absolute; left: 0; top: 0.1em; width: 1.8rem; height: 1.8rem;
-        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>") no-repeat center / contain;
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.1em;
+        width: 1.8rem;
+        height: 1.8rem;
+        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
+          no-repeat center / contain;
       }
-      .passing { color: #2563eb; font-weight: 600; }
+      .passing {
+        color: #2563eb;
+        font-weight: 600;
+      }
 
       /* Side notes: asides to the main explanation. The label is CSS-only, so it is not narrated. */
       .note {
@@ -75,7 +144,9 @@
         content: "Note";
         display: block;
         margin-bottom: 0.25rem;
-        font: 600 0.75rem system-ui, sans-serif;
+        font:
+          600 0.75rem system-ui,
+          sans-serif;
         letter-spacing: 0.06em;
         text-transform: uppercase;
         color: #3670a0;
@@ -95,10 +166,14 @@
         align-items: center;
         gap: 0.6rem;
         padding: 0.85rem 1.1rem;
-        font: 600 1rem/1.3 system-ui, sans-serif;
+        font:
+          600 1rem/1.3 system-ui,
+          sans-serif;
         color: #5b3d07;
       }
-      .exercise summary::-webkit-details-marker { display: none; }
+      .exercise summary::-webkit-details-marker {
+        display: none;
+      }
       .exercise summary::after {
         content: "";
         margin-left: auto;
@@ -109,8 +184,14 @@
         transform: rotate(45deg);
         transition: transform 0.15s;
       }
-      .exercise[open] summary::after { transform: rotate(-135deg); }
-      .exercise summary:focus-visible { outline: 2px solid #b7791f; outline-offset: 2px; border-radius: 8px; }
+      .exercise[open] summary::after {
+        transform: rotate(-135deg);
+      }
+      .exercise summary:focus-visible {
+        outline: 2px solid #b7791f;
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
       .exercise-label {
         font-size: 0.75rem;
         letter-spacing: 0.08em;
@@ -120,31 +201,79 @@
         border-radius: 999px;
         padding: 0.15rem 0.6rem;
       }
-      .exercise-body { padding: 0 1.1rem 1rem; }
-      .exercise-body p:first-child { margin-top: 0; }
-      figure.detail { min-width: min(100%, 16rem); margin-left: auto; margin-right: auto; }
-      .exercise figure { background: #fff; border-radius: 6px; padding: 0.5rem; }
+      .exercise-body {
+        padding: 0 1.1rem 1rem;
+      }
+      .exercise-body p:first-child {
+        margin-top: 0;
+      }
+      figure.detail {
+        min-width: min(100%, 16rem);
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .exercise figure {
+        background: #fff;
+        border-radius: 6px;
+        padding: 0.5rem;
+      }
 
       /* Read-along mode */
-      .score { position: relative; }
+      .score {
+        position: relative;
+      }
       .cursor {
-        position: absolute; top: 4%; bottom: 4%; width: 2.6%;
-        transform: translateX(-50%); border-radius: 4px;
-        background: rgba(255, 196, 0, 0.35); pointer-events: none; display: none;
+        position: absolute;
+        top: 4%;
+        bottom: 4%;
+        width: 2.6%;
+        transform: translateX(-50%);
+        border-radius: 4px;
+        background: rgba(255, 196, 0, 0.35);
+        pointer-events: none;
+        display: none;
       }
-      .score svg { width: 100%; height: auto; display: block; }
-      .score svg path.Note.sounding { fill: #e8590c; }
-      .reading { background: #fffbea; box-shadow: 0 0 0 0.5rem #fffbea; border-radius: 2px; }
-      .w { border-radius: 3px; }
-      .w.on { background: #ffe066; }
-      body.readalong article > :is(h1, h2, h3, p, aside, figure) { cursor: pointer; }
+      .score svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .score svg path.Note.sounding {
+        fill: #e8590c;
+      }
+      .reading {
+        background: #fffbea;
+        box-shadow: 0 0 0 0.5rem #fffbea;
+        border-radius: 2px;
+      }
+      .w {
+        border-radius: 3px;
+      }
+      .w.on {
+        background: #ffe066;
+      }
+      body.readalong article > :is(h1, h2, h3, p, aside, figure) {
+        cursor: pointer;
+      }
       #listen {
-        position: fixed; right: 1rem; bottom: 1rem; z-index: 1;
-        font: 600 1rem system-ui, sans-serif; padding: 0.75rem 1.25rem;
-        border: 0; border-radius: 999px; background: #1d1d1f; color: #fff;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); cursor: pointer;
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 1;
+        font:
+          600 1rem system-ui,
+          sans-serif;
+        padding: 0.75rem 1.25rem;
+        border: 0;
+        border-radius: 999px;
+        background: #1d1d1f;
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
       }
-      #listen[hidden] { display: none; }
+      #listen[hidden] {
+        display: none;
+      }
 
       /* Header: a minimal bar in the footer's colours, linking home. */
       .site-header {
@@ -154,15 +283,21 @@
         margin: -2rem 0 2.5rem calc(50% - 50vw);
       }
       .site-header .container {
-        max-width: 1200px; margin: 0 auto; padding: 1rem 1.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
       }
       .site-header a {
-        font: 600 1.25rem "Outfit", sans-serif;
+        font:
+          600 1.25rem "Outfit",
+          sans-serif;
         color: #ffffff;
         text-decoration: none;
         letter-spacing: 0.01em;
       }
-      .site-header a:hover { color: #c4d8ea; }
+      .site-header a:hover {
+        color: #c4d8ea;
+      }
 
       /* Footer: same as the home page (src/index.html), stretched to the full viewport
          width since this page's body is a narrow reading column. */
@@ -174,7 +309,11 @@
         width: 100vw;
         margin: 4rem 0 -4rem calc(50% - 50vw);
       }
-      footer .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+      footer .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
       footer a {
         font-family: "Outfit", sans-serif;
         color: #6a8faa;
@@ -183,8 +322,13 @@
         font-size: 0.9rem;
         transition: color 0.2s;
       }
-      footer a:hover { color: #c4d8ea; text-decoration: underline; }
-      html { overflow-x: hidden; }
+      footer a:hover {
+        color: #c4d8ea;
+        text-decoration: underline;
+      }
+      html {
+        overflow-x: hidden;
+      }
     </style>
   </head>
   <body>
@@ -194,98 +338,167 @@
     <article>
       <h1>Piano Block Chords</h1>
       <p class="lede">
-        In this lesson we’ll learn different harmonisation techniques for playing block chords
-        at the piano.
+        In this lesson we’ll learn different harmonisation techniques for
+        playing block chords at the piano.
       </p>
       <p>
-        Block chords, also called locked hands, harmonise a melody so that every note gets its own
-        chord, moving in parallel with the melody. The sound is closely associated with George
-        Shearing, Red Garland and Oscar Peterson, and it's one of the quickest ways to make a melody
-        sound like a full horn section at the piano.
+        Block chords, also called locked hands, harmonise a melody so that every
+        note gets its own chord, moving in parallel with the melody. The sound
+        is closely associated with George Shearing, Red Garland and Oscar
+        Peterson, and it's one of the quickest ways to make a melody sound like
+        a full horn section at the piano.
       </p>
       <p>
-        The basic shape is simple: play the melody note on top with the right hand, fill in three
-        chord tones directly beneath it in close position, and double the melody an octave lower
-        with the left hand. Both hands move together as one block, which is where the name comes
-        from.
+        The basic shape is simple: play the melody note on top with the right
+        hand, fill in three chord tones directly beneath it in close position,
+        and double the melody an octave lower with the left hand. Both hands
+        move together as one block, which is where the name comes from.
       </p>
       <figure>
-        <img src="/assets/articles/block-chords/basic-shape.svg" alt="Building a block chord on C in three steps: the melody note alone, then with three chord tones beneath it, then with the melody doubled an octave lower in the left hand" />
-        <audio controls preload="none" src="/assets/articles/block-chords/basic-shape.mp3"></audio>
-        <figcaption>Building the block on C: <strong style="color: #c2255c">the melody</strong>, then <strong style="color: #2f9e44">three chord tones beneath it</strong>, then <strong style="color: #7048e8">the melody doubled in the left hand</strong>.</figcaption>
+        <img
+          src="/assets/articles/block-chords/basic-shape.svg"
+          alt="Building a block chord on C in three steps: the melody note alone, then with three chord tones beneath it, then with the melody doubled an octave lower in the left hand"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/basic-shape.mp3"
+        ></audio>
+        <figcaption>
+          Building the block on C:
+          <strong style="color: #c2255c">the melody</strong>, then
+          <strong style="color: #2f9e44">three chord tones beneath it</strong>,
+          then
+          <strong style="color: #7048e8"
+            >the melody doubled in the left hand</strong
+          >.
+        </figcaption>
       </figure>
       <p>
-        If it's easier to think about, you can also build the same block from the bottom up: start
-        with the root in the left hand, stack the three chord tones above it, and duplicate the
-        melody an octave higher on top. The notes are the same; only the order you find them in
-        changes.
+        If it makes it easier, you can also build the same block from the bottom
+        up: start with the root in the left hand, stack the three chord tones
+        above it with the right hand, and duplicate the melody an octave higher
+        on top.
       </p>
       <figure>
-        <img src="/assets/articles/block-chords/basic-shape-from-below.svg" alt="Building the same block chord on C from the bottom up: the root alone in the left hand, then with three chord tones stacked above it, then with the melody doubled an octave higher on top" />
-        <audio controls preload="none" src="/assets/articles/block-chords/basic-shape-from-below.mp3"></audio>
-        <figcaption>The same block from below: <strong style="color: #7048e8">the root in the left hand</strong>, then <strong style="color: #2f9e44">three chord tones above it</strong>, then <strong style="color: #c2255c">the melody doubled on top</strong>.</figcaption>
+        <img
+          src="/assets/articles/block-chords/basic-shape-from-below.svg"
+          alt="Building the same block chord on C from the bottom up: the root alone in the left hand, then with three chord tones stacked above it, then with the melody doubled an octave higher on top"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/basic-shape-from-below.mp3"
+        ></audio>
+        <figcaption>
+          The same block from below:
+          <strong style="color: #7048e8">the root in the left hand</strong>,
+          then
+          <strong style="color: #2f9e44">three chord tones above it</strong>,
+          then
+          <strong style="color: #c2255c">the melody doubled on top</strong>.
+        </figcaption>
       </figure>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> C6 in every position</summary>
+        <summary>
+          <span class="exercise-label">Exercise</span> Preparation for block
+          chords scale in C6
+        </summary>
         <div class="exercise-body">
           <p>
-            Play the C6 block with each of its notes on top in turn, one block per beat: the melody
-            on C, E, G and A, up to the C an octave higher and back down again. The four notes stay
-            the same; only their order changes, with the melody always doubled an octave lower in the
-            left hand.
-          </p>
-          <p>
-            The goal is to know every position of the C6 block by feel, since every technique that
-            follows returns to one of them on each chord tone.
+            Play all positions of the C6 block chord in ascending and descending
+            order, one block per beat: the melody on C, E, G and A, up to the C
+            an octave higher and back down again. The melody always doubled an
+            octave lower in the left hand.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/c6-positions.svg" alt="The C6 block chord with the melody on C, E, G, A and the top C, then back down to C, one per beat" />
-            <audio controls preload="none" src="/assets/articles/block-chords/c6-positions.mp3"></audio>
-            <figcaption>The C6 block in every position, up and back down.</figcaption>
+            <img
+              src="/assets/articles/block-chords/c6-positions.svg"
+              alt="The C6 block chord with the melody on C, E, G, A and the top C, then back down to C, one per beat"
+            />
+            <audio
+              controls
+              preload="none"
+              src="/assets/articles/block-chords/c6-positions.mp3"
+            ></audio>
+            <figcaption>
+              The C6 block in every position, up and back down.
+            </figcaption>
           </figure>
         </div>
       </details>
 
-      <h2>Harmonising the sixth diminished scale</h2>
+      <h2>Harmonising the sixth-diminished scale</h2>
       <p>
-        To build and practise every technique, we'll use Barry Harris's sixth-diminished scale,
-        also known as the major bebop scale. In C, it's the C major scale with one extra note,
-        G♯ (or A♭), between G and A: C, D, E, F, G, A♭, A, B. With eight notes instead of seven,
-        the scale lines up with the beat: played in eighth notes, the four notes of C6 (C, E, G
-        and A) land on the beat, and the four passing tones (D, F, A♭ and B) fall in between. The
-        chord tones always stay on C6; each technique is a different way to harmonise the passing
-        tones.
+        To build and practise every technique, we'll use Barry Harris's
+        sixth-diminished scale, also known as the major bebop scale. In C, it's
+        the C major scale with an extra semitone between G and A (G♯ or A♭): C,
+        D, E, F, G, A♭ (or G♯), A, B. With eight notes instead of seven, the
+        scale lines up with the beat: played in eighth notes, the four notes of
+        C6 (C, E, G and A) land on the beat, and the four passing tones (D, F,
+        A♭ and B) fall on the upbeat.
       </p>
       <figure>
-        <img src="/assets/articles/block-chords/sixth-diminished-scale.svg" alt="The C sixth-diminished scale in eighth notes: C, D, E, F, G, A flat, A, B, then C, with the passing tones D, F, A flat and B in blue" />
-        <audio controls preload="none" src="/assets/articles/block-chords/sixth-diminished-scale.mp3"></audio>
-        <figcaption>The C sixth-diminished scale: C6 on the beat, passing tones in between. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/sixth-diminished-scale.svg"
+          alt="The C sixth-diminished scale in eighth notes: C, D, E, F, G, A flat, A, B, then C, with the passing tones D, F, A flat and B in blue"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/sixth-diminished-scale.mp3"
+        ></audio>
+        <figcaption>
+          The C sixth-diminished scale: C6 on the beat, passing tones in
+          between. <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <p>
-        Before harmonising every note, build the blocks up in two steps. Play the whole scale with
-        the left hand, and let the right hand add the C6 block only on the chord tones, in the
-        position that puts the melody on top. On the passing tones the right hand rests, and the left
-        hand carries the line on its own.
+        We can arrange the C major sixth-diminished scale progressively,
+        starting with the chord tones. Play the whole scale with the left hand,
+        and add the C6 block chords with the right hand only when playing a
+        chord tone. On non-chord tones the right hand can remain silent.
       </p>
       <figure>
-        <img src="/assets/articles/block-chords/scale-chord-tones.svg" alt="The sixth-diminished scale ascending in eighth notes in the left hand, with the right hand adding C6 blocks on C, E, G and A and resting on the passing tones, ending on C6" />
-        <audio controls preload="none" src="/assets/articles/block-chords/scale-chord-tones.mp3"></audio>
-        <figcaption>The scale in the left hand, C6 in the right hand on the chord tones only. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/scale-chord-tones.svg"
+          alt="The sixth-diminished scale ascending in eighth notes in the left hand, with the right hand adding C6 blocks on C, E, G and A and resting on the passing tones, ending on C6"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/scale-chord-tones.mp3"
+        ></audio>
+        <figcaption>
+          The scale in the left hand, C6 in the right hand on the chord tones
+          only. <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> Scale in the left hand, up and down</summary>
+        <summary>
+          <span class="exercise-label">Exercise</span> Scale in the left hand,
+          up and down
+        </summary>
         <div class="exercise-body">
           <p>
-            Play the C bebop scale up and back down in eighth notes with the left hand, and add the C6
-            block with the right hand on every chord tone, resting on the passing tones.
+            Play the C bebop scale up and back down in eighth notes with the
+            left hand, and add the C6 block with the right hand on every chord
+            tone, resting on the passing tones.
           </p>
           <p>
-            The goal is to land each C6 position on the beat while the left hand keeps the line
-            moving, in both directions.
+            The goal is to land each C6 position on the beat while the left hand
+            keeps the line moving, in both directions.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/exercise-scale-chord-tones.svg" alt="The C bebop scale up and back down in eighth notes in the left hand, with C6 blocks in the right hand on C, E, G and A and rests on the passing tones" />
-            <audio controls preload="none" src="/assets/articles/block-chords/exercise-scale-chord-tones.mp3"></audio>
+            <img
+              src="/assets/articles/block-chords/exercise-scale-chord-tones.svg"
+              alt="The C bebop scale up and back down in eighth notes in the left hand, with C6 blocks in the right hand on C, E, G and A and rests on the passing tones"
+            />
+            <audio
+              controls
+              preload="none"
+              src="/assets/articles/block-chords/exercise-scale-chord-tones.mp3"
+            ></audio>
             <figcaption>Up and back down in eighth notes.</figcaption>
           </figure>
         </div>
@@ -294,53 +507,99 @@
       <h2>Diminished passing tones</h2>
       <p>Harmonise passing tones as diminished chords.</p>
       <p>
-        Between the notes of C6 (C–E–G–A) sit D, F, G♯ (or A♭) and B, and together those four notes
-        spell a diminished seventh chord. For this explanation we'll use B°7.
+        The C major sixth-diminished scale is composed of chord tones matching
+        C6 (C–E–G–A) and non-chord tones (D, F, G♯ or A♭ and B). Together those
+        four non-chord tones spell a diminished seventh chord. For this
+        explanation we'll use B°7.
       </p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-c6-bdim7.svg" alt="A C6 chord, C E G A, in green, next to a B diminished seventh chord voiced from D: D F A flat B, in blue; then the scale in eighth notes, each note coloured by the chord it belongs to" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-c6-bdim7.mp3"></audio>
-        <figcaption><strong style="color: #2f9e44">C6 (C–E–G–A)</strong> and <strong style="color: #2563eb">B°7 (D–F–A♭–B)</strong>, voiced from D so each note sits a step from a note of C6. Between them, every note of the scale.</figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-c6-bdim7.svg"
+          alt="A C6 chord, C E G A, in green, next to a B diminished seventh chord voiced from D: D F A flat B, in blue; then the scale in eighth notes, each note coloured by the chord it belongs to"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-c6-bdim7.mp3"
+        ></audio>
+        <figcaption>
+          <strong style="color: #2f9e44">C6 (C–E–G–A)</strong> and
+          <strong style="color: #2563eb">B°7 (D–F–A♭–B)</strong>, voiced from D
+          so each note sits a step from a note of C6. Between them, every note
+          of the scale.
+        </figcaption>
       </figure>
       <p>
-        So whenever the melody
-        hits a passing tone, voice it as B°7
-        with the melody on top; when it returns to a chord tone, go back to C6. Played up the scale,
-        the two chords alternate on every step, and the diminished chord pulls back into C6 the same
-        way G7♭9 resolves to the tonic. This pairing of a sixth chord with its diminished neighbour
-        is the heart of Barry Harris's sixth-diminished scale.
+        So whenever the melody hits a passing tone (or non-chord tone), voice it
+        as B°7 with the melody on top; when it returns to a chord tone, go back
+        to C6. The two chords alternate on every step, and the diminished chord
+        pulls back into C6 the same way G7♭9 resolves to the tonic. This pairing
+        of a sixth chord with its diminished neighbour is the heart of Barry
+        Harris's sixth-diminished scale.
       </p>
       <aside class="note">
-        A diminished seventh is built from equal minor thirds, so the same four notes can be named as
-        four different diminished chords: D°7, F°7, A♭°7 or B°7, depending on which note you treat
-        as the root.
+        A diminished seventh is built from equal minor thirds, so the same four
+        notes can be named as four different diminished chords: D°7, F°7, A♭°7
+        or B°7, depending on which note you treat as the root.
       </aside>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-dim-names.svg" alt="The same four notes stacked from each of them in turn, ascending from D: D diminished seventh, F diminished seventh, A flat diminished seventh and B diminished seventh" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-dim-names.mp3"></audio>
-        <figcaption>The same four notes, named from each one in turn, ascending from D: D°7, F°7, A♭°7 and B°7.</figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-dim-names.svg"
+          alt="The same four notes stacked from each of them in turn, ascending from D: D diminished seventh, F diminished seventh, A flat diminished seventh and B diminished seventh"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-dim-names.mp3"
+        ></audio>
+        <figcaption>
+          The same four notes, named from each one in turn, ascending from D:
+          D°7, F°7, A♭°7 and B°7.
+        </figcaption>
       </figure>
       <figure>
-        <img src="/assets/articles/block-chords/diminished.svg" alt="C6 and B diminished seventh block chords alternating up the C scale" />
-        <audio controls preload="none" src="/assets/articles/block-chords/diminished.mp3"></audio>
-        <figcaption>C6 and B°7 alternating up the scale. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/diminished.svg"
+          alt="C6 and B diminished seventh block chords alternating up the C scale"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/diminished.mp3"
+        ></audio>
+        <figcaption>
+          C6 and B°7 alternating up the scale.
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <p>
-        Coming down the scale works exactly the same way: C6 on the chord tones and B°7 on the
-        passing tones.
+        Coming down the scale works exactly the same way: C6 on the chord tones
+        and B°7 on the passing tones.
       </p>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> Diminished passing tones, up and down</summary>
+        <summary>
+          <span class="exercise-label">Exercise</span> Diminished passing tones,
+          up and down
+        </summary>
         <div class="exercise-body">
           <p>
-            Play the C bebop scale up and back down in eighth notes, one block per note: C6 on the chord tones and B°7 on every passing tone.
+            Play the C bebop scale up and back down in eighth notes, one block
+            per note: C6 on the chord tones and B°7 on every passing tone.
           </p>
           <p>
-            The goal is to switch between the C6 and B°7 shapes without stopping, in both directions.
+            The goal is to switch between the C6 and B°7 shapes without
+            stopping, in both directions.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/exercise-diminished.svg" alt="The C bebop scale up and back down in eighth-note block chords, alternating C6 and B diminished seventh" />
-            <audio controls preload="none" src="/assets/articles/block-chords/exercise-diminished.mp3"></audio>
+            <img
+              src="/assets/articles/block-chords/exercise-diminished.svg"
+              alt="The C bebop scale up and back down in eighth-note block chords, alternating C6 and B diminished seventh"
+            />
+            <audio
+              controls
+              preload="none"
+              src="/assets/articles/block-chords/exercise-diminished.mp3"
+            ></audio>
             <figcaption>Up and back down in eighth notes.</figcaption>
           </figure>
         </div>
@@ -349,68 +608,128 @@
       <h2>Diatonic passing tones</h2>
       <p>Harmonise passing tones as diatonic chords.</p>
       <p>
-        Instead of a diminished chord, you can stay inside the key and harmonise passing tones with
-        another diatonic chord. The result is smoother and less dramatic than the diminished
-        approach. The chord tones C, E, G and A are still harmonised as C6, each in its own
-        position; only the passing tones change.
+        Instead of a diminished chord, you can stay inside the key and harmonise
+        passing tones with another diatonic chord. The result is smoother and
+        less dramatic than the diminished approach. The chord tones C, E, G and
+        A are still harmonised as C6, each in its own position; only the passing
+        tones change.
       </p>
 
       <h3>Rootless major ninth voicing</h3>
       <p>Drop the root from Cmaj9 and you're left with E–G–B–D.</p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-rootless.svg" alt="Cmaj9, C E G B D, then the same chord without its root, E G B D" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-rootless.mp3"></audio>
-        <figcaption>Cmaj9 (C–E–G–B–D), then without its root: E–G–B–D.</figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-rootless.svg"
+          alt="Cmaj9, C E G B D, then the same chord without its root, E G B D"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-rootless.mp3"
+        ></audio>
+        <figcaption>
+          Cmaj9 (C–E–G–B–D), then without its root: E–G–B–D.
+        </figcaption>
       </figure>
       <p>
-        That shape contains both D and B, so use it for those two passing tones: on D the block is
-        voiced D–E–G–B–D, and on B it is voiced B–D–E–G–B, with the melody doubled in the left hand
-        as usual. Because the rootless voicing shares E and G with C6, the passing chords barely move
-        away from home.
+        That shape contains both D and B, so use it for those two passing tones:
+        on D the block is voiced D–E–G–B–D, and on B it is voiced B–D–E–G–B,
+        with the melody doubled in the left hand as usual. Because the rootless
+        voicing shares E and G with C6, the passing chords barely move away from
+        home.
       </p>
       <figure>
-        <img src="/assets/articles/block-chords/rootless-major-ninth.svg" alt="A C major melody from C to C harmonised with C6 on chord tones and rootless C major ninth on D and B" />
-        <audio controls preload="none" src="/assets/articles/block-chords/rootless-major-ninth.mp3"></audio>
-        <figcaption>C6 on the chord tones, rootless Cmaj9 on D and B. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/rootless-major-ninth.svg"
+          alt="A C major melody from C to C harmonised with C6 on chord tones and rootless C major ninth on D and B"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/rootless-major-ninth.mp3"
+        ></audio>
+        <figcaption>
+          C6 on the chord tones, rootless Cmaj9 on D and B.
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
 
       <h3>Dominant seventh voicing</h3>
       <p>
-        The fourth degree is the exception. In C that's F, which the rootless Cmaj9 shape doesn't
-        contain, so it takes a plain dominant seventh instead: G7, voiced F–G–B–D–F, with F on top
-        and doubled in the left hand. The two shapes are very close: both are stacked thirds
-        sharing G, B and D. So as the melody climbs, the hands alternate between C6 on the chord
-        tones and two similar shapes on the passing tones.
+        The fourth degree is the exception. In C that's F, which the rootless
+        Cmaj9 shape doesn't contain, so it takes a plain dominant seventh
+        instead: G7, voiced F–G–B–D–F, with F on top and doubled in the left
+        hand. The two shapes are very close: both are stacked thirds sharing G,
+        B and D. So as the melody climbs, the hands alternate between C6 on the
+        chord tones and two similar shapes on the passing tones.
       </p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-g7-maj9.svg" alt="The rootless C major ninth block on D, D E G B D, next to the G7 block on F, F G B D F" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-g7-maj9.mp3"></audio>
-        <figcaption>Rootless Cmaj9 on D (D–E–G–B–D) and G7 on F (F–G–B–D–F): both stacked thirds, sharing G, B and D. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-g7-maj9.svg"
+          alt="The rootless C major ninth, E G B D, next to G7, F G B D F"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-g7-maj9.mp3"
+        ></audio>
+        <figcaption>
+          Rootless Cmaj9 (E–G–B–D) and G7 (F–G–B–D–F): both stacked thirds,
+          sharing G, B and D.
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <p>
-        With that last piece in place, every note of the C major scale has a block chord: C6 on the
-        chord tones, rootless Cmaj9 on D and B, and G7 on F. Keep the A♭ from the diminished
-        technique as a passing tone between G and A: harmonised as B°7, it holds the shape of the
-        scale in place, just like a bebop scale, so the chord tones keep landing on the beat.
+        With that last piece in place, every note of the C major scale has a
+        block chord: C6 on the chord tones, rootless Cmaj9 on D and B, and G7 on
+        F. Keep the A♭ from the diminished technique as a passing tone between G
+        and A: harmonised as B°7, it holds the shape of the scale in place, just
+        like a bebop scale, so the chord tones keep landing on the beat.
       </p>
       <figure>
-        <img src="/assets/articles/block-chords/dominant-seventh.svg" alt="A C bebop scale from C to C harmonised with C6, rootless C major ninth, G7 and B diminished seventh block chords" />
-        <audio controls preload="none" src="/assets/articles/block-chords/dominant-seventh.mp3"></audio>
-        <figcaption>The full scale: C6, rootless Cmaj9, G7 on the fourth degree, and B°7 on A♭. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/dominant-seventh.svg"
+          alt="A C bebop scale from C to C harmonised with C6, rootless C major ninth, G7 and B diminished seventh block chords"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/dominant-seventh.mp3"
+        ></audio>
+        <figcaption>
+          The full scale: C6, rootless Cmaj9, G7 on the fourth degree, and B°7
+          on A♭. <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
-      <p>Coming down the scale, every note keeps the voicing it has on the way up.</p>
+      <p>
+        Coming down the scale, every note keeps the voicing it has on the way
+        up.
+      </p>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> Diatonic passing tones, up and down</summary>
+        <summary>
+          <span class="exercise-label">Exercise</span> Diatonic passing tones,
+          up and down
+        </summary>
         <div class="exercise-body">
           <p>
-            Play the C bebop scale up and back down in eighth notes, one block per note: C6 on the chord tones, the rootless Cmaj9 on D and B, G7 on F, and B°7 on A♭.
+            Play the C bebop scale up and back down in eighth notes, one block
+            per note: C6 on the chord tones, the rootless Cmaj9 on D and B, G7
+            on F, and B°7 on A♭.
           </p>
           <p>
-            The goal is to find each of these voicings by hand, going up and coming down.
+            The goal is to find each of these voicings by hand, going up and
+            coming down.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/exercise-diatonic.svg" alt="The C bebop scale up and back down in eighth-note block chords, with C6, rootless C major ninth, G7 and B diminished seventh" />
-            <audio controls preload="none" src="/assets/articles/block-chords/exercise-diatonic.mp3"></audio>
+            <img
+              src="/assets/articles/block-chords/exercise-diatonic.svg"
+              alt="The C bebop scale up and back down in eighth-note block chords, with C6, rootless C major ninth, G7 and B diminished seventh"
+            />
+            <audio
+              controls
+              preload="none"
+              src="/assets/articles/block-chords/exercise-diatonic.mp3"
+            ></audio>
             <figcaption>Up and back down in eighth notes.</figcaption>
           </figure>
         </div>
@@ -418,58 +737,119 @@
 
       <h2>Chromatic passing tones</h2>
       <p>
-        Harmonise the passing tone with the target chord's own voicing, shifted by a half step.
-        This technique only works when approaching the target note chromatically.
+        Harmonise the passing tone with the target chord's own voicing, shifted
+        by a half step. This technique only works when approaching the target
+        note chromatically.
       </p>
       <p>
-        Take the same bebop scale and treat A♭ and B as passing tones that approach their targets
-        chromatically, always ascending. With A in the melody, the C6 voicing (C–E–G–A) can just as
-        well be read as Am7 (C6 over A). A♭ leads to A, so it takes that voicing a half step lower:
-        C♭–E♭–G♭–A♭, an A♭m7. B leads to C, so it takes the C6 voicing (E–G–A–C) a half step lower:
-        D♯–F♯–G♯–B, a B6. Each approach block then slides up into place, A♭m7 into Am7 and B6 into
-        C6.
+        Take the same bebop scale and treat A♭ and B as passing tones that
+        approach their targets chromatically, always ascending. With A in the
+        melody, the C6 voicing (C–E–G–A) can just as well be read as Am7 (C6
+        over A). A♭ leads to A, so it takes that voicing a half step lower:
+        C♭–E♭–G♭–A♭, an A♭m7. B leads to C, so it takes the C6 voicing (E–G–A–C)
+        a half step lower: D♯–F♯–G♯–B, a B6. Each approach block then slides up
+        into place, A♭m7 into Am7 and B6 into C6.
       </p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-chromatic-up.svg" alt="A flat minor seventh, C flat E flat G flat A flat, moving up a half step to A minor seventh, C E G A; then B6, D sharp F sharp G sharp B, moving up to C6, E G A C" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-chromatic-up.mp3"></audio>
-        <figcaption>A♭m7 (C♭–E♭–G♭–A♭) up to Am7 (C–E–G–A); B6 (D♯–F♯–G♯–B) up to C6 (E–G–A–C). <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-chromatic-up.svg"
+          alt="A flat minor seventh, C flat E flat G flat A flat, moving up a half step to A minor seventh, C E G A; then B6, D sharp F sharp G sharp B, moving up to C6, E G A C"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-chromatic-up.mp3"
+        ></audio>
+        <figcaption>
+          A♭m7 (C♭–E♭–G♭–A♭) up to Am7 (C–E–G–A); B6 (D♯–F♯–G♯–B) up to C6
+          (E–G–A–C). <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <figure>
-        <img src="/assets/articles/block-chords/chromatic.svg" alt="A C bebop scale where A flat is harmonised as A flat minor seventh approaching A minor seventh, and B as B6 approaching C6" />
-        <audio controls preload="none" src="/assets/articles/block-chords/chromatic.mp3"></audio>
-        <figcaption>A♭m7 approaching Am7, and B6 approaching C6, each from a half step below. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/chromatic.svg"
+          alt="A C bebop scale where A flat is harmonised as A flat minor seventh approaching A minor seventh, and B as B6 approaching C6"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/chromatic.mp3"
+        ></audio>
+        <figcaption>
+          A♭m7 approaching Am7, and B6 approaching C6, each from a half step
+          below. <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <p>
-        Coming down the scale, the approaches change direction. B no longer leads to a note a half
-        step away, so it falls back to the rootless Cmaj9 voicing, B–D–E–G–B. A♭ now approaches G
-        from above, so it takes G's voicing a half step higher. G is voiced A–C–E–G, which you can
-        read as C6 over its fifth or as Am7 over G; a half step up, that becomes B♭–D♭–F–A♭, a B♭m7
-        over A♭, which slides down into place. F works the same way: it now sits a half step above
-        E, so it takes E's voicing a half step higher. E is voiced G–A–C–E, C6 over its third or
-        Am7 over E; a half step up, that becomes A♭–B♭–D♭–F, a B♭m7 over F.
+        Coming down the scale, the approaches change direction. B no longer
+        leads to a note a half step away, so it falls back to the rootless Cmaj9
+        voicing, B–D–E–G–B. A♭ now approaches G from above, so it takes G's
+        voicing a half step higher. G is voiced A–C–E–G, which you can read as
+        C6 over its fifth or as Am7 over G; a half step up, that becomes
+        B♭–D♭–F–A♭, a B♭m7 over A♭, which slides down into place. F works the
+        same way: it now sits a half step above E, so it takes E's voicing a
+        half step higher. E is voiced G–A–C–E, C6 over its third or Am7 over E;
+        a half step up, that becomes A♭–B♭–D♭–F, a B♭m7 over F.
       </p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-chromatic-down.svg" alt="B flat minor seventh over A flat, B flat D flat F A flat, moving down a half step to A minor seventh over G, A C E G; then B flat minor seventh over F, A flat B flat D flat F, moving down to A minor seventh over E, G A C E" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-chromatic-down.mp3"></audio>
-        <figcaption>B♭m7/A♭ (B♭–D♭–F–A♭) down to Am7/G (A–C–E–G); B♭m7/F (A♭–B♭–D♭–F) down to Am7/E (G–A–C–E). <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-chromatic-down.svg"
+          alt="B flat minor seventh over A flat, B flat D flat F A flat, moving down a half step to A minor seventh over G, A C E G; then B flat minor seventh over F, A flat B flat D flat F, moving down to A minor seventh over E, G A C E"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-chromatic-down.mp3"
+        ></audio>
+        <figcaption>
+          B♭m7/A♭ (B♭–D♭–F–A♭) down to Am7/G (A–C–E–G); B♭m7/F (A♭–B♭–D♭–F) down
+          to Am7/E (G–A–C–E).
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <figure>
-        <img src="/assets/articles/block-chords/chromatic-descending.svg" alt="The C bebop scale coming down, with A flat harmonised as B flat minor seventh over A flat approaching A minor seventh over G, and F as B flat minor seventh over F approaching A minor seventh over E, each from a half step above" />
-        <audio controls preload="none" src="/assets/articles/block-chords/chromatic-descending.mp3"></audio>
-        <figcaption>Coming down: B♭m7/A♭ approaching Am7/G, and B♭m7/F approaching Am7/E, each from a half step above. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/chromatic-descending.svg"
+          alt="The C bebop scale coming down, with A flat harmonised as B flat minor seventh over A flat approaching A minor seventh over G, and F as B flat minor seventh over F approaching A minor seventh over E, each from a half step above"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/chromatic-descending.mp3"
+        ></audio>
+        <figcaption>
+          Coming down: B♭m7/A♭ approaching Am7/G, and B♭m7/F approaching Am7/E,
+          each from a half step above.
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> Chromatic passing tones, up and down</summary>
+        <summary>
+          <span class="exercise-label">Exercise</span> Chromatic passing tones,
+          up and down
+        </summary>
         <div class="exercise-body">
           <p>
-            Play the C bebop scale up and back down in eighth notes, one block per note. Going up, A♭ and B approach A and C from a half step below, as A♭m7 and B6; coming down, A♭ and F approach G and E from a half step above, as B♭m7/A♭ and B♭m7/F, and B falls back to the rootless Cmaj9.
+            Play the C bebop scale up and back down in eighth notes, one block
+            per note. Going up, A♭ and B approach A and C from a half step
+            below, as A♭m7 and B6; coming down, A♭ and F approach G and E from a
+            half step above, as B♭m7/A♭ and B♭m7/F, and B falls back to the
+            rootless Cmaj9.
           </p>
           <p>
-            The goal is to feel how the approach chord changes with the direction of the melody.
+            The goal is to feel how the approach chord changes with the
+            direction of the melody.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/exercise-chromatic.svg" alt="The C bebop scale up and back down in eighth-note block chords, with chromatic approach chords from below going up and from above coming down" />
-            <audio controls preload="none" src="/assets/articles/block-chords/exercise-chromatic.mp3"></audio>
+            <img
+              src="/assets/articles/block-chords/exercise-chromatic.svg"
+              alt="The C bebop scale up and back down in eighth-note block chords, with chromatic approach chords from below going up and from above coming down"
+            />
+            <audio
+              controls
+              preload="none"
+              src="/assets/articles/block-chords/exercise-chromatic.mp3"
+            ></audio>
             <figcaption>Up and back down in eighth notes.</figcaption>
           </figure>
         </div>
@@ -478,52 +858,100 @@
       <h2>2 5 1 passing tones</h2>
       <p>Harmonise passing tones with the chords of a major 2 5 1.</p>
       <p>
-        In C, those chords are Dm7, G7 and C6. The chord tones C, E and G stay on C6, the 1 chord.
-        The second, fourth and seventh degrees of the scale, D, F and B, all belong to G7, the
-        dominant built on the fifth degree, so each one is harmonised as G7 in the inversion that
-        puts it on top: on D the block is D–F–G–B–D, on F it is F–G–B–D–F, and on B it is
-        B–D–F–G–B. The sixth degree, A, is harmonised as Dm7, the 2 chord, inverted the same way:
-        A–C–D–F–A.
+        In C, those chords are Dm7, G7 and C6. The chord tones C, E and G stay
+        on C6, the 1 chord. The second, fourth and seventh degrees of the scale,
+        D, F and B, all belong to G7, the dominant built on the fifth degree, so
+        each one is harmonised as G7 in the inversion that puts it on top: on D
+        the block is D–F–G–B–D, on F it is F–G–B–D–F, and on B it is B–D–F–G–B.
+        The sixth degree, A, is harmonised as Dm7, the 2 chord, inverted the
+        same way: A–C–D–F–A.
       </p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-two-five-one-voicings.svg" alt="G7 blocks with D, F and B on top, D F G B D, F G B D F and B D F G B, then the Dm7 block with A on top, A C D F A" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-two-five-one-voicings.mp3"></audio>
-        <figcaption>G7 on D (D–F–G–B–D), on F (F–G–B–D–F) and on B (B–D–F–G–B); Dm7 on A (A–C–D–F–A). <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-two-five-one-voicings.svg"
+          alt="G7 blocks with D, F and B on top, D F G B D, F G B D F and B D F G B, then the Dm7 block with A on top, A C D F A"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-two-five-one-voicings.mp3"
+        ></audio>
+        <figcaption>
+          G7 on D (D–F–G–B–D), on F (F–G–B–D–F) and on B (B–D–F–G–B); Dm7 on A
+          (A–C–D–F–A). <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <p>
-        Keep the A♭ between G and A as a diminished passing tone, harmonised as B°7 just like in
-        Barry Harris's sixth-diminished scale, so the scale keeps its bebop shape and the chord
-        tones land on the beat. Played up the scale, every passing tone becomes a small cadence:
-        G7, B°7 and Dm7 lead back to C6 each time the melody lands on a chord tone.
+        Keep the A♭ between G and A as a diminished passing tone, harmonised as
+        B°7 just like in Barry Harris's sixth-diminished scale, so the scale
+        keeps its bebop shape and the chord tones land on the beat. Played up
+        the scale, every passing tone becomes a small cadence: G7, B°7 and Dm7
+        lead back to C6 each time the melody lands on a chord tone.
       </p>
       <p>
-        Voicing the sixth degree as Dm7 has a particular effect on the way up: the last three
-        notes, A, B and C, are harmonised as Dm7, G7 and C6, a complete 2 5 1 progression that
-        carries the melody home to the top of the scale.
+        Voicing the sixth degree as Dm7 has a particular effect on the way up:
+        the last three notes, A, B and C, are harmonised as Dm7, G7 and C6, a
+        complete 2 5 1 progression that carries the melody home to the top of
+        the scale.
       </p>
       <figure class="detail">
-        <img src="/assets/articles/block-chords/detail-two-five-one-cadence.svg" alt="Dm7 with A on top, G7 with B on top, then C6 with C on top" />
-        <audio controls preload="none" src="/assets/articles/block-chords/detail-two-five-one-cadence.mp3"></audio>
-        <figcaption>A, B and C as Dm7, G7 and C6: a 2 5 1 into the top of the scale. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/detail-two-five-one-cadence.svg"
+          alt="Dm7 with A on top, G7 with B on top, then C6 with C on top"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/detail-two-five-one-cadence.mp3"
+        ></audio>
+        <figcaption>
+          A, B and C as Dm7, G7 and C6: a 2 5 1 into the top of the scale.
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
       <figure>
-        <img src="/assets/articles/block-chords/two-five-one.svg" alt="A C bebop scale harmonised with C6 on the chord tones, G7 on D, F and B, B diminished seventh on A flat, and Dm7 on A" />
-        <audio controls preload="none" src="/assets/articles/block-chords/two-five-one.mp3"></audio>
-        <figcaption>C6 on C, E and G; G7 on D, F and B; B°7 on A♭; Dm7 on A. <span class="passing">Passing tones in blue.</span></figcaption>
+        <img
+          src="/assets/articles/block-chords/two-five-one.svg"
+          alt="A C bebop scale harmonised with C6 on the chord tones, G7 on D, F and B, B diminished seventh on A flat, and Dm7 on A"
+        />
+        <audio
+          controls
+          preload="none"
+          src="/assets/articles/block-chords/two-five-one.mp3"
+        ></audio>
+        <figcaption>
+          C6 on C, E and G; G7 on D, F and B; B°7 on A♭; Dm7 on A.
+          <span class="passing">Passing tones in blue.</span>
+        </figcaption>
       </figure>
-      <p>Coming down the scale, every note keeps the chord it has on the way up.</p>
+      <p>
+        Coming down the scale, every note keeps the chord it has on the way up.
+      </p>
       <details class="exercise">
-        <summary><span class="exercise-label">Exercise</span> 2 5 1 passing tones, up and down</summary>
+        <summary>
+          <span class="exercise-label">Exercise</span> 2 5 1 passing tones, up
+          and down
+        </summary>
         <div class="exercise-body">
           <p>
-            Play the C bebop scale up and back down in eighth notes, one block per note: C6 on C, E and G; G7 on D, F and B; B°7 on A♭; and Dm7 on A.
+            Play the C bebop scale up and back down in eighth notes, one block
+            per note: C6 on C, E and G; G7 on D, F and B; B°7 on A♭; and Dm7 on
+            A.
           </p>
           <p>
-            The goal is to hear every passing tone resolve back to C6, as a small 2 5 1, in both directions.
+            The goal is to hear every passing tone resolve back to C6, as a
+            small 2 5 1, in both directions.
           </p>
           <figure>
-            <img src="/assets/articles/block-chords/exercise-two-five-one.svg" alt="The C bebop scale up and back down in eighth-note block chords, with C6, G7, B diminished seventh and D minor seventh" />
-            <audio controls preload="none" src="/assets/articles/block-chords/exercise-two-five-one.mp3"></audio>
+            <img
+              src="/assets/articles/block-chords/exercise-two-five-one.svg"
+              alt="The C bebop scale up and back down in eighth-note block chords, with C6, G7, B diminished seventh and D minor seventh"
+            />
+            <audio
+              controls
+              preload="none"
+              src="/assets/articles/block-chords/exercise-two-five-one.mp3"
+            ></audio>
             <figcaption>Up and back down in eighth notes.</figcaption>
           </figure>
         </div>
@@ -546,8 +974,14 @@
       (async () => {
         const BASE = "/assets/articles/block-chords/";
         const article = document.querySelector("article");
-        const blocks = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside)")];
-        const items = [...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside, figure)")];
+        const blocks = [
+          ...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside)"),
+        ];
+        const items = [
+          ...article.querySelectorAll(
+            ":scope > :is(h1, h2, h3, p, aside, figure)",
+          ),
+        ];
 
         // Number the examples in page order so each one can be referred to as "Example N".
         // Exercises are not examples: they keep their own count, "Exercise N", on their label.
@@ -566,7 +1000,8 @@
         // Every example gets a chord cursor and lights up the sounding notes, whether played
         // by read-along or by hand. The SVG is inlined so its noteheads can be styled.
         for (const fig of article.querySelectorAll("figure")) {
-          const img = fig.querySelector("img"), audio = fig.querySelector("audio");
+          const img = fig.querySelector("img"),
+            audio = fig.querySelector("audio");
           const wrap = document.createElement("div");
           wrap.className = "score";
           img.replaceWith(wrap);
@@ -574,42 +1009,61 @@
           const cursor = document.createElement("div");
           cursor.className = "cursor";
           wrap.append(cursor);
-          let events = [], heads = []; // heads[i] = noteheads of chord i
+          let events = [],
+            heads = []; // heads[i] = noteheads of chord i
           const src = img.getAttribute("src");
           Promise.all([
             fetch(src.replace(/\.svg$/, ".cursor.json")).then((r) => r.json()),
             fetch(src).then((r) => r.text()),
-          ]).then(([ev, text]) => {
-            events = ev;
-            const svg = new DOMParser().parseFromString(text, "image/svg+xml").documentElement;
-            svg.removeAttribute("width");
-            svg.removeAttribute("height");
-            svg.setAttribute("role", "img");
-            svg.setAttribute("aria-label", img.alt);
-            img.replaceWith(svg);
-            // Detail figures keep their natural width: the notation is drawn at one size across
-            // them (a full-width example is 8217 units wide; details are shown 1.3x larger).
-            if (fig.classList.contains("detail")) {
-              fig.style.width = Math.min(100, (svg.viewBox.baseVal.width / 8217) * 130) + "%";
-            }
-            // Assign each notehead to the chord whose cursor x is nearest (paths start at the
-            // head's left edge; heads are ~107 units wide, chords several hundred apart). On a
-            // score with several lines, only chords on the head's own (nearest) line compete.
-            const { width, height } = svg.viewBox.baseVal;
-            const lineMid = (e) => (e.top == null ? 50 : (e.top + e.bottom) / 2);
-            heads = events.map(() => []);
-            for (const head of svg.querySelectorAll("path.Note")) {
-              const [hx, hy] = head.getAttribute("d").slice(1).split(/[ ,L]/).map(parseFloat);
-              const x = ((hx + 54) / width) * 100, y = (hy / height) * 100;
-              const line = Math.min(...events.map((e) => Math.abs(lineMid(e) - y)));
-              let best = -1;
-              events.forEach((e, i) => {
-                if (Math.abs(lineMid(e) - y) - line > 0.01) return;
-                if (best < 0 || Math.abs(e.x - x) < Math.abs(events[best].x - x)) best = i;
-              });
-              heads[best].push(head);
-            }
-          }).catch(() => {}); // keep the plain <img> if anything fails
+          ])
+            .then(([ev, text]) => {
+              events = ev;
+              const svg = new DOMParser().parseFromString(
+                text,
+                "image/svg+xml",
+              ).documentElement;
+              svg.removeAttribute("width");
+              svg.removeAttribute("height");
+              svg.setAttribute("role", "img");
+              svg.setAttribute("aria-label", img.alt);
+              img.replaceWith(svg);
+              // Detail figures keep their natural width: the notation is drawn at one size across
+              // them (a full-width example is 8217 units wide; details are shown 1.3x larger).
+              if (fig.classList.contains("detail")) {
+                fig.style.width =
+                  Math.min(100, (svg.viewBox.baseVal.width / 8217) * 130) + "%";
+              }
+              // Assign each notehead to the chord whose cursor x is nearest (paths start at the
+              // head's left edge; heads are ~107 units wide, chords several hundred apart). On a
+              // score with several lines, only chords on the head's own (nearest) line compete.
+              const { width, height } = svg.viewBox.baseVal;
+              const lineMid = (e) =>
+                e.top == null ? 50 : (e.top + e.bottom) / 2;
+              heads = events.map(() => []);
+              for (const head of svg.querySelectorAll("path.Note")) {
+                const [hx, hy] = head
+                  .getAttribute("d")
+                  .slice(1)
+                  .split(/[ ,L]/)
+                  .map(parseFloat);
+                const x = ((hx + 54) / width) * 100,
+                  y = (hy / height) * 100;
+                const line = Math.min(
+                  ...events.map((e) => Math.abs(lineMid(e) - y)),
+                );
+                let best = -1;
+                events.forEach((e, i) => {
+                  if (Math.abs(lineMid(e) - y) - line > 0.01) return;
+                  if (
+                    best < 0 ||
+                    Math.abs(e.x - x) < Math.abs(events[best].x - x)
+                  )
+                    best = i;
+                });
+                heads[best].push(head);
+              }
+            })
+            .catch(() => {}); // keep the plain <img> if anything fails
           let lit = -1;
           const light = (i) => {
             if (i === lit) return;
@@ -619,13 +1073,16 @@
           };
           const tick = () => {
             const t = audio.currentTime;
-            const i = audio.paused ? -1 : events.findIndex((e) => t >= e.t && t < e.end);
+            const i = audio.paused
+              ? -1
+              : events.findIndex((e) => t >= e.t && t < e.end);
             cursor.style.display = i >= 0 ? "block" : "none";
             if (i >= 0) {
               const e = events[i];
               cursor.style.left = e.x + "%";
               cursor.style.top = e.top == null ? "" : e.top + "%";
-              cursor.style.bottom = e.bottom == null ? "" : 100 - e.bottom + "%";
+              cursor.style.bottom =
+                e.bottom == null ? "" : 100 - e.bottom + "%";
             }
             light(i);
             if (!audio.paused) requestAnimationFrame(tick);
@@ -640,7 +1097,9 @@
 
         let manifest;
         try {
-          manifest = await (await fetch(BASE + "narration/narration.json")).json();
+          manifest = await (
+            await fetch(BASE + "narration/narration.json")
+          ).json();
         } catch {
           return; // no narration: the page still works as a plain article
         }
@@ -649,7 +1108,8 @@
         // Wrap each displayed word in a span, matching the narration's word list.
         blocks.forEach((el, i) => {
           const words = el.textContent.trim().split(/\s+/);
-          if (words.length !== manifest[i].words.length) return (manifest[i] = null);
+          if (words.length !== manifest[i].words.length)
+            return (manifest[i] = null);
           el.textContent = "";
           words.forEach((w, j) => {
             if (j) el.append(" ");
@@ -662,20 +1122,30 @@
 
         const button = document.getElementById("listen");
         const voice = new Audio();
-        let current = -1, playing = false, media = null, raf = 0;
+        let current = -1,
+          playing = false,
+          media = null,
+          raf = 0;
 
         const clear = () => {
           cancelAnimationFrame(raf);
-          document.querySelectorAll(".reading").forEach((e) => e.classList.remove("reading"));
-          document.querySelectorAll(".w.on").forEach((e) => e.classList.remove("on"));
+          document
+            .querySelectorAll(".reading")
+            .forEach((e) => e.classList.remove("reading"));
+          document
+            .querySelectorAll(".w.on")
+            .forEach((e) => e.classList.remove("on"));
         };
-        const setButton = () => (button.textContent = playing ? "❚❚ Pause" : "▶ Listen");
+        const setButton = () =>
+          (button.textContent = playing ? "❚❚ Pause" : "▶ Listen");
 
         const follow = (el, timings) => {
           const spans = el.querySelectorAll(".w");
           const step = () => {
             const t = voice.currentTime;
-            timings.forEach(([s, e], j) => spans[j].classList.toggle("on", t >= s && t < e));
+            timings.forEach(([s, e], j) =>
+              spans[j].classList.toggle("on", t >= s && t < e),
+            );
             if (!voice.paused) raf = requestAnimationFrame(step);
           };
           raf = requestAnimationFrame(step);

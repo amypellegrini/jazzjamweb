@@ -189,7 +189,8 @@ E['detail-dim-names'] = ("Four names for one diminished chord", [
 # Cmaj9 with its root, then without it: the rootless shape E-G-B-D.
 E['detail-rootless'] = ("Rootless major ninth", [
  [chord(4, 'Cmaj9', ['D5','B4','G4','E4','C4']), chord(4, 'Cmaj9', ['D5','B4','G4','E4'], {**BLUE, 'text': ('Rootless', PASSING_COLOR)})]])
-E['detail-g7-maj9'] = ("Rootless Cmaj9 and G7", [[blk(4, 'Cmaj9', V['D.maj9']), blk(4, 'G7', V['F.G7'])]])
+# The two passing shapes spelled out on one treble staff: rootless Cmaj9 (E-G-B-D) and G7 with F on top and below (F-G-B-D-F).
+E['detail-g7-maj9'] = ("Rootless Cmaj9 and G7", [[chord(4, 'Cmaj9', ['D5','B4','G4','E4'], BLUE), chord(4, 'G7', ['F5','D5','B4','G4','F4'], BLUE)]])
 E['detail-chromatic-up'] = ("Chromatic approaches from below", [
  [blk(4, 'Abm7', V['Ab.m7']), blk(4, 'Am7', V['A'])], [blk(4, 'B6', V['B.6']), blk(4, 'C6', V["C'"])]])
 E['detail-chromatic-down'] = ("Chromatic approaches from above", [

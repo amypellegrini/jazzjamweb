@@ -103,10 +103,10 @@ E['c6-positions']=("C6 in every position",[
  [ex_blk(None, C6_POS[n]) for n in ["C'", 'A', 'G', 'E']],
  [ex_blk(None, C6_POS['C'], 8)]])
 E['diminished']=("Diminished",[[
- blk(1,'C6',['C5','A4','G4','E4']), blk(1,'Bdim7',['D5','B4','Ab4','F4']),
- blk(1,'C6',['E5','C5','A4','G4']), blk(1,'Bdim7',['F5','D5','B4','Ab4']),
- blk(1,'C6',['G5','E5','C5','A4']), blk(1,'Bdim7',['Ab5','F5','D5','B4']),
- blk(1,'C6',['A5','G5','E5','C5']), blk(1,'Bdim7',['B5','Ab5','F5','D5'])],
+ blk(1,'C6',['C5','A4','G4','E4']), blk(1,'G7b9',['D5','B4','Ab4','F4']),
+ blk(1,'C6',['E5','C5','A4','G4']), blk(1,'G7b9',['F5','D5','B4','Ab4']),
+ blk(1,'C6',['G5','E5','C5','A4']), blk(1,'G7b9',['Ab5','F5','D5','B4']),
+ blk(1,'C6',['A5','G5','E5','C5']), blk(1,'G7b9',['B5','Ab5','F5','D5'])],
  [blk(8,'C6',['C6','A5','G5','E5'])]])
 E['rootless-major-ninth']=("Rootless major ninth",[[
  blk(2,'C6',['C5','A4','G4','E4']), blk(2,'Cmaj9',['D5','B4','G4','E4']),
@@ -116,7 +116,7 @@ E['rootless-major-ninth']=("Rootless major ninth",[[
 E['dominant-seventh']=("Dominant seventh",[[
  blk(1,'C6',['C5','A4','G4','E4']), blk(1,'Cmaj9',['D5','B4','G4','E4']),
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'G7',['F5','D5','B4','G4']),
- blk(1,'C6',['G5','E5','C5','A4']), blk(1,'Bdim7',['Ab5','F5','D5','B4']),
+ blk(1,'C6',['G5','E5','C5','A4']), blk(1,'G7b9',['Ab5','F5','D5','B4']),
  blk(1,'C6',['A5','G5','E5','C5']), blk(1,'Cmaj9',['B5','G5','E5','D5'])],
  [blk(8,'C6',['C6','A5','G5','E5'])]])
 E['chromatic']=("Chromatic",[[
@@ -191,7 +191,7 @@ E['scale-chord-tones'] = ("Scale in the left hand, C6 on the chord tones", [
 # colour of the chord it belongs to.
 GREEN = {'rh': CHORD, 'lh': CHORD}
 E['detail-c6-bdim7'] = ("C6 and B°7", [
- [chord(8, 'C6', ['A4','G4','E4','C4'], GREEN)], [chord(8, 'Bdim7', ['B4','Ab4','F4','D4'], BLUE)],
+ [chord(8, 'C6', ['A4','G4','E4','C4'], GREEN)], [chord(8, 'G7b9', ['B4','Ab4','F4','D4'], BLUE)],
  [chord(1, None, [n], BLUE if is_passing([n]) else GREEN) for n in ['C4','D4','E4','F4','G4','Ab4','A4','B4']]])
 # Ascending from D4, each chord stacked from the next note up: D°7, F°7, A♭°7, B°7.
 # G7(b9) resolving to C6: the B°7 notes (D-F-Ab-B) over a G bass are G7(b9) without its root,
@@ -242,10 +242,10 @@ def up_down(up, down):
     """Plain black, and only the opening C6 named: the voicings are explained in the text."""
     blocks = [(d, sym if i == 0 else None, rh, lh, PLAIN) for i, (d, sym, rh, lh, *_) in enumerate(run(up + down, 1))]
     return bars_of(blocks) + [[(8, None, V['C'], [oct_down(V['C'][0])], PLAIN)]]
-DIM_UP = [('C','C6'),('D.dim','Bdim7'),('E','C6'),('F.dim','Bdim7'),('G','C6'),('Ab.dim','Bdim7'),('A','C6'),('B.dim','Bdim7')]
-DIA_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','Bdim7'),('A','C6'),('B.maj9','Cmaj9')]
+DIM_UP = [('C','C6'),('D.dim','G7b9'),('E','C6'),('F.dim','G7b9'),('G','C6'),('Ab.dim','G7b9'),('A','C6'),('B.dim','G7b9')]
+DIA_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','G7b9'),('A','C6'),('B.maj9','Cmaj9')]
 CHR_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('G#.m7','G#m7'),('A','Am7'),('B.6','B6')]
-TFO_UP = [('C','C6'),('D.G7','G7'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','Bdim7'),('A.Dm7','Dm7'),('B.G7','G7')]
+TFO_UP = [('C','C6'),('D.G7','G7'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','G7b9'),('A.Dm7','Dm7'),('B.G7','G7')]
 top = [("C'",'C6')]
 desc = lambda up: top + list(reversed(up[1:]))   # same voicings as ascending, top C down to D
 # Exercise: the left-hand scale with C6 on the chord tones (Example 4), up and back down.

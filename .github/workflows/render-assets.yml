@@ -134,6 +134,8 @@ jobs:
           npm run build
 
       - name: Commit rendered assets
+        env:
+          HUSKY: "0" # the pre-commit test run is for people; CI already tests every PR
         run: |
           set -euo pipefail
           git add -A src/assets

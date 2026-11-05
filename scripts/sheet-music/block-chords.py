@@ -312,8 +312,9 @@ for k, (t, m) in E.items():
     open(src, "w").write(build(t, m, lines=multi, bass=k in BASS_CLEF))
     # The exercises keep their lines close together (multi-line.mss; MuseScore ignores
     # layout settings in MusicXML).
-    mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else None
-    style = ["-S", os.path.join(os.path.dirname(__file__), mss)] if mss else []
+    # Every style file turns chord-symbol playback off (base.mss holds just that).
+    mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else "base.mss"
+    style = ["-S", os.path.join(os.path.dirname(__file__), mss)]
     for ext in ("svg", "mp3"):
         subprocess.run([MSCORE, *style, "-o", os.path.join(OUT, f"{k}.{ext}"), "-T", "10", src],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)

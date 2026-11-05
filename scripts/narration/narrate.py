@@ -20,8 +20,14 @@ Run:
 import hashlib, json, os, re, subprocess, sys, tempfile
 from html.parser import HTMLParser
 
-ESPEAK_LIB = os.environ.get("ESPEAK_LIB", "/opt/homebrew/lib/libespeak-ng.dylib")
-ESPEAK_DATA = os.environ.get("ESPEAK_DATA", "/opt/homebrew/share/espeak-ng-data")
+# espeak-ng: ESPEAK_LIB/ESPEAK_DATA override; otherwise Homebrew's on macOS, the distro's on Linux.
+def _first(*paths): return next((p for p in paths if os.path.exists(p)), paths[0])
+ESPEAK_LIB = os.environ.get("ESPEAK_LIB") or _first(
+    "/opt/homebrew/lib/libespeak-ng.dylib", "/usr/lib/x86_64-linux-gnu/libespeak-ng.so.1",
+    "/usr/lib/aarch64-linux-gnu/libespeak-ng.so.1")
+ESPEAK_DATA = os.environ.get("ESPEAK_DATA") or _first(
+    "/opt/homebrew/share/espeak-ng-data", "/usr/lib/x86_64-linux-gnu/espeak-ng-data",
+    "/usr/lib/aarch64-linux-gnu/espeak-ng-data", "/usr/share/espeak-ng-data")
 VOICE, LANG, RATE = "bf_emma", "b", 24000
 
 # ---- what gets narrated --------------------------------------------------------------------
@@ -120,19 +126,39 @@ def main(html_path, out_dir):
     import soundfile as sf
     parser = Blocks(); parser.feed(open(html_path, encoding="utf-8").read())
     os.makedirs(out_dir, exist_ok=True)
-    pipe = load_pipeline()
+    # Reuse the recording of any block whose text hasn't changed (matched by hash, so it survives
+    # blocks being added, removed or reordered). FORCE=1 re-records everything.
+    previous = {}
+    manifest_path = os.path.join(out_dir, "narration.json")
+    if os.path.exists(manifest_path) and not os.environ.get("FORCE"):
+        for n, entry in enumerate(json.load(open(manifest_path))):
+            mp3 = os.path.join(out_dir, f"{n}.mp3")
+            if os.path.exists(mp3): previous[entry["hash"]] = (entry, open(mp3, "rb").read())
+    pipe = None
     manifest = []
     for n, text in enumerate(parser.blocks):
         words = text.split(" ")
+        digest = hashlib.sha1(text.encode()).hexdigest()[:12]
+        if digest in previous:
+            entry, mp3 = previous[digest]
+            open(os.path.join(out_dir, f"{n}.mp3"), "wb").write(mp3)
+            manifest.append(entry)
+            print(f"{n:2d}  kept  {text[:60]}")
+            continue
+        pipe = pipe or load_pipeline()
         audio, tokens = synth(pipe, " ".join(speak_word(w) for w in words))
         with tempfile.NamedTemporaryFile(suffix=".wav") as wav:
             sf.write(wav.name, audio, RATE)
             subprocess.run(["ffmpeg", "-loglevel", "error", "-y", "-i", wav.name, "-b:a", "64k",
                             os.path.join(out_dir, f"{n}.mp3")], check=True)
-        manifest.append({"hash": hashlib.sha1(text.encode()).hexdigest()[:12],
+        manifest.append({"hash": digest,
                          "duration": round(len(audio) / RATE, 3), "words": align(words, tokens)})
         print(f"{n:2d} {len(audio) / RATE:5.1f}s  {text[:60]}")
-    json.dump(manifest, open(os.path.join(out_dir, "narration.json"), "w"), separators=(",", ":"))
+    # Drop recordings left over from blocks that no longer exist.
+    n = len(manifest)
+    while os.path.exists(os.path.join(out_dir, f"{n}.mp3")):
+        os.remove(os.path.join(out_dir, f"{n}.mp3")); n += 1
+    json.dump(manifest, open(manifest_path, "w"), separators=(",", ":"))
 
 if __name__ == "__main__":
     main(*sys.argv[1:3])

@@ -1,0 +1,147 @@
+name: Render Assets
+
+# Renders the generated article assets in the cloud, so content can be edited from any device:
+#   - sheet music: scripts/sheet-music/*.py -> MusicXML, SVG, MP3 and cursor timings (MuseScore 4)
+#   - narration:  the article's text -> per-block MP3 + word timings (Kokoro TTS)
+# and commits the results back to the branch. Runs on pushes to non-main branches that touch
+# the sources, or by hand from the Actions tab (or `gh workflow run render-assets.yml -r <branch>`).
+# Commits made with GITHUB_TOKEN don't trigger workflows, so the commit-back can't loop.
+
+on:
+  push:
+    branches-ignore: [main, gh-pages]
+    paths:
+      - "scripts/sheet-music/**"
+      - "scripts/narration/**"
+      - "src/articles/**/index.html"
+  workflow_dispatch:
+    inputs:
+      sheet_music:
+        description: "Render sheet music"
+        type: boolean
+        default: true
+      narration:
+        description: "Record narration (only changed paragraphs unless forced)"
+        type: boolean
+        default: true
+      force_narration:
+        description: "Re-record every paragraph"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-assets-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  MUSESCORE_VERSION: v4.7.6 # match the version the committed renders were made with
+  ARTICLE: src/articles/block-chords/index.html
+  NARRATION_OUT: src/assets/articles/block-chords/narration
+
+jobs:
+  render:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Decide what to render
+        id: what
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          IN_SHEET: ${{ inputs.sheet_music }}
+          IN_NARR: ${{ inputs.narration }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = "workflow_dispatch" ]; then
+            echo "sheet=$IN_SHEET" >> "$GITHUB_OUTPUT"
+            echo "narration=$IN_NARR" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ] || ! git cat-file -e "$BEFORE" 2>/dev/null; then
+            BEFORE=$(git merge-base origin/main "$AFTER" 2>/dev/null || git rev-list --max-parents=0 "$AFTER" | tail -1)
+          fi
+          changed=$(git diff --name-only "$BEFORE" "$AFTER")
+          echo "$changed"
+          echo "sheet=$(grep -q '^scripts/sheet-music/' <<<"$changed" && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "narration=$(grep -qE '^(scripts/narration/|src/articles/.*/index\.html$)' <<<"$changed" && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Install system packages
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg espeak-ng libegl1 libopengl0 libxkbcommon0 \
+            libxcb-cursor0 libnss3 libasound2t64 libpipewire-0.3-0 fonts-freefont-ttf
+
+      # ---- sheet music -------------------------------------------------------------------
+      - name: Install MuseScore ${{ env.MUSESCORE_VERSION }}
+        if: steps.what.outputs.sheet == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/mscore" && cd "$RUNNER_TEMP/mscore"
+          gh release download "$MUSESCORE_VERSION" --repo musescore/MuseScore --pattern '*x86_64.AppImage' --output mscore.AppImage
+          chmod +x mscore.AppImage && ./mscore.AppImage --appimage-extract >/dev/null
+          cat > "$RUNNER_TEMP/mscore/mscore" <<EOF
+          #!/bin/sh
+          exec "$RUNNER_TEMP/mscore/squashfs-root/AppRun" "\$@"
+          EOF
+          chmod +x "$RUNNER_TEMP/mscore/mscore"
+          echo "MSCORE=$RUNNER_TEMP/mscore/mscore" >> "$GITHUB_ENV"
+          echo "QT_QPA_PLATFORM=offscreen" >> "$GITHUB_ENV"
+          QT_QPA_PLATFORM=offscreen "$RUNNER_TEMP/mscore/mscore" --version
+
+      - name: Render sheet music
+        if: steps.what.outputs.sheet == 'true'
+        run: python3 scripts/sheet-music/block-chords.py
+
+      # ---- narration ---------------------------------------------------------------------
+      - name: Set up Python for Kokoro
+        if: steps.what.outputs.narration == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: scripts/narration/requirements.txt
+
+      - name: Cache Kokoro model
+        if: steps.what.outputs.narration == 'true'
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: kokoro-82m-v1
+
+      - name: Record narration
+        if: steps.what.outputs.narration == 'true'
+        env:
+          FORCE: ${{ inputs.force_narration && '1' || '' }}
+        run: |
+          set -euo pipefail
+          pip install -q -r scripts/narration/requirements.txt
+          python scripts/narration/narrate.py "$ARTICLE" "$NARRATION_OUT"
+
+      # ---- results -----------------------------------------------------------------------
+      - name: Build the site
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build
+
+      - name: Commit rendered assets
+        run: |
+          set -euo pipefail
+          git add -A src/assets
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git diff --cached --stat
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "chore(assets): render sheet music and narration" -m "Rendered by the Render Assets workflow, run ${{ github.run_id }}."
+          git push origin "HEAD:${GITHUB_REF_NAME}"

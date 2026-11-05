@@ -254,7 +254,9 @@ E['exercise-two-five-one'] = ("Exercise: 2 5 1",    up_down(TFO_UP, desc(TFO_UP)
 
 # Render: MusicXML source -> SVG (notation) + MP3 (playback) with MuseScore 4's CLI.
 import os, subprocess, glob
-MSCORE = os.environ.get("MSCORE", "/Applications/MuseScore 4.app/Contents/MacOS/mscore")
+# MSCORE overrides; otherwise the macOS app if present, else `mscore` on PATH (Linux/CI).
+_MAC_MSCORE = "/Applications/MuseScore 4.app/Contents/MacOS/mscore"
+MSCORE = os.environ.get("MSCORE") or (_MAC_MSCORE if os.path.exists(_MAC_MSCORE) else "mscore")
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "src", "assets", "articles", "block-chords")
 os.makedirs(OUT, exist_ok=True)
 def write_cursor(k, measures):

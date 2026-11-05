@@ -143,3 +143,4 @@ playwright-report/
 .DS_Store
 .envrc
 .claude/reports/
+__pycache__/

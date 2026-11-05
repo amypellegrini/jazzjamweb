@@ -77,7 +77,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq ffmpeg espeak-ng libegl1 libopengl0 libxkbcommon0 \
-            libxcb-cursor0 libnss3 libasound2t64 libpipewire-0.3-0 fonts-freefont-ttf
+            libxcb-cursor0 xvfb xauth libnss3 libasound2t64 libpipewire-0.3-0 fonts-freefont-ttf
 
       # ---- sheet music -------------------------------------------------------------------
       - name: Install MuseScore ${{ env.MUSESCORE_VERSION }}
@@ -91,12 +91,12 @@ jobs:
           chmod +x mscore.AppImage && ./mscore.AppImage --appimage-extract >/dev/null
           cat > "$RUNNER_TEMP/mscore/mscore" <<EOF
           #!/bin/sh
-          exec "$RUNNER_TEMP/mscore/squashfs-root/AppRun" "\$@"
+          exec xvfb-run -a "$RUNNER_TEMP/mscore/squashfs-root/AppRun" "\$@"
           EOF
           chmod +x "$RUNNER_TEMP/mscore/mscore"
           echo "MSCORE=$RUNNER_TEMP/mscore/mscore" >> "$GITHUB_ENV"
-          echo "QT_QPA_PLATFORM=offscreen" >> "$GITHUB_ENV"
-          QT_QPA_PLATFORM=offscreen "$RUNNER_TEMP/mscore/mscore" --version
+          # The AppImage forces Qt's X11 backend, so it runs under a virtual display.
+          "$RUNNER_TEMP/mscore/mscore" --version
 
       - name: Render sheet music
         if: steps.what.outputs.sheet == 'true'

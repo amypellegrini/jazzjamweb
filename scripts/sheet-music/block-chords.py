@@ -129,12 +129,12 @@ E['chromatic']=("Chromatic",[[
 # 2 5 1: chord tones C, E, G on C6 (the I); the 2nd, 4th and 7th degrees (D, F, B) on G7, the
 # dominant of the 5th degree; the 6th degree (A) on Dm7, the ii. Each inverted to put the melody on
 # top. Here A is a passing tone too, so its Dm7 block is marked like the others. The bebop
-# scale's A-flat stays a diminished passing tone (B°7), as in the sixth-diminished scale.
+# scale's extra note, spelled G-sharp, approaches Dm7 chromatically from a half step below: C#m7.
 def p_blk(d, sym, rh): return blk(d, sym, rh) + ({'rh': [PASSING_COLOR] * 4, 'lh': PASSING_COLOR},)
 E['two-five-one']=("2 5 1 passing tones",[[
  blk(1,'C6',['C5','A4','G4','E4']), blk(1,'G7',['D5','B4','G4','F4']),
  blk(1,'C6',['E5','C5','A4','G4']), blk(1,'G7',['F5','D5','B4','G4']),
- blk(1,'C6',['G5','E5','C5','A4']), blk(1,'Bdim7',['Ab5','F5','D5','B4']),
+ blk(1,'C6',['G5','E5','C5','A4']), blk(1,'C#m7',['G#5','E5','C#5','B4']),
  p_blk(1,'Dm7',['A5','F5','D5','C5']), blk(1,'G7',['B5','G5','F5','D5'])],
  [blk(8,'C6',['C6','A5','G5','E5'])]])
 
@@ -145,6 +145,7 @@ V = {
  'D.maj9': ['D5','B4','G4','E4'], 'B.maj9': ['B5','G5','E5','D5'],
  'D.dim': ['D5','B4','Ab4','F4'], 'F.dim': ['F5','D5','B4','Ab4'], 'Ab.dim': ['Ab5','F5','D5','B4'], 'B.dim': ['B5','Ab5','F5','D5'],
  'D.G7': ['D5','B4','G4','F4'], 'F.G7': ['F5','D5','B4','G4'], 'B.G7': ['B5','G5','F5','D5'], 'A.Dm7': ['A5','F5','D5','C5'],
+ 'G#.C#m7': ['G#5','E5','C#5','B4'],  # Dm7's A-F-D-C voicing a half step lower
  'Ab.m7': ['Ab5','Gb5','Eb5','Cb5'], 'G#.m7': ['G#5','F#5','D#5','B4'], 'B.6': ['B5','G#5','F#5','D#5'], 'Ab.Bbm7': ['Ab5','F5','Db5','Bb4'], 'F.Bbm7': ['F5','Db5','Bb4','Ab4'],
 }
 def run(steps, dur):
@@ -214,6 +215,9 @@ E['detail-two-five-one-voicings'] = ("G7 and Dm7 inversions", [
  [blk(4, 'G7', V['D.G7']), blk(4, 'G7', V['F.G7'])], [blk(4, 'G7', V['B.G7']), p_blk(4, 'Dm7', V['A.Dm7'])]])
 E['detail-two-five-one-cadence'] = ("A 2 5 1 at the top of the scale", [
  [p_blk(4, 'Dm7', V['A.Dm7']), blk(4, 'G7', V['B.G7'])], [blk(8, 'C6', V["C'"])]])
+# The chromatic approach to Dm7: its A-on-top voicing a half step lower, C#m7 with G# on top.
+E['detail-two-five-one-chromatic'] = ("C#m7 approaching Dm7", [
+ [blk(4, 'C#m7', V['G#.C#m7']), p_blk(4, 'Dm7', V['A.Dm7'])]])
 
 # Examples shown without the passing-tone highlight: blue becomes black, other colours stay.
 def unhighlight(measures):
@@ -224,7 +228,7 @@ def unhighlight(measures):
             for meas in measures]
 for _k in ['scale-chord-tones', 'detail-g7b9-c6', 'detail-dim-names', 'detail-g7-maj9',
            'detail-chromatic-up', 'detail-chromatic-down', 'detail-two-five-one-voicings',
-           'detail-two-five-one-cadence']:
+           'detail-two-five-one-cadence', 'detail-two-five-one-chromatic']:
     E[_k] = (E[_k][0], unhighlight(E[_k][1]))
 
 # Exercises: each technique up the C bebop scale and back down, one block per eighth note.

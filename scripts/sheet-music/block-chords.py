@@ -165,6 +165,11 @@ def bars_of(blocks):
 CHROM_DOWN = [("C'",'C6'), ('B.maj9','Cmaj9'), ('A','C6'), ('Ab.Bbm7','Bbm7/Ab'),
               ('G','Am7/G'), ('F.Bbm7','Bbm7/F'), ('E','Am7/E'), ('D.maj9','Cmaj9')]
 E['chromatic-descending']=("Chromatic, descending", bars_of(run(CHROM_DOWN, 1)) + [[blk(8,'C6',V['C'])]])
+# 2 5 1, descending: every note keeps its ascending chord except A-flat, which now approaches G
+# from above with the descending chromatic chord (Bbm7/Ab, as in the chromatic section).
+TFO_DOWN = [("C'",'C6'), ('B.G7','G7'), ('A.Dm7','Dm7'), ('Ab.Bbm7','Bbm7/Ab'),
+            ('G','C6'), ('F.G7','G7'), ('E','C6'), ('D.G7','G7')]
+E['two-five-one-descending']=("2 5 1 passing tones, descending", bars_of(run(TFO_DOWN, 1)) + [[blk(8,'C6',V['C'])]])
 
 # Detail figures: the chords the text spells out or compares, shown side by side, half or whole
 # notes. Spelled chords (no melody) sit in the right hand alone; blocks keep the left-hand doubling.

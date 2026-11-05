@@ -29,6 +29,6 @@ GENERATED — edit the sources, never the outputs:
 
 Cloud sessions can't run MuseScore 4 or download the Kokoro model. Don't render locally there:
 edit the sources, push to a branch, and the **Render Assets** workflow renders and commits the
-outputs back (it runs on push when the sources change; run it by hand with
-`gh workflow run render-assets.yml -r <branch>`). Pull before further edits, since the workflow
+outputs back (it runs on push when the sources or the workflow change; a person can also run it
+from the Actions tab — cloud session tokens can't dispatch workflows). Pull before further edits, since the workflow
 adds a commit. Changing the text of a paragraph re-records only that paragraph's narration.

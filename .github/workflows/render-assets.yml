@@ -14,6 +14,7 @@ on:
       - "scripts/sheet-music/**"
       - "scripts/narration/**"
       - "src/articles/**/index.html"
+      - ".github/workflows/render-assets.yml"
   workflow_dispatch:
     inputs:
       sheet_music:
@@ -70,8 +71,9 @@ jobs:
           fi
           changed=$(git diff --name-only "$BEFORE" "$AFTER")
           echo "$changed"
-          echo "sheet=$(grep -q '^scripts/sheet-music/' <<<"$changed" && echo true || echo false)" >> "$GITHUB_OUTPUT"
-          echo "narration=$(grep -qE '^(scripts/narration/|src/articles/.*/index\.html$)' <<<"$changed" && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          # A change to this workflow re-runs both, to prove the pipeline still works.
+          echo "sheet=$(grep -qE '^(scripts/sheet-music/|\.github/workflows/render-assets\.yml$)' <<<"$changed" && echo true || echo false)" >> "$GITHUB_OUTPUT"
+          echo "narration=$(grep -qE '^(scripts/narration/|src/articles/.*/index\.html$|\.github/workflows/render-assets\.yml$)' <<<"$changed" && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
       - name: Install system packages
         run: |

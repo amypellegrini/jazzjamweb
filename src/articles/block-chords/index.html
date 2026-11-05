@@ -125,6 +125,18 @@
         background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
           no-repeat center / contain;
       }
+      /* Technique subtitle: the one-line goal under each technique's heading. Same voice as the
+         lede, a step smaller and without its icon, sitting close to the heading it belongs to. */
+      .subtitle {
+        font-size: 1.1rem;
+        line-height: 1.4;
+        color: #6b7280;
+        font-style: italic;
+        font-weight: 600;
+        font-family: "Accidentals", "Source Serif 4", Georgia, serif;
+        margin-top: -0.35rem;
+        text-wrap: balance;
+      }
       .passing {
         color: #2563eb;
         font-weight: 600;
@@ -509,7 +521,7 @@
       </details>
 
       <h2>Diminished passing tones</h2>
-      <p>Harmonise passing tones as diminished chords.</p>
+      <p class="subtitle">Harmonise passing tones as diminished chords.</p>
       <p>
         The C major sixth-diminished scale is composed of chord tones matching
         C6 (C–E–G–A) and non-chord tones (D, F, G♯ or A♭ and B). The non-chord
@@ -625,7 +637,7 @@
       </details>
 
       <h2>Diatonic passing tones</h2>
-      <p>Harmonise passing tones as diatonic chords.</p>
+      <p class="subtitle">Harmonise passing tones as diatonic chords.</p>
       <p>
         Instead of a diminished chord, you can stay inside the key and harmonise
         passing tones with another diatonic chord. The result is smoother and
@@ -755,7 +767,7 @@
       </details>
 
       <h2>Chromatic passing tones</h2>
-      <p>
+      <p class="subtitle">
         Harmonise the passing tone with the target chord's own voicing, shifted
         by a half step. This technique only works when approaching the target
         note chromatically.
@@ -874,7 +886,7 @@
       </details>
 
       <h2>2 5 1 passing tones</h2>
-      <p>Harmonise passing tones with the chords of a major 2 5 1.</p>
+      <p class="subtitle">Harmonise passing tones with the chords of a major 2 5 1.</p>
       <p>
         In C, those chords are Dm7, G7 and C6. The chord tones C, E and G stay
         on C6, the 1 chord. The second, fourth and seventh degrees of the scale,

@@ -216,8 +216,9 @@ E['detail-chromatic-up'] = ("Chromatic approaches from below", [
  [blk(4, 'G#m7', V['G#.m7']), blk(4, 'Am7', V['A'])], [blk(4, 'B6', V['B.6']), blk(4, 'C6', V["C'"])]])
 E['detail-chromatic-down'] = ("Chromatic approaches from above", [
  [blk(4, 'Bbm7/Ab', V['Ab.Bbm7']), blk(4, 'Am7/G', V['G'])], [blk(4, 'Bbm7/F', V['F.Bbm7']), blk(4, 'Am7/E', V['E'])]])
+# In ascending order of the melody note: D, F, A, B.
 E['detail-two-five-one-voicings'] = ("G7 and Dm7 inversions", [
- [blk(4, 'G7', V['D.G7']), blk(4, 'G7', V['F.G7'])], [blk(4, 'G7', V['B.G7']), p_blk(4, 'Dm7', V['A.Dm7'])]])
+ [blk(4, 'G7', V['D.G7']), blk(4, 'G7', V['F.G7'])], [p_blk(4, 'Dm7', V['A.Dm7']), blk(4, 'G7', V['B.G7'])]])
 E['detail-two-five-one-cadence'] = ("A 2 5 1 at the top of the scale", [
  [p_blk(4, 'Dm7', V['A.Dm7']), blk(4, 'G7', V['B.G7'])], [blk(8, 'C6', V["C'"])]])
 # The chromatic approach to Dm7: its A-on-top voicing a half step lower, C#m7 with G# on top.

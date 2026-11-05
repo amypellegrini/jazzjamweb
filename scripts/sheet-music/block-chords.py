@@ -312,11 +312,17 @@ for k, (t, m) in E.items():
     open(src, "w").write(build(t, m, lines=multi, bass=k in BASS_CLEF))
     # The exercises keep their lines close together (multi-line.mss; MuseScore ignores
     # layout settings in MusicXML).
-    # Every style file turns chord-symbol playback off (base.mss holds just that).
-    mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else "base.mss"
-    style = ["-S", os.path.join(os.path.dirname(__file__), mss)]
-    for ext in ("svg", "mp3"):
-        subprocess.run([MSCORE, *style, "-o", os.path.join(OUT, f"{k}.{ext}"), "-T", "10", src],
+    mss = "multi-line.mss" if multi else "detail.mss" if k.startswith("detail-") else None
+    style = ["-S", os.path.join(os.path.dirname(__file__), mss)] if mss else []
+    subprocess.run([MSCORE, *style, "-o", os.path.join(OUT, f"{k}.svg"), "-T", "10", src],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+    # Audio from a copy without chord symbols: MuseScore plays a symbol's own realisation over
+    # the notated voicings, and its style setting for that doesn't hold from the command line.
+    import tempfile
+    with tempfile.TemporaryDirectory() as tmp:
+        silent = os.path.join(tmp, f"{k}.musicxml")
+        open(silent, "w").write(re.sub(r"<harmony>.*?</harmony>", "", open(src).read(), flags=re.S))
+        subprocess.run([MSCORE, *style, "-o", os.path.join(OUT, f"{k}.mp3"), silent],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
     # MuseScore suffixes page numbers on SVG output; examples are one page each.
     os.replace(os.path.join(OUT, f"{k}-1.svg"), os.path.join(OUT, f"{k}.svg"))

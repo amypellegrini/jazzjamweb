@@ -275,6 +275,64 @@ test.describe("Block chords course", () => {
   });
 });
 
+test.describe("Block chords course lesson 1", () => {
+  const path = `${BASE}building-block-chords/`;
+
+  test("opens on the introduction, without the course's goal callout", async ({
+    page,
+  }) => {
+    await page.goto(path);
+    await expect(page.locator("article .lede")).toHaveCount(0);
+    await expect(page.locator("article > p").first()).toHaveText(
+      /^Block chords, also called locked hands/,
+    );
+  });
+
+  test("shows the three pianists the introduction names, in its order", async ({
+    page,
+  }) => {
+    await page.goto(path);
+    const row = page.locator("article > .pianists");
+    // Right after the paragraph that names them.
+    const after = await row.evaluate(
+      (el) => el.previousElementSibling?.textContent?.includes("Oscar Peterson") ?? false,
+    );
+    expect(after).toBe(true);
+    await expect(row.locator(".person-name")).toHaveText([
+      "George Shearing",
+      "Red Garland",
+      "Oscar Peterson",
+    ]);
+    const images = row.locator("img");
+    await expect(images).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      await expect(images.nth(i)).toHaveAttribute("alt", /.+/);
+      expect(await images.nth(i).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
+    // The CC BY-SA photo of Red Garland carries its credit and licence, linked to the source.
+    const credit = row.locator(".person").nth(1).locator(".person-credit");
+    await expect(credit).toContainText("Brian McMillen");
+    await expect(credit).toContainText("CC BY-SA 3.0");
+    await expect(credit.locator("a").first()).toHaveAttribute(
+      "href",
+      "https://commons.wikimedia.org/wiki/File:Red_Garland_9A.jpg",
+    );
+  });
+
+  test("keeps the three photos side by side on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(path);
+    const boxes = await page
+      .locator("article > .pianists img")
+      .evaluateAll((imgs) => imgs.map((i) => i.getBoundingClientRect().top));
+    expect(new Set(boxes.map((t) => Math.round(t))).size).toBe(1);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
+    expect(overflow).toBe(false);
+  });
+});
+
 test.describe("Block chords course landing page", () => {
   test("introduces the course and starts it at the first lesson", async ({
     page,
@@ -291,10 +349,13 @@ test.describe("Block chords course landing page", () => {
         'script[src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"]',
       ),
     ).toHaveCount(1);
-    // A summary of what the course is about.
+    // The summary: the course's goal as a callout, then the introduction to block chords.
     const summary = page.locator("main .course-summary");
-    await expect(summary).toBeVisible();
-    expect((await summary.innerText()).split(/\s+/).length).toBeGreaterThan(30);
+    await expect(summary.locator("p")).toHaveText([
+      "In this course we’ll learn different harmonisation techniques for playing block chords at the piano.",
+      "Block chords, also called locked hands, harmonise a melody so that every note gets its own chord, moving in parallel with the melody. The sound is closely associated with George Shearing, Red Garland and Oscar Peterson, and it's one of the quickest ways to make a melody sound like a full horn section at the piano.",
+    ]);
+    await expect(summary.locator("p").first()).toHaveClass(/lede/);
     // The call to action leads to lesson 1.
     const start = page.getByRole("link", { name: "Start the course" });
     await expect(start).toBeVisible();

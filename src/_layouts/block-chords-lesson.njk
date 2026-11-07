@@ -33,26 +33,51 @@
         color: #666;
         margin-top: 0.25rem;
       }
-      /* Lesson goal: set apart with a target icon (drawn in CSS so the narration text is unchanged). */
-      .lede {
-        font-size: 1.2rem;
-        color: #6b7280;
-        font-style: italic;
-        font-weight: 600;
-        /* Georgia has only regular and bold; Source Serif 4 has a true semibold italic. */
-        font-family: "Accidentals", "Source Serif 4", Georgia, serif;
-        position: relative;
-        padding-left: 2.4rem;
+      /* The pianists the introduction names, side by side with their names (as in the video). */
+      .pianists {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+        margin: 1.5rem 0;
       }
-      .lede::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0.1em;
-        width: 1.8rem;
-        height: 1.8rem;
-        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
-          no-repeat center / contain;
+      .person {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        text-align: center;
+      }
+      .person img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 10px;
+      }
+      .person-name {
+        font:
+          600 1rem "Outfit",
+          sans-serif;
+      }
+      .person-credit {
+        font:
+          400 0.75rem/1.3 "Outfit",
+          sans-serif;
+        color: #5a6b7d;
+      }
+      .person-credit a {
+        color: inherit;
+      }
+      @media (max-width: 30rem) {
+        .pianists {
+          gap: 0.75rem;
+        }
+        .person-name {
+          font-size: 0.85rem;
+        }
       }
       /* Technique subtitle: the one-line goal under each technique's heading. Same voice as the
          lede, a step smaller and without its icon, sitting close to the heading it belongs to. */

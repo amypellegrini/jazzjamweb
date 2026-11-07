@@ -1,82 +1,11 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% if lesson > 1 %}{{ lessons[lesson - 1].heading }} - {% endif %}Piano Block Chords - Jazz Jam Studio</title>
-    <meta
-      name="description"
-      content="{{ description }}"
-    />
-    <link rel="canonical" href="https://jazzjam.app{{ page.url }}" />
-
-    <!-- Privacy-friendly analytics by Plausible -->
-    <script
-      async
-      src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"
-    ></script>
-    <script>
-      ((window.plausible =
-        window.plausible ||
-        function () {
-          (plausible.q = plausible.q || []).push(arguments);
-        }),
-        (plausible.init =
-          plausible.init ||
-          function (i) {
-            plausible.o = i || {};
-          }));
-      plausible.init();
-    </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,wght@1,600&display=swap"
-      rel="stylesheet"
-    />
+    {% set current = lessons[lesson - 1] %}
+    {% set pageTitle = current.title + " - Piano Block Chords - Jazz Jam Studio" %}
+    {% include "block-chords/head.njk" %}
     <style>
-      @font-face {
-        /* Serif fonts lack ♭ ♯ ♮, and the browser's fallback glyph is a full em wide ("A ♭").
-           Route just those three characters to a symbol font with sensible metrics. */
-        font-family: "Accidentals";
-        src:
-          local("Apple Symbols"), local("Arial Unicode MS"),
-          local("Segoe UI Symbol");
-        unicode-range: U+266D-266F;
-      }
-      body {
-        max-width: 46rem;
-        margin: 0 auto;
-        padding: 2rem 1rem 4rem;
-        font:
-          1.0625rem/1.65 "Accidentals",
-          Georgia,
-          "Times New Roman",
-          serif;
-        color: #1d1d1f;
-        background: #fff;
-      }
-      h1,
-      h2,
-      h3 {
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        line-height: 1.25;
-      }
-      h1 {
-        font-size: 2.25rem;
-        margin-bottom: 0.5rem;
-      }
-      h2 {
-        margin-top: 2.5rem;
-      }
-      h3 {
-        margin-top: 1.75rem;
-        color: #444;
-      }
+{% include "block-chords/base.css" %}
       figure {
         margin: 1.5rem 0;
       }
@@ -104,26 +33,51 @@
         color: #666;
         margin-top: 0.25rem;
       }
-      /* Lesson goal: set apart with a target icon (drawn in CSS so the narration text is unchanged). */
-      .lede {
-        font-size: 1.2rem;
-        color: #6b7280;
-        font-style: italic;
-        font-weight: 600;
-        /* Georgia has only regular and bold; Source Serif 4 has a true semibold italic. */
-        font-family: "Accidentals", "Source Serif 4", Georgia, serif;
-        position: relative;
-        padding-left: 2.4rem;
+      /* The pianists the introduction names, side by side with their names (as in the video). */
+      .pianists {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+        margin: 1.5rem 0;
       }
-      .lede::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0.1em;
-        width: 1.8rem;
-        height: 1.8rem;
-        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
-          no-repeat center / contain;
+      .person {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35rem;
+        text-align: center;
+      }
+      .person img {
+        display: block;
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 10px;
+      }
+      .person-name {
+        font:
+          600 1rem "Outfit",
+          sans-serif;
+      }
+      .person-credit {
+        font:
+          400 0.75rem/1.3 "Outfit",
+          sans-serif;
+        color: #5a6b7d;
+      }
+      .person-credit a {
+        color: inherit;
+      }
+      @media (max-width: 30rem) {
+        .pianists {
+          gap: 0.75rem;
+        }
+        .person-name {
+          font-size: 0.85rem;
+        }
       }
       /* Technique subtitle: the one-line goal under each technique's heading. Same voice as the
          lede, a step smaller and without its icon, sitting close to the heading it belongs to. */
@@ -294,60 +248,6 @@
         display: none;
       }
 
-      /* Header: a minimal bar in the footer's colours, linking home. */
-      .site-header {
-        background: #0a1420;
-        border-bottom: 1px solid rgba(74, 144, 196, 0.1);
-        width: 100vw;
-        margin: -2rem 0 2.5rem calc(50% - 50vw);
-      }
-      .site-header .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 1rem 1.5rem;
-      }
-      .site-header a {
-        font:
-          600 1.25rem "Outfit",
-          sans-serif;
-        color: #ffffff;
-        text-decoration: none;
-        letter-spacing: 0.01em;
-      }
-      .site-header a:hover {
-        color: #c4d8ea;
-      }
-
-      /* Footer: same as the home page (src/index.html), stretched to the full viewport
-         width since this page's body is a narrow reading column. */
-      footer {
-        background: #0a1420;
-        border-top: 1px solid rgba(74, 144, 196, 0.1);
-        padding: 2rem 0;
-        text-align: center;
-        width: 100vw;
-        margin: 4rem 0 -4rem calc(50% - 50vw);
-      }
-      footer .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 1.5rem;
-      }
-      footer a {
-        font-family: "Outfit", sans-serif;
-        color: #6a8faa;
-        text-decoration: none;
-        margin: 0 1rem;
-        font-size: 0.9rem;
-        transition: color 0.2s;
-      }
-      footer a:hover {
-        color: #c4d8ea;
-        text-decoration: underline;
-      }
-      html {
-        overflow-x: hidden;
-      }
       /* Course: where this lesson sits, above it, and the step to the next one, below it. */
       .course-eyebrow {
         margin: 0 0 -1rem;
@@ -363,7 +263,7 @@
         color: inherit;
       }
       .lesson-nav {
-        margin: 3rem 0 0;
+        margin: 3rem 0 4rem; /* the footer's own top margin is auto */
         padding-top: 1.5rem;
         border-top: 1px solid #e5e7eb;
         font-family:
@@ -396,7 +296,7 @@
         margin-left: auto;
         text-align: right;
       }
-      .lesson-nav-steps span {
+      .lesson-nav-step {
         display: block;
         font-size: 0.8rem;
         font-weight: 500;
@@ -475,9 +375,7 @@
     </style>
   </head>
   <body>
-    <header class="site-header">
-      <div class="container"><a href="/">JazzJam</a></div>
-    </header>
+    {% include "block-chords/header.njk" %}
     <div class="lesson-layout">
       <nav class="course-index" aria-label="Course contents">
         <details open>
@@ -509,9 +407,8 @@
         <a href="/courses/block-chords/">Piano Block Chords</a> · Lesson
         {{ lesson }} of {{ lessons.length }}
       </p>
-      {% set current = lessons[lesson - 1] %}
       <article
-        data-narration-offset="{{ current.narrationOffset }}"
+        data-narration="/assets/courses/block-chords/narration/{{ current.slug }}/"
         data-example-start="{{ current.exampleStart }}"
         data-exercise-start="{{ current.exerciseStart }}"
       >
@@ -521,36 +418,31 @@
       <div class="lesson-nav-steps">
         {% if lesson > 1 %}{% set prev = lessons[lesson - 2] %}
         <a rel="prev" href="{{ prev.url }}"
-          ><span>← Lesson {{ lesson - 1 }}</span>{{ prev.title }}</a
+          ><span class="lesson-nav-step">← Lesson {{ lesson - 1 }}</span
+          ><span class="lesson-nav-title">{{ prev.title }}</span></a
         >
         {% endif %}{% if lesson < lessons.length %}{% set next = lessons[lesson] %}
         <a rel="next" href="{{ next.url }}"
-          ><span>Lesson {{ lesson + 1 }} →</span>{{ next.title }}</a
+          ><span class="lesson-nav-step">Lesson {{ lesson + 1 }} →</span
+          ><span class="lesson-nav-title">{{ next.title }}</span></a
         >
         {% endif %}
       </div>
     </nav>
-    <footer>
-      <div class="container">
-        <a href="/privacy-policy">Privacy Policy</a>
-        <a href="/terms-of-service">Terms of Service</a>
-        <a href="/license">License</a>
-      </div>
-    </footer>
+    {% include "block-chords/footer.njk" %}
     <button id="listen" type="button" hidden>▶ Listen</button>
 
     <script>
-      // Read-along: narrates the article (pre-recorded with Kokoro TTS, see
+      // Read-along: narrates the lesson (pre-recorded with Kokoro TTS per lesson, see
       // scripts/narration/narrate.py), highlights each word as it is spoken, and plays each
       // example in turn with its noteheads lighting up chord by chord (timings from
       // scripts/sheet-music/block-chords.py).
       (async () => {
-        const BASE = "/assets/articles/block-chords/";
         const article = document.querySelector("article");
-        // Each lesson is a slice of the article: these offsets keep its examples, exercises
-        // and narration recordings numbered as they are in the article.
-        const narrationOffset = Number(article.dataset.narrationOffset),
-          exampleStart = Number(article.dataset.exampleStart),
+        const NARRATION = article.dataset.narration;
+        // Each lesson is a slice of the article: these offsets keep its examples and exercises
+        // numbered as they are in the article.
+        const exampleStart = Number(article.dataset.exampleStart),
           exerciseStart = Number(article.dataset.exerciseStart);
         const blocks = [
           ...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside)"),
@@ -693,16 +585,36 @@
 
         let manifest;
         try {
-          manifest = (await (
-            await fetch(BASE + "narration/narration.json")
-          ).json()).slice(narrationOffset, narrationOffset + blocks.length);
+          manifest = await (await fetch(NARRATION + "narration.json")).json();
         } catch {
-          return; // no narration: the page still works as a plain article
+          return; // no narration: the page still works as a plain lesson
         }
         if (manifest.length !== blocks.length) return;
 
+        // A recording belongs to the exact text it was made from: narrate.py stores the first
+        // 12 hex digits of the SHA-1 of each block's text (a note's example aside). A block whose
+        // text has changed since is left out of the read-along until it is re-recorded.
+        const hashOf = async (block) => {
+          const copy = block.cloneNode(true);
+          copy.querySelectorAll("figure").forEach((f) => f.remove());
+          const text = copy.textContent.trim().split(/\s+/).join(" ");
+          const digest = await crypto.subtle.digest(
+            "SHA-1",
+            new TextEncoder().encode(text),
+          );
+          return [...new Uint8Array(digest)]
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("")
+            .slice(0, 12);
+        };
+        const hashes = await Promise.all(blocks.map(hashOf));
+        hashes.forEach((hash, i) => {
+          if (hash !== manifest[i].hash) manifest[i] = null;
+        });
+
         // Wrap each displayed word in a span, matching the narration's word list.
         blocks.forEach((block, i) => {
+          if (!manifest[i]) return;
           const el = textOf(block);
           const words = el.textContent.trim().split(/\s+/);
           if (words.length !== manifest[i].words.length)
@@ -765,7 +677,7 @@
             const n = blocks.indexOf(el);
             if (!manifest[n]) return playItem(i + 1); // text changed since narration was recorded
             media = voice;
-            voice.src = BASE + `narration/${narrationOffset + n}.mp3`;
+            voice.src = NARRATION + `${n}.mp3`;
             voice.onplay = () => follow(el, manifest[n].words);
           }
           media.onended = () => playItem(i + 1);

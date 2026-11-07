@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% set pageTitle = "Piano Block Chords - Jazz Jam Studio" %}
+    {% include "block-chords/head.njk" %}
+    <style>
+{% include "block-chords/base.css" %}
+      /* Landing: the course's name, what it covers, and the way in. */
+      .course-eyebrow {
+        margin: 0 0 -1rem;
+        font:
+          600 0.8rem system-ui,
+          -apple-system,
+          sans-serif;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+      .course-landing {
+        margin-bottom: 4rem; /* the footer's own top margin is auto */
+      }
+      .course-landing h1 {
+        font-size: 2.75rem;
+        margin-bottom: 1rem;
+      }
+      .course-summary p {
+        margin: 0 0 1rem;
+      }
+      .course-start {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.8rem 1.6rem;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+        font:
+          600 1.05rem system-ui,
+          -apple-system,
+          sans-serif;
+        text-decoration: none;
+      }
+      .course-start:hover,
+      .course-start:focus-visible {
+        background: #1d4ed8;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "block-chords/header.njk" %}
+    <main class="course-landing">
+      <p class="course-eyebrow">Course · {{ lessons.length }} lessons</p>
+      <h1>Piano Block Chords</h1>
+{{ content | safe }}      <a class="course-start" href="{{ lessons[0].url }}">Start the course</a>
+    </main>
+    {% include "block-chords/footer.njk" %}
+  </body>
+</html>

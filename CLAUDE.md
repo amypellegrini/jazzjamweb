@@ -30,6 +30,10 @@ GENERATED — edit the sources, never the outputs:
   re-rendering the examples; it needs no MuseScore, so it runs anywhere `npm ci` does.
 - Narration: the article's `h1/h2/h3/p/aside` text → `src/assets/articles/<slug>/narration/`
   (Kokoro TTS). Unchanged paragraphs keep their recording (matched by text hash).
+- Course narration: each built lesson page of `src/courses/block-chords/` →
+  `src/assets/courses/block-chords/narration/<lesson-slug>/`, the same way. A lesson reads along
+  only the blocks whose text matches their recording's hash, so edited text stays silent until
+  the Render Assets workflow re-records it.
 
 Cloud sessions can't run MuseScore 4 or download the Kokoro model. Don't render locally there:
 edit the sources, push to a branch, and the **Render Assets** workflow renders and commits the

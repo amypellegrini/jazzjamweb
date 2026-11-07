@@ -1,12 +1,17 @@
 import { test, expect } from "@playwright/test";
+import { createHash } from "node:crypto";
 
 const BASE = "/courses/block-chords/";
 
-// The course is the block chords article cut into lessons, each ending on its exercise.
-// firstExample pins the article-wide example numbering, which the lessons continue
-// (lesson 6's text refers back to "Example 16" in lesson 5).
+// The course is the block chords article cut into lessons, each ending on its exercise, behind
+// a landing page at BASE. firstExample pins the article-wide example numbering, which the
+// lessons continue (lesson 6's text refers back to "Example 16" in lesson 5).
 const lessons = [
-  { path: BASE, h1: "Piano Block Chords", firstExample: 1 },
+  {
+    path: `${BASE}building-block-chords/`,
+    h1: "Building block chords",
+    firstExample: 1,
+  },
   {
     path: `${BASE}sixth-diminished-scale/`,
     h1: "Harmonising the sixth-diminished scale",
@@ -98,9 +103,16 @@ test.describe("Block chords course", () => {
         const prev = nav.locator('a[rel="prev"]');
         const next = nav.locator('a[rel="next"]');
         if (i === 0) await expect(prev).toHaveCount(0);
-        else await expect(prev).toHaveAttribute("href", lessons[i - 1].path);
+        else {
+          await expect(prev).toHaveAttribute("href", lessons[i - 1].path);
+          // Named exactly as the lesson it leads to is titled.
+          await expect(prev.locator(".lesson-nav-title")).toHaveText(lessons[i - 1].h1);
+        }
         if (i === lessons.length - 1) await expect(next).toHaveCount(0);
-        else await expect(next).toHaveAttribute("href", lessons[i + 1].path);
+        else {
+          await expect(next).toHaveAttribute("href", lessons[i + 1].path);
+          await expect(next.locator(".lesson-nav-title")).toHaveText(lessons[i + 1].h1);
+        }
       });
 
       test("lists every lesson in a sidebar on the left of the lesson", async ({
@@ -109,7 +121,8 @@ test.describe("Block chords course", () => {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.goto(lesson.path);
         const index = page.locator("nav.course-index");
-        await expect(index.locator("ol a")).toHaveCount(lessons.length);
+        // Each entry reads word for word as its lesson's title.
+        await expect(index.locator("ol a")).toHaveText(lessons.map((l) => l.h1));
         await expect(index.locator('[aria-current="page"]')).toHaveAttribute(
           "href",
           lesson.path,
@@ -146,19 +159,36 @@ test.describe("Block chords course", () => {
         expect(overflow).toBe(false);
       });
 
-      test("lines every narrated block up with the article's recordings", async ({
+      test("reads along only where the recording matches the text", async ({
         page,
+        request,
       }) => {
         await page.goto(lesson.path);
         await expect(page.locator("#listen")).toBeVisible();
-        // A block whose word count disagrees with its recording is left unwrapped.
-        const unwrapped = await page
+        const slug = lesson.path.slice(BASE.length, -1);
+        const manifest: { hash: string }[] = await (
+          await request.get(`/assets/courses/block-chords/narration/${slug}/narration.json`)
+        ).json();
+        // Each block's text as scripts/narration/narrate.py hashes it (a note's example aside).
+        const blocks = await page
           .locator("article > :is(h1, h2, h3, p, aside)")
-          .evaluateAll(
-            (blocks) =>
-              blocks.filter((b) => !b.querySelector(".w")).length,
+          .evaluateAll((els) =>
+            els.map((el) => {
+              const copy = el.cloneNode(true) as HTMLElement;
+              copy.querySelectorAll("figure").forEach((f) => f.remove());
+              return {
+                text: copy.textContent!.trim().split(/\s+/).join(" "),
+                wrapped: !!el.querySelector(".w"),
+              };
+            }),
           );
-        expect(unwrapped).toBe(0);
+        expect(manifest.length).toBe(blocks.length);
+        blocks.forEach(({ text, wrapped }, b) => {
+          const recorded =
+            createHash("sha1").update(text).digest("hex").slice(0, 12) === manifest[b].hash;
+          // A block narrates (and highlights word by word) only with its own recording.
+          expect(wrapped, `block ${b + 1}: ${text.slice(0, 40)}`).toBe(recorded);
+        });
       });
 
       test("plays each example on a keyboard chart beneath its score", async ({
@@ -230,6 +260,16 @@ test.describe("Block chords course", () => {
         await expect.poll(async () => (await lit()).lit.length).toBe(0);
       });
 
+      test("ends with the footer below the lesson", async ({ page }) => {
+        await page.goto(lesson.path);
+        const gap = await page.evaluate(() => {
+          const nav = document.querySelector("nav.lesson-nav")!.getBoundingClientRect();
+          const footer = document.querySelector("footer")!.getBoundingClientRect();
+          return footer.top - nav.bottom;
+        });
+        expect(gap).toBeGreaterThanOrEqual(32);
+      });
+
       test("loads every example asset", async ({ page, request }) => {
         await page.goto(lesson.path);
         const sources = await page
@@ -242,5 +282,119 @@ test.describe("Block chords course", () => {
         }
       });
     });
+  });
+});
+
+test.describe("Block chords course lesson 1", () => {
+  const path = `${BASE}building-block-chords/`;
+
+  test("opens on the introduction, without the course's goal callout", async ({
+    page,
+  }) => {
+    await page.goto(path);
+    await expect(page.locator("article .lede")).toHaveCount(0);
+    await expect(page.locator("article > p").first()).toHaveText(
+      /^Block chords, also called locked hands/,
+    );
+  });
+
+  test("shows the three pianists the introduction names, in its order", async ({
+    page,
+  }) => {
+    await page.goto(path);
+    const row = page.locator("article > .pianists");
+    // Right after the paragraph that names them.
+    const after = await row.evaluate(
+      (el) => el.previousElementSibling?.textContent?.includes("Oscar Peterson") ?? false,
+    );
+    expect(after).toBe(true);
+    await expect(row.locator(".person-name")).toHaveText([
+      "George Shearing",
+      "Red Garland",
+      "Oscar Peterson",
+    ]);
+    const images = row.locator("img");
+    await expect(images).toHaveCount(3);
+    for (let i = 0; i < 3; i++) {
+      await expect(images.nth(i)).toHaveAttribute("alt", /.+/);
+      expect(await images.nth(i).evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0)).toBe(true);
+    }
+    // The CC BY-SA photo of Red Garland carries its credit and licence, linked to the source.
+    const credit = row.locator(".person").nth(1).locator(".person-credit");
+    await expect(credit).toContainText("Brian McMillen");
+    await expect(credit).toContainText("CC BY-SA 3.0");
+    await expect(credit.locator("a").first()).toHaveAttribute(
+      "href",
+      "https://commons.wikimedia.org/wiki/File:Red_Garland_9A.jpg",
+    );
+  });
+
+  test("keeps the three photos side by side on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(path);
+    const boxes = await page
+      .locator("article > .pianists img")
+      .evaluateAll((imgs) => imgs.map((i) => i.getBoundingClientRect().top));
+    expect(new Set(boxes.map((t) => Math.round(t))).size).toBe(1);
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
+    expect(overflow).toBe(false);
+  });
+});
+
+test.describe("Block chords course landing page", () => {
+  test("introduces the course and starts it at the first lesson", async ({
+    page,
+  }) => {
+    const response = await page.goto(BASE);
+    expect(response?.status()).toBe(200);
+    await expect(page.locator("h1")).toHaveText("Piano Block Chords");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      "href",
+      `https://jazzjam.app${BASE}`,
+    );
+    await expect(
+      page.locator(
+        'script[src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"]',
+      ),
+    ).toHaveCount(1);
+    // The summary: the course's goal as a callout, then the introduction to block chords.
+    const summary = page.locator("main .course-summary");
+    await expect(summary.locator("p")).toHaveText([
+      "In this course we’ll learn different harmonisation techniques for playing block chords at the piano.",
+      "Block chords, also called locked hands, harmonise a melody so that every note gets its own chord, moving in parallel with the melody. The sound is closely associated with George Shearing, Red Garland and Oscar Peterson, and it's one of the quickest ways to make a melody sound like a full horn section at the piano.",
+    ]);
+    await expect(summary.locator("p").first()).toHaveClass(/lede/);
+    // The call to action leads to lesson 1.
+    const start = page.getByRole("link", { name: "Start the course" });
+    await expect(start).toBeVisible();
+    await expect(start).toHaveAttribute("href", lessons[0].path);
+    await start.click();
+    await expect(page.locator("article h1")).toHaveText(lessons[0].h1);
+  });
+
+  test("keeps the footer at the bottom of a window taller than the page", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 1400 });
+    await page.goto(BASE);
+    const { bottom, viewport, scrollable } = await page.evaluate(() => ({
+      bottom: document.querySelector("footer")!.getBoundingClientRect().bottom,
+      viewport: window.innerHeight,
+      scrollable: document.documentElement.scrollHeight > window.innerHeight,
+    }));
+    expect(Math.abs(bottom - viewport)).toBeLessThanOrEqual(1);
+    expect(scrollable).toBe(false);
+  });
+
+  test("fits a phone without sideways scrolling", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(BASE);
+    await expect(page.getByRole("link", { name: "Start the course" })).toBeInViewport();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > window.innerWidth,
+    );
+    expect(overflow).toBe(false);
   });
 });

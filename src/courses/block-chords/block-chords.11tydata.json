@@ -2,50 +2,44 @@
   "layout": "block-chords-lesson.njk",
   "lessons": [
     {
-      "url": "/courses/block-chords/",
-      "title": "Building the block",
-      "heading": "Piano Block Chords",
-      "narrationOffset": 0,
+      "url": "/courses/block-chords/building-block-chords/",
+      "slug": "building-block-chords",
+      "title": "Building block chords",
       "exampleStart": 0,
       "exerciseStart": 0
     },
     {
       "url": "/courses/block-chords/sixth-diminished-scale/",
-      "title": "The sixth-diminished scale",
-      "heading": "Harmonising the sixth-diminished scale",
-      "narrationOffset": 5,
+      "slug": "sixth-diminished-scale",
+      "title": "Harmonising the sixth-diminished scale",
       "exampleStart": 2,
       "exerciseStart": 1
     },
     {
       "url": "/courses/block-chords/diminished-passing-tones/",
+      "slug": "diminished-passing-tones",
       "title": "Diminished passing tones",
-      "heading": "Diminished passing tones",
-      "narrationOffset": 8,
       "exampleStart": 4,
       "exerciseStart": 2
     },
     {
       "url": "/courses/block-chords/diatonic-passing-tones/",
+      "slug": "diatonic-passing-tones",
       "title": "Diatonic passing tones",
-      "heading": "Diatonic passing tones",
-      "narrationOffset": 14,
       "exampleStart": 8,
       "exerciseStart": 3
     },
     {
       "url": "/courses/block-chords/chromatic-passing-tones/",
+      "slug": "chromatic-passing-tones",
       "title": "Chromatic passing tones",
-      "heading": "Chromatic passing tones",
-      "narrationOffset": 25,
       "exampleStart": 12,
       "exerciseStart": 4
     },
     {
       "url": "/courses/block-chords/two-five-one-passing-tones/",
+      "slug": "two-five-one-passing-tones",
       "title": "2 5 1 passing tones",
-      "heading": "2 5 1 passing tones",
-      "narrationOffset": 29,
       "exampleStart": 16,
       "exerciseStart": 5
     }

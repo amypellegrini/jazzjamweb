@@ -195,6 +195,21 @@ test.describe("Block chords course", () => {
         expect(scrolled.y).toBeLessThan(900);
       });
 
+      test("gives the sidebar the room beside the lesson without leaving the window", async ({
+        page,
+      }) => {
+        for (const width of [1280, 1440]) {
+          await page.setViewportSize({ width, height: 900 });
+          await page.goto(lesson.path);
+          const box = (await page.locator("nav.course-index ol").first().boundingBox())!;
+          const article = (await page.locator("article").boundingBox())!;
+          expect(box.x).toBeGreaterThanOrEqual(8);
+          expect(box.x + box.width).toBeLessThanOrEqual(article.x);
+          // Wide enough that most lesson titles fit on one line.
+          expect(box.width).toBeGreaterThanOrEqual(width >= 1440 ? 260 : 220);
+        }
+      });
+
       test("folds the lesson index above the lesson on a phone", async ({
         page,
       }) => {

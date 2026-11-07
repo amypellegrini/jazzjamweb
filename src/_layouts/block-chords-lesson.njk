@@ -339,7 +339,7 @@
       }
       .course-index .course-part ol {
         margin: 0.5rem 0 0.25rem;
-        padding-left: 1.4rem;
+        padding-left: 1.2rem;
         font-size: 0.95rem;
         line-height: 1.4;
       }
@@ -363,8 +363,9 @@
           position: absolute;
           top: 0;
           bottom: 0;
-          right: calc(100% + 3rem);
-          width: 13rem;
+          /* All the room left of the 44rem column, less a 2rem gap and a 1rem window margin. */
+          right: calc(100% + 2rem);
+          width: min(19rem, calc(50vw - 22rem - 3rem));
           margin: 0;
         }
         .course-index details {
@@ -373,7 +374,7 @@
           border: 0;
           border-left: 2px solid #e5e7eb;
           border-radius: 0;
-          padding: 0 0 0 1rem;
+          padding: 0 0 0 0.75rem;
         }
         .course-index summary {
           cursor: default;

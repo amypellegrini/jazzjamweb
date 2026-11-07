@@ -6,6 +6,7 @@ test.describe("Analytics tracking", () => {
     { name: "privacy policy", path: "/privacy-policy/" },
     { name: "license", path: "/license/" },
     { name: "block chords article", path: "/articles/block-chords/" },
+    { name: "block chords course", path: "/courses/block-chords/" },
   ];
 
   for (const { name, path } of pages) {

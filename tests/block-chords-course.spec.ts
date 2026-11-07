@@ -39,6 +39,30 @@ const lessons = [
   },
 ];
 
+// The course's parts, in order. Part 1 is the six lessons above; the rest are announced as
+// coming soon until their lessons are written, and link nowhere until then.
+const parts = [
+  { title: "Part 1 · Harmonisation techniques", lessons },
+  { title: "Part 2 · Harmonising a major 2 5 1", lessons: [] },
+  { title: "Part 3 · Harmonising a minor 2 5 1", lessons: [] },
+  { title: "Part 4 · Arranging a jazz standard", lessons: [] },
+];
+
+async function expectSyllabus(contents: import("@playwright/test").Locator) {
+  const items = contents.locator(".course-part");
+  await expect(items.locator(".course-part-title")).toHaveText(parts.map((p) => p.title));
+  for (const [i, part] of parts.entries()) {
+    const item = items.nth(i);
+    if (part.lessons.length) {
+      await expect(item.locator("a")).toHaveText(part.lessons.map((l) => l.h1));
+      await expect(item.locator(".coming-soon")).toHaveCount(0);
+    } else {
+      await expect(item.locator("a")).toHaveCount(0);
+      await expect(item.locator(".coming-soon")).toHaveText("Coming soon");
+    }
+  }
+}
+
 test.describe("Block chords course", () => {
   lessons.forEach((lesson, i) => {
     const n = i + 1;
@@ -59,6 +83,13 @@ test.describe("Block chords course", () => {
             'script[src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"]',
           ),
         ).toHaveCount(1);
+      });
+
+      test("names its part and lesson number above the lesson", async ({ page }) => {
+        await page.goto(lesson.path);
+        await expect(page.locator(".course-eyebrow")).toHaveText(
+          `Piano Block Chords · Part 1 · Lesson ${n}`,
+        );
       });
 
       test("ends on its exercise", async ({ page }) => {
@@ -108,8 +139,14 @@ test.describe("Block chords course", () => {
           // Named exactly as the lesson it leads to is titled.
           await expect(prev.locator(".lesson-nav-title")).toHaveText(lessons[i - 1].h1);
         }
-        if (i === lessons.length - 1) await expect(next).toHaveCount(0);
-        else {
+        if (i === lessons.length - 1) {
+          // Part 1's last lesson points ahead to Part 2, announced but not yet linked.
+          await expect(next).toHaveCount(0);
+          const upcoming = nav.locator(".lesson-nav-upcoming");
+          await expect(upcoming.locator(".lesson-nav-step")).toHaveText("Coming soon");
+          await expect(upcoming.locator(".lesson-nav-title")).toHaveText(parts[1].title);
+          await expect(upcoming.locator("a")).toHaveCount(0);
+        } else {
           await expect(next).toHaveAttribute("href", lessons[i + 1].path);
           await expect(next.locator(".lesson-nav-title")).toHaveText(lessons[i + 1].h1);
         }
@@ -127,16 +164,18 @@ test.describe("Block chords course", () => {
           "href",
           lesson.path,
         );
-        await expect(index.locator("ol")).toBeVisible();
+        await expect(index.locator("ol").first()).toBeVisible();
+        // Lessons sit under their part, with the parts still to come announced after them.
+        await expectSyllabus(index);
 
-        const box = (await index.locator("ol").boundingBox())!;
+        const box = (await index.locator("ol").first().boundingBox())!;
         const article = (await page.locator("article").boundingBox())!;
         expect(box.x + box.width).toBeLessThanOrEqual(article.x);
         expect(box.y).toBeLessThan(article.y + 200);
 
         // It stays in view while the lesson scrolls.
         await page.locator("details.exercise").scrollIntoViewIfNeeded();
-        const scrolled = (await index.locator("ol").boundingBox())!;
+        const scrolled = (await index.locator("ol").first().boundingBox())!;
         expect(scrolled.y).toBeGreaterThanOrEqual(0);
         expect(scrolled.y).toBeLessThan(900);
       });
@@ -147,9 +186,9 @@ test.describe("Block chords course", () => {
         await page.setViewportSize({ width: 375, height: 812 });
         await page.goto(lesson.path);
         const index = page.locator("nav.course-index");
-        await expect(index.locator("ol")).toBeHidden();
+        await expect(index.locator("ol").first()).toBeHidden();
         await index.locator("summary").click();
-        await expect(index.locator("ol")).toBeVisible();
+        await expect(index.locator("ol").first()).toBeVisible();
         const box = (await index.boundingBox())!;
         const article = (await page.locator("article").boundingBox())!;
         expect(box.y + box.height).toBeLessThanOrEqual(article.y);
@@ -374,10 +413,38 @@ test.describe("Block chords course landing page", () => {
     await expect(page.locator("article h1")).toHaveText(lessons[0].h1);
   });
 
+  test("outlines the course part by part, with what is still to come", async ({ page }) => {
+    await page.goto(BASE);
+    await expect(page.locator(".course-eyebrow")).toHaveText(
+      `Course · ${parts.length} parts`,
+    );
+    const contents = page.locator("main .course-contents");
+    await expect(contents.locator("h2")).toHaveText("Course contents");
+    await expectSyllabus(contents);
+    for (const [i, l] of lessons.entries())
+      await expect(contents.locator(".course-part").first().locator("a").nth(i)).toHaveAttribute(
+        "href",
+        l.path,
+      );
+  });
+
+  test("links only to pages that exist", async ({ page, request }) => {
+    for (const path of [BASE, ...lessons.map((l) => l.path)]) {
+      await page.goto(path);
+      const hrefs = await page.$$eval("a[href^='/']", (as) =>
+        as.map((a) => a.getAttribute("href")!),
+      );
+      for (const href of new Set(hrefs)) {
+        const res = await request.get(href);
+        expect(res.status(), `${href} linked from ${path}`).toBe(200);
+      }
+    }
+  });
+
   test("keeps the footer at the bottom of a window taller than the page", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1440, height: 1400 });
+    await page.setViewportSize({ width: 1440, height: 2000 });
     await page.goto(BASE);
     const { bottom, viewport, scrollable } = await page.evaluate(() => ({
       bottom: document.querySelector("footer")!.getBoundingClientRect().bottom,

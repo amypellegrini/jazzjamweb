@@ -6,42 +6,69 @@
       "slug": "building-block-chords",
       "title": "Building block chords",
       "exampleStart": 0,
-      "exerciseStart": 0
+      "exerciseStart": 0,
+      "part": 1
     },
     {
       "url": "/courses/block-chords/sixth-diminished-scale/",
       "slug": "sixth-diminished-scale",
       "title": "Harmonising the sixth-diminished scale",
       "exampleStart": 2,
-      "exerciseStart": 1
+      "exerciseStart": 1,
+      "part": 1
     },
     {
       "url": "/courses/block-chords/diminished-passing-tones/",
       "slug": "diminished-passing-tones",
       "title": "Diminished passing tones",
       "exampleStart": 4,
-      "exerciseStart": 2
+      "exerciseStart": 2,
+      "part": 1
     },
     {
       "url": "/courses/block-chords/diatonic-passing-tones/",
       "slug": "diatonic-passing-tones",
       "title": "Diatonic passing tones",
       "exampleStart": 8,
-      "exerciseStart": 3
+      "exerciseStart": 3,
+      "part": 1
     },
     {
       "url": "/courses/block-chords/chromatic-passing-tones/",
       "slug": "chromatic-passing-tones",
       "title": "Chromatic passing tones",
       "exampleStart": 12,
-      "exerciseStart": 4
+      "exerciseStart": 4,
+      "part": 1
     },
     {
       "url": "/courses/block-chords/two-five-one-passing-tones/",
       "slug": "two-five-one-passing-tones",
       "title": "2 5 1 passing tones",
       "exampleStart": 16,
-      "exerciseStart": 5
+      "exerciseStart": 5,
+      "part": 1
+    }
+  ],
+  "parts": [
+    {
+      "number": 1,
+      "title": "Harmonisation techniques"
+    },
+    {
+      "number": 2,
+      "title": "Harmonising a major 2 5 1",
+      "comingSoon": true
+    },
+    {
+      "number": 3,
+      "title": "Harmonising a minor 2 5 1",
+      "comingSoon": true
+    },
+    {
+      "number": 4,
+      "title": "Arranging a jazz standard",
+      "comingSoon": true
     }
   ]
 }

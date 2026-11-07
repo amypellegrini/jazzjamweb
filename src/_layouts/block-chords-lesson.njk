@@ -292,6 +292,17 @@
         border-color: #2563eb;
         color: #2563eb;
       }
+      .lesson-nav-upcoming {
+        margin-left: auto;
+        text-align: right;
+        padding: 0.75rem 1rem;
+        max-width: 50%;
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        color: #6b7280;
+        font-weight: 600;
+        line-height: 1.3;
+      }
       .lesson-nav-steps a[rel="next"] {
         margin-left: auto;
         text-align: right;
@@ -326,13 +337,13 @@
         text-transform: uppercase;
         color: #6b7280;
       }
-      .course-index ol {
+      .course-index .course-part ol {
         margin: 0.5rem 0 0.25rem;
         padding-left: 1.4rem;
         font-size: 0.95rem;
         line-height: 1.4;
       }
-      .course-index li + li {
+      .course-index .course-part li + li {
         margin-top: 0.55rem;
       }
       .course-index ol a {
@@ -347,7 +358,7 @@
         font-weight: 600;
       }
       @media (min-width: 80rem) {
-        /* Spans the lesson's height so its sticky list stays in view down to the exercise. */
+        /* Spans the lesson and its bottom nav so its sticky list stays in view to the end. */
         .course-index {
           position: absolute;
           top: 0;
@@ -380,13 +391,7 @@
       <nav class="course-index" aria-label="Course contents">
         <details open>
           <summary>Course contents</summary>
-          <ol>
-            {% for item in lessons %}
-            <li>
-              <a href="{{ item.url }}"{% if loop.index == lesson %} aria-current="page"{% endif %}>{{ item.title }}</a>
-            </li>
-            {% endfor %}
-          </ol>
+{% include "block-chords/syllabus.njk" %}
         </details>
       </nav>
       <script>
@@ -404,8 +409,8 @@
         })();
       </script>
       <p class="course-eyebrow">
-        <a href="/courses/block-chords/">Piano Block Chords</a> · Lesson
-        {{ lesson }} of {{ lessons.length }}
+        <a href="/courses/block-chords/">Piano Block Chords</a> · Part
+        {{ current.part }} · Lesson {{ lesson }}
       </p>
       <article
         data-narration="/assets/courses/block-chords/narration/{{ current.slug }}/"
@@ -413,22 +418,27 @@
         data-exercise-start="{{ current.exerciseStart }}"
       >
 {{ content | safe }}      </article>
+      <nav class="lesson-nav" aria-label="Previous and next lesson">
+        <div class="lesson-nav-steps">
+          {% if lesson > 1 %}{% set prev = lessons[lesson - 2] %}
+          <a rel="prev" href="{{ prev.url }}"
+            ><span class="lesson-nav-step">← Lesson {{ lesson - 1 }}</span
+            ><span class="lesson-nav-title">{{ prev.title }}</span></a
+          >
+          {% endif %}{% if lesson < lessons.length %}{% set next = lessons[lesson] %}
+          <a rel="next" href="{{ next.url }}"
+            ><span class="lesson-nav-step">Lesson {{ lesson + 1 }} →</span
+            ><span class="lesson-nav-title">{{ next.title }}</span></a
+          >
+          {% else %}{% set upcoming = parts[current.part] %}{% if upcoming %}
+          <div class="lesson-nav-upcoming"
+            ><span class="lesson-nav-step">Coming soon</span
+            ><span class="lesson-nav-title">Part {{ upcoming.number }} · {{ upcoming.title }}</span></div
+          >
+          {% endif %}{% endif %}
+        </div>
+      </nav>
     </div>
-    <nav class="lesson-nav" aria-label="Previous and next lesson">
-      <div class="lesson-nav-steps">
-        {% if lesson > 1 %}{% set prev = lessons[lesson - 2] %}
-        <a rel="prev" href="{{ prev.url }}"
-          ><span class="lesson-nav-step">← Lesson {{ lesson - 1 }}</span
-          ><span class="lesson-nav-title">{{ prev.title }}</span></a
-        >
-        {% endif %}{% if lesson < lessons.length %}{% set next = lessons[lesson] %}
-        <a rel="next" href="{{ next.url }}"
-          ><span class="lesson-nav-step">Lesson {{ lesson + 1 }} →</span
-          ><span class="lesson-nav-title">{{ next.title }}</span></a
-        >
-        {% endif %}
-      </div>
-    </nav>
     {% include "block-chords/footer.njk" %}
     <button id="listen" type="button" hidden>▶ Listen</button>
 

@@ -1,0 +1,20 @@
+{# The course outline, part by part. A part still to be written is announced as coming soon
+   and links nowhere until its lessons exist. #}
+<ol class="course-parts">
+  {% for part in parts %}
+  <li class="course-part">
+    <span class="course-part-title">Part {{ part.number }} · {{ part.title }}</span>
+    {% if part.comingSoon %}
+    <span class="coming-soon">Coming soon</span>
+    {% else %}
+    <ol>
+      {% for item in lessons %}{% if item.part == part.number %}
+      <li>
+        <a href="{{ item.url }}"{% if item.url == page.url %} aria-current="page"{% endif %}>{{ item.title }}</a>
+      </li>
+      {% endif %}{% endfor %}
+    </ol>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>

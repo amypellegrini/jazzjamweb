@@ -39,6 +39,26 @@
           sans-serif;
         text-decoration: none;
       }
+      .course-contents {
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+      }
+      .course-contents h2 {
+        margin-top: 0;
+      }
+      .course-contents .course-part ol {
+        margin: 0.5rem 0 0;
+        padding-left: 1.4rem;
+        line-height: 1.5;
+      }
+      .course-contents .course-part a {
+        color: #2563eb;
+        text-decoration: none;
+      }
+      .course-contents .course-part a:hover {
+        text-decoration: underline;
+      }
       .course-start:hover,
       .course-start:focus-visible {
         background: #1d4ed8;
@@ -48,9 +68,13 @@
   <body>
     {% include "block-chords/header.njk" %}
     <main class="course-landing">
-      <p class="course-eyebrow">Course · {{ lessons.length }} lessons</p>
+      <p class="course-eyebrow">Course · {{ parts.length }} parts</p>
       <h1>Piano Block Chords</h1>
 {{ content | safe }}      <a class="course-start" href="{{ lessons[0].url }}">Start the course</a>
+      <section class="course-contents" aria-labelledby="course-contents">
+        <h2 id="course-contents">Course contents</h2>
+{% include "block-chords/syllabus.njk" %}
+      </section>
     </main>
     {% include "block-chords/footer.njk" %}
   </body>

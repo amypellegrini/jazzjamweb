@@ -125,3 +125,28 @@ html {
   background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
     no-repeat center / contain;
 }
+      /* Course outline (sidebar and landing page): parts, each with its lessons or "coming soon". */
+      ol.course-parts {
+        list-style: none;
+        padding-left: 0;
+      }
+      .course-part + .course-part {
+        margin-top: 1rem;
+      }
+      .course-part-title {
+        display: block;
+        font-weight: 600;
+        color: #1d1d1f;
+      }
+      .coming-soon {
+        display: inline-block;
+        margin-top: 0.3rem;
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        background: #f3f4f6;
+        color: #6b7280;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }

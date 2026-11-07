@@ -1,0 +1,97 @@
+/* Shared by every block chords course page: type, header and footer. */
+@font-face {
+  /* Serif fonts lack ♭ ♯ ♮, and the browser's fallback glyph is a full em wide ("A ♭").
+     Route just those three characters to a symbol font with sensible metrics. */
+  font-family: "Accidentals";
+  src:
+    local("Apple Symbols"), local("Arial Unicode MS"),
+    local("Segoe UI Symbol");
+  unicode-range: U+266D-266F;
+}
+body {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+  font:
+    1.0625rem/1.65 "Accidentals",
+    Georgia,
+    "Times New Roman",
+    serif;
+  color: #1d1d1f;
+  background: #fff;
+}
+h1,
+h2,
+h3 {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  line-height: 1.25;
+}
+h1 {
+  font-size: 2.25rem;
+  margin-bottom: 0.5rem;
+}
+h2 {
+  margin-top: 2.5rem;
+}
+h3 {
+  margin-top: 1.75rem;
+  color: #444;
+}
+
+/* Header: a minimal bar in the footer's colours, linking home. */
+.site-header {
+  background: #0a1420;
+  border-bottom: 1px solid rgba(74, 144, 196, 0.1);
+  width: 100vw;
+  margin: -2rem 0 2.5rem calc(50% - 50vw);
+}
+.site-header .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+}
+.site-header a {
+  font:
+    600 1.25rem "Outfit",
+    sans-serif;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+.site-header a:hover {
+  color: #c4d8ea;
+}
+
+/* Footer: same as the home page (src/index.html), stretched to the full viewport
+   width since this page's body is a narrow reading column. */
+footer {
+  background: #0a1420;
+  border-top: 1px solid rgba(74, 144, 196, 0.1);
+  padding: 2rem 0;
+  text-align: center;
+  width: 100vw;
+  margin: 4rem 0 -4rem calc(50% - 50vw);
+}
+footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+footer a {
+  font-family: "Outfit", sans-serif;
+  color: #6a8faa;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+footer a:hover {
+  color: #c4d8ea;
+  text-decoration: underline;
+}
+html {
+  overflow-x: hidden;
+}

@@ -1,0 +1,801 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% if lesson > 1 %}{{ lessons[lesson - 1].heading }} - {% endif %}Piano Block Chords - Jazz Jam Studio</title>
+    <meta
+      name="description"
+      content="{{ description }}"
+    />
+    <link rel="canonical" href="https://jazzjam.app{{ page.url }}" />
+
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script
+      async
+      src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"
+    ></script>
+    <script>
+      ((window.plausible =
+        window.plausible ||
+        function () {
+          (plausible.q = plausible.q || []).push(arguments);
+        }),
+        (plausible.init =
+          plausible.init ||
+          function (i) {
+            plausible.o = i || {};
+          }));
+      plausible.init();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Serif+4:ital,wght@1,600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      @font-face {
+        /* Serif fonts lack ♭ ♯ ♮, and the browser's fallback glyph is a full em wide ("A ♭").
+           Route just those three characters to a symbol font with sensible metrics. */
+        font-family: "Accidentals";
+        src:
+          local("Apple Symbols"), local("Arial Unicode MS"),
+          local("Segoe UI Symbol");
+        unicode-range: U+266D-266F;
+      }
+      body {
+        max-width: 46rem;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+        font:
+          1.0625rem/1.65 "Accidentals",
+          Georgia,
+          "Times New Roman",
+          serif;
+        color: #1d1d1f;
+        background: #fff;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        line-height: 1.25;
+      }
+      h1 {
+        font-size: 2.25rem;
+        margin-bottom: 0.5rem;
+      }
+      h2 {
+        margin-top: 2.5rem;
+      }
+      h3 {
+        margin-top: 1.75rem;
+        color: #444;
+      }
+      figure {
+        margin: 1.5rem 0;
+      }
+      .example-title {
+        font:
+          700 0.95rem/1.3 system-ui,
+          -apple-system,
+          sans-serif;
+        margin-bottom: 0.4rem;
+      }
+      figure img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      figure audio {
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+      figcaption {
+        font:
+          0.875rem/1.4 "Accidentals",
+          system-ui,
+          sans-serif;
+        color: #666;
+        margin-top: 0.25rem;
+      }
+      /* Lesson goal: set apart with a target icon (drawn in CSS so the narration text is unchanged). */
+      .lede {
+        font-size: 1.2rem;
+        color: #6b7280;
+        font-style: italic;
+        font-weight: 600;
+        /* Georgia has only regular and bold; Source Serif 4 has a true semibold italic. */
+        font-family: "Accidentals", "Source Serif 4", Georgia, serif;
+        position: relative;
+        padding-left: 2.4rem;
+      }
+      .lede::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.1em;
+        width: 1.8rem;
+        height: 1.8rem;
+        background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
+          no-repeat center / contain;
+      }
+      /* Technique subtitle: the one-line goal under each technique's heading. Same voice as the
+         lede, a step smaller and without its icon, sitting close to the heading it belongs to. */
+      .subtitle {
+        font-size: 1.1rem;
+        line-height: 1.4;
+        color: #6b7280;
+        font-style: italic;
+        font-weight: 600;
+        font-family: "Accidentals", "Source Serif 4", Georgia, serif;
+        margin-top: -0.35rem;
+        text-wrap: balance;
+      }
+      .passing {
+        color: #2563eb;
+        font-weight: 600;
+      }
+
+      /* Side notes: asides to the main explanation. The label is CSS-only, so it is not narrated. */
+      .note > p {
+        margin: 0 0 0.75rem;
+      }
+      .note > p:last-child {
+        margin-bottom: 0;
+      }
+      .note {
+        margin: 1.5rem 0;
+        padding: 0.9rem 1.1rem;
+        border-left: 4px solid #4a90c4;
+        border-radius: 0 6px 6px 0;
+        background: #f1f6fb;
+        font-size: 0.975rem;
+        color: #333;
+      }
+      .note::before {
+        content: "Note";
+        display: block;
+        margin-bottom: 0.25rem;
+        font:
+          600 0.75rem system-ui,
+          sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #3670a0;
+      }
+
+      /* Exercises: collapsible practice tasks, set apart from the explanation in a warm tint. */
+      .exercise {
+        margin: 1.75rem 0;
+        border: 1px solid #e6c98f;
+        border-radius: 8px;
+        background: #fdf6e7;
+      }
+      .exercise summary {
+        cursor: pointer;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.85rem 1.1rem;
+        font:
+          600 1rem/1.3 system-ui,
+          sans-serif;
+        color: #5b3d07;
+      }
+      .exercise summary::-webkit-details-marker {
+        display: none;
+      }
+      .exercise summary::after {
+        content: "";
+        margin-left: auto;
+        width: 0.55rem;
+        height: 0.55rem;
+        border-right: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+        transition: transform 0.15s;
+      }
+      .exercise[open] summary::after {
+        transform: rotate(-135deg);
+      }
+      .exercise summary:focus-visible {
+        outline: 2px solid #b7791f;
+        outline-offset: 2px;
+        border-radius: 8px;
+      }
+      .exercise-label {
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #fff;
+        background: #b7791f;
+        border-radius: 999px;
+        padding: 0.15rem 0.6rem;
+      }
+      .exercise-body {
+        padding: 0 1.1rem 1rem;
+      }
+      .exercise-body p:first-child {
+        margin-top: 0;
+      }
+      figure.detail {
+        min-width: min(100%, 16rem);
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .exercise figure {
+        background: #fff;
+        border-radius: 6px;
+        padding: 0.5rem;
+      }
+
+      /* Read-along mode */
+      .score {
+        position: relative;
+      }
+      .cursor {
+        position: absolute;
+        top: 4%;
+        bottom: 4%;
+        width: 2.6%;
+        transform: translateX(-50%);
+        border-radius: 4px;
+        background: rgba(255, 196, 0, 0.35);
+        pointer-events: none;
+        display: none;
+      }
+      .score svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .score svg path.Note.sounding {
+        fill: #e8590c;
+      }
+      .reading {
+        background: #fffbea;
+        box-shadow: 0 0 0 0.5rem #fffbea;
+        border-radius: 2px;
+      }
+      .w {
+        border-radius: 3px;
+      }
+      .w.on {
+        background: #ffe066;
+      }
+      body.readalong article > :is(h1, h2, h3, p, aside, figure) {
+        cursor: pointer;
+      }
+      #listen {
+        position: fixed;
+        right: 1rem;
+        bottom: 1rem;
+        z-index: 1;
+        font:
+          600 1rem system-ui,
+          sans-serif;
+        padding: 0.75rem 1.25rem;
+        border: 0;
+        border-radius: 999px;
+        background: #1d1d1f;
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+      }
+      #listen[hidden] {
+        display: none;
+      }
+
+      /* Header: a minimal bar in the footer's colours, linking home. */
+      .site-header {
+        background: #0a1420;
+        border-bottom: 1px solid rgba(74, 144, 196, 0.1);
+        width: 100vw;
+        margin: -2rem 0 2.5rem calc(50% - 50vw);
+      }
+      .site-header .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem;
+      }
+      .site-header a {
+        font:
+          600 1.25rem "Outfit",
+          sans-serif;
+        color: #ffffff;
+        text-decoration: none;
+        letter-spacing: 0.01em;
+      }
+      .site-header a:hover {
+        color: #c4d8ea;
+      }
+
+      /* Footer: same as the home page (src/index.html), stretched to the full viewport
+         width since this page's body is a narrow reading column. */
+      footer {
+        background: #0a1420;
+        border-top: 1px solid rgba(74, 144, 196, 0.1);
+        padding: 2rem 0;
+        text-align: center;
+        width: 100vw;
+        margin: 4rem 0 -4rem calc(50% - 50vw);
+      }
+      footer .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+      footer a {
+        font-family: "Outfit", sans-serif;
+        color: #6a8faa;
+        text-decoration: none;
+        margin: 0 1rem;
+        font-size: 0.9rem;
+        transition: color 0.2s;
+      }
+      footer a:hover {
+        color: #c4d8ea;
+        text-decoration: underline;
+      }
+      html {
+        overflow-x: hidden;
+      }
+      /* Course: where this lesson sits, above it, and the step to the next one, below it. */
+      .course-eyebrow {
+        margin: 0 0 -1rem;
+        font:
+          600 0.8rem system-ui,
+          -apple-system,
+          sans-serif;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+      .course-eyebrow a {
+        color: inherit;
+      }
+      .lesson-nav {
+        margin: 3rem 0 0;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e5e7eb;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      .lesson-nav-steps {
+        display: flex;
+        gap: 1rem;
+        justify-content: space-between;
+      }
+      .lesson-nav-steps a {
+        flex: 1 1 0;
+        max-width: 50%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        color: #1d1d1f;
+        font-weight: 600;
+        line-height: 1.3;
+        text-decoration: none;
+      }
+      .lesson-nav-steps a:hover,
+      .lesson-nav-steps a:focus-visible {
+        border-color: #2563eb;
+        color: #2563eb;
+      }
+      .lesson-nav-steps a[rel="next"] {
+        margin-left: auto;
+        text-align: right;
+      }
+      .lesson-nav-steps span {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #6b7280;
+      }
+      /* Course index: a sidebar left of the lesson on wide screens, folded above it otherwise. */
+      .lesson-layout {
+        position: relative;
+      }
+      .course-index {
+        margin: 0 0 1.5rem;
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      .course-index details {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.6rem 1rem;
+      }
+      .course-index summary {
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+      .course-index ol {
+        margin: 0.5rem 0 0.25rem;
+        padding-left: 1.4rem;
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+      .course-index li + li {
+        margin-top: 0.55rem;
+      }
+      .course-index ol a {
+        color: #2563eb;
+        text-decoration: none;
+      }
+      .course-index ol a:hover {
+        text-decoration: underline;
+      }
+      .course-index ol a[aria-current="page"] {
+        color: #1d1d1f;
+        font-weight: 600;
+      }
+      @media (min-width: 80rem) {
+        /* Spans the lesson's height so its sticky list stays in view down to the exercise. */
+        .course-index {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          right: calc(100% + 3rem);
+          width: 13rem;
+          margin: 0;
+        }
+        .course-index details {
+          position: sticky;
+          top: 2rem;
+          border: 0;
+          border-left: 2px solid #e5e7eb;
+          border-radius: 0;
+          padding: 0 0 0 1rem;
+        }
+        .course-index summary {
+          cursor: default;
+          list-style: none;
+        }
+        .course-index summary::-webkit-details-marker {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container"><a href="/">JazzJam</a></div>
+    </header>
+    <div class="lesson-layout">
+      <nav class="course-index" aria-label="Course contents">
+        <details open>
+          <summary>Course contents</summary>
+          <ol>
+            {% for item in lessons %}
+            <li>
+              <a href="{{ item.url }}"{% if loop.index == lesson %} aria-current="page"{% endif %}>{{ item.title }}</a>
+            </li>
+            {% endfor %}
+          </ol>
+        </details>
+      </nav>
+      <script>
+        // Always open as a sidebar on wide screens; folded by default above the lesson otherwise.
+        // Without JavaScript the index simply stays open.
+        (() => {
+          const index = document.querySelector(".course-index details");
+          const wide = matchMedia("(min-width: 80rem)");
+          const sync = () => (index.open = wide.matches);
+          sync();
+          wide.addEventListener("change", sync);
+          index.querySelector("summary").addEventListener("click", (e) => {
+            if (wide.matches) e.preventDefault();
+          });
+        })();
+      </script>
+      <p class="course-eyebrow">
+        <a href="/courses/block-chords/">Piano Block Chords</a> · Lesson
+        {{ lesson }} of {{ lessons.length }}
+      </p>
+      {% set current = lessons[lesson - 1] %}
+      <article
+        data-narration-offset="{{ current.narrationOffset }}"
+        data-example-start="{{ current.exampleStart }}"
+        data-exercise-start="{{ current.exerciseStart }}"
+      >
+{{ content | safe }}      </article>
+    </div>
+    <nav class="lesson-nav" aria-label="Previous and next lesson">
+      <div class="lesson-nav-steps">
+        {% if lesson > 1 %}{% set prev = lessons[lesson - 2] %}
+        <a rel="prev" href="{{ prev.url }}"
+          ><span>← Lesson {{ lesson - 1 }}</span>{{ prev.title }}</a
+        >
+        {% endif %}{% if lesson < lessons.length %}{% set next = lessons[lesson] %}
+        <a rel="next" href="{{ next.url }}"
+          ><span>Lesson {{ lesson + 1 }} →</span>{{ next.title }}</a
+        >
+        {% endif %}
+      </div>
+    </nav>
+    <footer>
+      <div class="container">
+        <a href="/privacy-policy">Privacy Policy</a>
+        <a href="/terms-of-service">Terms of Service</a>
+        <a href="/license">License</a>
+      </div>
+    </footer>
+    <button id="listen" type="button" hidden>▶ Listen</button>
+
+    <script>
+      // Read-along: narrates the article (pre-recorded with Kokoro TTS, see
+      // scripts/narration/narrate.py), highlights each word as it is spoken, and plays each
+      // example in turn with a cursor following the chords (timings from
+      // scripts/sheet-music/block-chords.py).
+      (async () => {
+        const BASE = "/assets/articles/block-chords/";
+        const article = document.querySelector("article");
+        // Each lesson is a slice of the article: these offsets keep its examples, exercises
+        // and narration recordings numbered as they are in the article.
+        const narrationOffset = Number(article.dataset.narrationOffset),
+          exampleStart = Number(article.dataset.exampleStart),
+          exerciseStart = Number(article.dataset.exerciseStart);
+        const blocks = [
+          ...article.querySelectorAll(":scope > :is(h1, h2, h3, p, aside)"),
+        ];
+        // A note (aside) may hold an example: it plays right after the note's text.
+        const items = [
+          ...article.querySelectorAll(
+            ":scope > :is(h1, h2, h3, p, aside, figure)",
+          ),
+        ].flatMap((el) =>
+          el.tagName === "ASIDE"
+            ? [el, ...el.querySelectorAll("figure")]
+            : [el],
+        );
+        // The narrated text of a block: a note with an example narrates only its paragraph.
+        const textOf = (el) =>
+          (el.tagName === "ASIDE" && el.querySelector(":scope > p")) || el;
+
+        // Number the examples in page order so each one can be referred to as "Example N".
+        // Exercises are not examples: they keep their own count, "Exercise N", on their label.
+        [...article.querySelectorAll("figure")]
+          .filter((fig) => !fig.closest(".exercise"))
+          .forEach((fig, i) => {
+            const title = document.createElement("div");
+            title.className = "example-title";
+            title.textContent = `Example ${exampleStart + i + 1}`;
+            fig.prepend(title);
+          });
+        article.querySelectorAll(".exercise-label").forEach((label, i) => {
+          label.textContent = `Exercise ${exerciseStart + i + 1}`;
+        });
+
+        // Every example gets a chord cursor and lights up the sounding notes, whether played
+        // by read-along or by hand. The SVG is inlined so its noteheads can be styled.
+        for (const fig of article.querySelectorAll("figure")) {
+          const img = fig.querySelector("img"),
+            audio = fig.querySelector("audio");
+          const wrap = document.createElement("div");
+          wrap.className = "score";
+          img.replaceWith(wrap);
+          wrap.append(img);
+          const cursor = document.createElement("div");
+          cursor.className = "cursor";
+          wrap.append(cursor);
+          let events = [],
+            heads = []; // heads[i] = noteheads of chord i
+          const src = img.getAttribute("src");
+          Promise.all([
+            fetch(src.replace(/\.svg$/, ".cursor.json")).then((r) => r.json()),
+            fetch(src).then((r) => r.text()),
+          ])
+            .then(([ev, text]) => {
+              events = ev;
+              const svg = new DOMParser().parseFromString(
+                text,
+                "image/svg+xml",
+              ).documentElement;
+              svg.removeAttribute("width");
+              svg.removeAttribute("height");
+              svg.setAttribute("role", "img");
+              svg.setAttribute("aria-label", img.alt);
+              img.replaceWith(svg);
+              // Detail figures keep their natural width: the notation is drawn at one size across
+              // them (a full-width example is 8217 units wide; details are shown 1.3x larger).
+              if (fig.classList.contains("detail")) {
+                fig.style.width =
+                  Math.min(100, (svg.viewBox.baseVal.width / 8217) * 130) + "%";
+              }
+              // Assign each notehead to the chord whose cursor x is nearest (paths start at the
+              // head's left edge; heads are ~107 units wide, chords several hundred apart). On a
+              // score with several lines, only chords on the head's own (nearest) line compete.
+              const { width, height } = svg.viewBox.baseVal;
+              const lineMid = (e) =>
+                e.top == null ? 50 : (e.top + e.bottom) / 2;
+              heads = events.map(() => []);
+              for (const head of svg.querySelectorAll("path.Note")) {
+                const [hx, hy] = head
+                  .getAttribute("d")
+                  .slice(1)
+                  .split(/[ ,L]/)
+                  .map(parseFloat);
+                const x = ((hx + 54) / width) * 100,
+                  y = (hy / height) * 100;
+                const line = Math.min(
+                  ...events.map((e) => Math.abs(lineMid(e) - y)),
+                );
+                let best = -1;
+                events.forEach((e, i) => {
+                  if (Math.abs(lineMid(e) - y) - line > 0.01) return;
+                  if (
+                    best < 0 ||
+                    Math.abs(e.x - x) < Math.abs(events[best].x - x)
+                  )
+                    best = i;
+                });
+                heads[best].push(head);
+              }
+            })
+            .catch(() => {}); // keep the plain <img> if anything fails
+          let lit = -1;
+          const light = (i) => {
+            if (i === lit) return;
+            heads[lit]?.forEach((h) => h.classList.remove("sounding"));
+            heads[i]?.forEach((h) => h.classList.add("sounding"));
+            lit = i;
+          };
+          const tick = () => {
+            const t = audio.currentTime;
+            const i = audio.paused
+              ? -1
+              : events.findIndex((e) => t >= e.t && t < e.end);
+            cursor.style.display = i >= 0 ? "block" : "none";
+            if (i >= 0) {
+              const e = events[i];
+              cursor.style.left = e.x + "%";
+              cursor.style.top = e.top == null ? "" : e.top + "%";
+              cursor.style.bottom =
+                e.bottom == null ? "" : 100 - e.bottom + "%";
+            }
+            light(i);
+            if (!audio.paused) requestAnimationFrame(tick);
+          };
+          audio.addEventListener("play", () => requestAnimationFrame(tick));
+          audio.addEventListener("pause", tick);
+          audio.addEventListener("ended", () => {
+            cursor.style.display = "none";
+            light(-1);
+          });
+        }
+
+        let manifest;
+        try {
+          manifest = (await (
+            await fetch(BASE + "narration/narration.json")
+          ).json()).slice(narrationOffset, narrationOffset + blocks.length);
+        } catch {
+          return; // no narration: the page still works as a plain article
+        }
+        if (manifest.length !== blocks.length) return;
+
+        // Wrap each displayed word in a span, matching the narration's word list.
+        blocks.forEach((block, i) => {
+          const el = textOf(block);
+          const words = el.textContent.trim().split(/\s+/);
+          if (words.length !== manifest[i].words.length)
+            return (manifest[i] = null);
+          el.textContent = "";
+          words.forEach((w, j) => {
+            if (j) el.append(" ");
+            const s = document.createElement("span");
+            s.className = "w";
+            s.textContent = w;
+            el.append(s);
+          });
+        });
+
+        const button = document.getElementById("listen");
+        const voice = new Audio();
+        let current = -1,
+          playing = false,
+          media = null,
+          raf = 0;
+
+        const clear = () => {
+          cancelAnimationFrame(raf);
+          document
+            .querySelectorAll(".reading")
+            .forEach((e) => e.classList.remove("reading"));
+          document
+            .querySelectorAll(".w.on")
+            .forEach((e) => e.classList.remove("on"));
+        };
+        const setButton = () =>
+          (button.textContent = playing ? "❚❚ Pause" : "▶ Listen");
+
+        const follow = (el, timings) => {
+          const spans = el.querySelectorAll(".w");
+          const step = () => {
+            const t = voice.currentTime;
+            timings.forEach(([s, e], j) =>
+              spans[j].classList.toggle("on", t >= s && t < e),
+            );
+            if (!voice.paused) raf = requestAnimationFrame(step);
+          };
+          raf = requestAnimationFrame(step);
+        };
+
+        const playItem = (i) => {
+          clear();
+          if (media) media.onended = null;
+          voice.pause();
+          items.forEach((it) => it.querySelector("audio")?.pause());
+          current = i;
+          if (i >= items.length) return stop();
+          const el = items[i];
+          el.classList.add("reading");
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          if (el.tagName === "FIGURE") {
+            media = el.querySelector("audio");
+            media.currentTime = 0;
+          } else {
+            const n = blocks.indexOf(el);
+            if (!manifest[n]) return playItem(i + 1); // text changed since narration was recorded
+            media = voice;
+            voice.src = BASE + `narration/${narrationOffset + n}.mp3`;
+            voice.onplay = () => follow(el, manifest[n].words);
+          }
+          media.onended = () => playItem(i + 1);
+          media.play();
+        };
+
+        const stop = () => {
+          clear();
+          playing = false;
+          current = -1;
+          document.body.classList.remove("readalong");
+          setButton();
+        };
+
+        button.addEventListener("click", () => {
+          if (!playing && current < 0) {
+            document.body.classList.add("readalong");
+            playing = true;
+            playItem(0);
+          } else if (playing) {
+            media?.pause();
+            playing = false;
+          } else {
+            media?.play();
+            playing = true;
+          }
+          setButton();
+        });
+
+        // While read-along is on, clicking any block jumps there.
+        article.addEventListener("click", (e) => {
+          if (!document.body.classList.contains("readalong")) return;
+          if (e.target.closest("audio")) return;
+          const i = items.findIndex((it) => it.contains(e.target));
+          if (i < 0) return;
+          playing = true;
+          setButton();
+          playItem(i);
+        });
+
+        button.hidden = false;
+      })();
+    </script>
+  </body>

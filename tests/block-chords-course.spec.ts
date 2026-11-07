@@ -215,6 +215,9 @@ test.describe("Block chords course", () => {
           .filter((i) => i >= 0 && i < keys.chords.length)
           .map((i) => [...keys.chords[i]].sort((a: number, b: number) => a - b));
         expect(near).toContainEqual(on);
+        // Only the noteheads light up on the score: no box is drawn over the playing chord.
+        await expect(fig.locator(".score path.Note.sounding").first()).toBeAttached();
+        await expect(fig.locator(".score .cursor")).toHaveCount(0);
         // Lit keys take the keyboard chart generator's own highlight colour (#a0c6e8).
         const fills = await fig.evaluate((el) =>
           [...el.querySelectorAll(".keyboard rect.sounding")].map(

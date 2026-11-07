@@ -240,17 +240,6 @@
       .score {
         position: relative;
       }
-      .cursor {
-        position: absolute;
-        top: 4%;
-        bottom: 4%;
-        width: 2.6%;
-        transform: translateX(-50%);
-        border-radius: 4px;
-        background: rgba(255, 196, 0, 0.35);
-        pointer-events: none;
-        display: none;
-      }
       .score svg {
         width: 100%;
         height: auto;
@@ -260,7 +249,7 @@
         fill: #e8590c;
       }
       /* Keyboard chart under each example (piano-chord-charts, compact): the keys of the chord
-         under the cursor light up with its noteheads, in the generator's own highlight colour.
+         being played light up with its noteheads, in the generator's own highlight colour.
          Drawn at its natural size, never wider than the example. */
       .keyboard svg {
         display: block;
@@ -553,7 +542,7 @@
     <script>
       // Read-along: narrates the article (pre-recorded with Kokoro TTS, see
       // scripts/narration/narrate.py), highlights each word as it is spoken, and plays each
-      // example in turn with a cursor following the chords (timings from
+      // example in turn with its noteheads lighting up chord by chord (timings from
       // scripts/sheet-music/block-chords.py).
       (async () => {
         const BASE = "/assets/articles/block-chords/";
@@ -594,8 +583,9 @@
           label.textContent = `Exercise ${exerciseStart + i + 1}`;
         });
 
-        // Every example gets a chord cursor and lights up the sounding notes, whether played
-        // by read-along or by hand. The SVG is inlined so its noteheads can be styled.
+        // Every example lights up its sounding notes, whether played by read-along or by hand.
+        // The SVG is inlined so its noteheads can be styled. The chord timings and x positions
+        // come from <example>.cursor.json.
         for (const fig of article.querySelectorAll("figure")) {
           const img = fig.querySelector("img"),
             audio = fig.querySelector("audio");
@@ -603,9 +593,6 @@
           wrap.className = "score";
           img.replaceWith(wrap);
           wrap.append(img);
-          const cursor = document.createElement("div");
-          cursor.className = "cursor";
-          wrap.append(cursor);
           let events = [],
             heads = []; // heads[i] = noteheads of chord i
           const src = img.getAttribute("src");
@@ -630,7 +617,7 @@
                 fig.style.width =
                   Math.min(100, (svg.viewBox.baseVal.width / 8217) * 130) + "%";
               }
-              // Assign each notehead to the chord whose cursor x is nearest (paths start at the
+              // Assign each notehead to the chord whose x position is nearest (paths start at the
               // head's left edge; heads are ~107 units wide, chords several hundred apart). On a
               // score with several lines, only chords on the head's own (nearest) line compete.
               const { width, height } = svg.viewBox.baseVal;
@@ -696,23 +683,12 @@
             const i = audio.paused
               ? -1
               : events.findIndex((e) => t >= e.t && t < e.end);
-            cursor.style.display = i >= 0 ? "block" : "none";
-            if (i >= 0) {
-              const e = events[i];
-              cursor.style.left = e.x + "%";
-              cursor.style.top = e.top == null ? "" : e.top + "%";
-              cursor.style.bottom =
-                e.bottom == null ? "" : 100 - e.bottom + "%";
-            }
             light(i);
             if (!audio.paused) requestAnimationFrame(tick);
           };
           audio.addEventListener("play", () => requestAnimationFrame(tick));
           audio.addEventListener("pause", tick);
-          audio.addEventListener("ended", () => {
-            cursor.style.display = "none";
-            light(-1);
-          });
+          audio.addEventListener("ended", () => light(-1));
         }
 
         let manifest;

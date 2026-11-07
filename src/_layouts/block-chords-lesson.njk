@@ -259,6 +259,18 @@
       .score svg path.Note.sounding {
         fill: #e8590c;
       }
+      /* Keyboard chart under each example (piano-chord-charts, compact): the keys of the chord
+         under the cursor light up with its noteheads, in the generator's own highlight colour.
+         Drawn at its natural size, never wider than the example. */
+      .keyboard svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin: 0.6rem auto 0;
+      }
+      .keyboard rect.sounding {
+        fill: #a0c6e8 !important; /* over the chart's inline key colours */
+      }
       .reading {
         background: #fffbea;
         box-shadow: 0 0 0 0.5rem #fffbea;
@@ -649,11 +661,34 @@
               }
             })
             .catch(() => {}); // keep the plain <img> if anything fails
+          // The keyboard chart beneath the score: keys[i] = the keys chord i plays (rendered by
+          // scripts/keyboards/keyboard.js). Without it the example plays as before.
+          const keyboard = document.createElement("div");
+          keyboard.className = "keyboard";
+          wrap.after(keyboard);
+          let keys = [];
+          Promise.all([
+            fetch(src.replace(/\.svg$/, ".keys.json")).then((r) => r.json()),
+            fetch(src.replace(/\.svg$/, ".keyboard.svg")).then((r) => r.text()),
+          ])
+            .then(([data, text]) => {
+              const svg = new DOMParser().parseFromString(
+                text,
+                "image/svg+xml",
+              ).documentElement;
+              svg.setAttribute("aria-hidden", "true"); // the score carries the description
+              keyboard.append(svg);
+              const rects = svg.querySelectorAll("rect");
+              keys = data.chords.map((chord) => chord.map((j) => rects[j]));
+            })
+            .catch(() => keyboard.remove());
           let lit = -1;
           const light = (i) => {
             if (i === lit) return;
             heads[lit]?.forEach((h) => h.classList.remove("sounding"));
+            keys[lit]?.forEach((k) => k.classList.remove("sounding"));
             heads[i]?.forEach((h) => h.classList.add("sounding"));
+            keys[i]?.forEach((k) => k.classList.add("sounding"));
             lit = i;
           };
           const tick = () => {

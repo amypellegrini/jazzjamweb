@@ -161,6 +161,72 @@ test.describe("Block chords course", () => {
         expect(unwrapped).toBe(0);
       });
 
+      test("plays each example on a keyboard chart beneath its score", async ({
+        page,
+      }) => {
+        await page.goto(lesson.path);
+        const figures = page.locator("article figure");
+        const count = await figures.count();
+        expect(count).toBeGreaterThan(0);
+        for (let f = 0; f < count; f++) {
+          const fig = figures.nth(f);
+          await expect(fig.locator(".keyboard svg rect").first()).toBeAttached();
+          // Below the score, above the player.
+          const order = await fig.evaluate((el) => {
+            const kids = [...el.children];
+            const at = (sel: string) =>
+              kids.findIndex((k) => k.matches(sel) || !!k.querySelector(sel));
+            return [at(".score"), at(".keyboard"), at("audio")];
+          });
+          expect(order[0]).toBeLessThan(order[1]);
+          expect(order[1]).toBeLessThan(order[2]);
+        }
+
+        // Playing an example lights the keys of the chord under the cursor, then clears them.
+        const fig = figures.first();
+        const src = await fig.locator("audio").getAttribute("src");
+        const keys = await (
+          await page.request.get(src!.replace(/\.mp3$/, ".keys.json"))
+        ).json();
+        const cursor = await (
+          await page.request.get(src!.replace(/\.mp3$/, ".cursor.json"))
+        ).json();
+        await fig.locator("audio").evaluate((a: HTMLAudioElement) => {
+          a.muted = true;
+          return a.play();
+        });
+        const lit = async () =>
+          fig.evaluate((el) => {
+            const a = el.querySelector("audio") as HTMLAudioElement;
+            const rects = [...el.querySelectorAll(".keyboard rect")];
+            return {
+              t: a.currentTime,
+              lit: rects
+                .map((r, i) => (r.classList.contains("sounding") ? i : -1))
+                .filter((i) => i >= 0),
+            };
+          });
+        await expect.poll(async () => (await lit()).lit.length).toBeGreaterThan(0);
+        const { t, lit: on } = await lit();
+        const chord = cursor.findIndex(
+          (e: { t: number; end: number }) => t >= e.t && t < e.end,
+        );
+        const near = [chord - 1, chord, chord + 1]
+          .filter((i) => i >= 0 && i < keys.chords.length)
+          .map((i) => [...keys.chords[i]].sort((a: number, b: number) => a - b));
+        expect(near).toContainEqual(on);
+        // Lit keys take the keyboard chart generator's own highlight colour (#a0c6e8).
+        const fills = await fig.evaluate((el) =>
+          [...el.querySelectorAll(".keyboard rect.sounding")].map(
+            (r) => getComputedStyle(r).fill,
+          ),
+        );
+        expect(fills.length).toBeGreaterThan(0);
+        for (const fill of fills) expect(fill).toBe("rgb(160, 198, 232)");
+        await fig.locator("audio").evaluate((a: HTMLAudioElement) => a.pause());
+        await expect.poll(async () => (await lit()).lit.length).toBe(0);
+      });
+
       test("loads every example asset", async ({ page, request }) => {
         await page.goto(lesson.path);
         const sources = await page

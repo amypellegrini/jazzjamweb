@@ -260,6 +260,16 @@ test.describe("Block chords course", () => {
         await expect.poll(async () => (await lit()).lit.length).toBe(0);
       });
 
+      test("ends with the footer below the lesson", async ({ page }) => {
+        await page.goto(lesson.path);
+        const gap = await page.evaluate(() => {
+          const nav = document.querySelector("nav.lesson-nav")!.getBoundingClientRect();
+          const footer = document.querySelector("footer")!.getBoundingClientRect();
+          return footer.top - nav.bottom;
+        });
+        expect(gap).toBeGreaterThanOrEqual(32);
+      });
+
       test("loads every example asset", async ({ page, request }) => {
         await page.goto(lesson.path);
         const sources = await page
@@ -362,6 +372,20 @@ test.describe("Block chords course landing page", () => {
     await expect(start).toHaveAttribute("href", lessons[0].path);
     await start.click();
     await expect(page.locator("article h1")).toHaveText(lessons[0].h1);
+  });
+
+  test("keeps the footer at the bottom of a window taller than the page", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 1400 });
+    await page.goto(BASE);
+    const { bottom, viewport, scrollable } = await page.evaluate(() => ({
+      bottom: document.querySelector("footer")!.getBoundingClientRect().bottom,
+      viewport: window.innerHeight,
+      scrollable: document.documentElement.scrollHeight > window.innerHeight,
+    }));
+    expect(Math.abs(bottom - viewport)).toBeLessThanOrEqual(1);
+    expect(scrollable).toBe(false);
   });
 
   test("fits a phone without sideways scrolling", async ({ page }) => {

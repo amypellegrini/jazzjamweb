@@ -8,7 +8,14 @@
     local("Segoe UI Symbol");
   unicode-range: U+266D-266F;
 }
+/* At least a full window tall, as a column, so the footer (margin-top: auto) sits at the
+   bottom of the window when the page is shorter than it. */
 body {
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   max-width: 46rem;
   margin: 0 auto;
   padding: 2rem 1rem 4rem;
@@ -73,8 +80,9 @@ footer {
   padding: 2rem 0;
   text-align: center;
   width: 100vw;
-  margin: 4rem 0 -4rem calc(50% - 50vw);
+  margin: auto 0 -4rem calc(50% - 50vw);
 }
+
 footer .container {
   max-width: 1200px;
   margin: 0 auto;

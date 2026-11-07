@@ -3,7 +3,8 @@
 <ol class="course-parts">
   {% for part in parts %}
   <li class="course-part">
-    <span class="course-part-title">Part {{ part.number }} · {{ part.title }}</span>
+    <span class="course-part-number">Part {{ part.number }}</span>
+    <span class="course-part-title">{{ part.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span>
     {% if part.comingSoon %}
     <span class="coming-soon">Coming soon</span>
     {% else %}

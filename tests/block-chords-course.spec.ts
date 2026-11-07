@@ -42,15 +42,28 @@ const lessons = [
 // The course's parts, in order. Part 1 is the six lessons above; the rest are announced as
 // coming soon until their lessons are written, and link nowhere until then.
 const parts = [
-  { title: "Part 1 · Harmonisation techniques", lessons },
-  { title: "Part 2 · Harmonising a major 2 5 1", lessons: [] },
-  { title: "Part 3 · Harmonising a minor 2 5 1", lessons: [] },
-  { title: "Part 4 · Arranging a jazz standard", lessons: [] },
+  { number: "Part 1", title: "Harmonisation techniques", lessons },
+  { number: "Part 2", title: "Harmonising a major 2 5 1", lessons: [] },
+  { number: "Part 3", title: "Harmonising a minor 2 5 1", lessons: [] },
+  { number: "Part 4", title: "Arranging a jazz standard", lessons: [] },
 ];
 
 async function expectSyllabus(contents: import("@playwright/test").Locator) {
   const items = contents.locator(".course-part");
+  // "Part N" is a small label of its own above the part's title, not run into it.
+  await expect(items.locator(".course-part-number")).toHaveText(parts.map((p) => p.number));
   await expect(items.locator(".course-part-title")).toHaveText(parts.map((p) => p.title));
+  const [label, title] = await Promise.all(
+    [".course-part-number", ".course-part-title"].map((sel) =>
+      items.first().locator(sel).evaluate((el) => ({
+        size: parseFloat(getComputedStyle(el).fontSize),
+        bottom: el.getBoundingClientRect().bottom,
+        top: el.getBoundingClientRect().top,
+      })),
+    ),
+  );
+  expect(label.size).toBeLessThan(title.size);
+  expect(label.bottom).toBeLessThanOrEqual(title.top);
   for (const [i, part] of parts.entries()) {
     const item = items.nth(i);
     if (part.lessons.length) {
@@ -143,7 +156,9 @@ test.describe("Block chords course", () => {
           // Part 1's last lesson points ahead to Part 2, announced but not yet linked.
           await expect(next).toHaveCount(0);
           const upcoming = nav.locator(".lesson-nav-upcoming");
-          await expect(upcoming.locator(".lesson-nav-step")).toHaveText("Coming soon");
+          await expect(upcoming.locator(".lesson-nav-step")).toHaveText(
+            `${parts[1].number} · Coming soon`,
+          );
           await expect(upcoming.locator(".lesson-nav-title")).toHaveText(parts[1].title);
           await expect(upcoming.locator("a")).toHaveCount(0);
         } else {

@@ -432,8 +432,8 @@
           >
           {% else %}{% set upcoming = parts[current.part] %}{% if upcoming %}
           <div class="lesson-nav-upcoming"
-            ><span class="lesson-nav-step">Coming soon</span
-            ><span class="lesson-nav-title">Part {{ upcoming.number }} · {{ upcoming.title }}</span></div
+            ><span class="lesson-nav-step">Part {{ upcoming.number }} · Coming soon</span
+            ><span class="lesson-nav-title">{{ upcoming.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span></div
           >
           {% endif %}{% endif %}
         </div>

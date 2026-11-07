@@ -24,6 +24,10 @@ GENERATED — edit the sources, never the outputs:
 
 - Examples: `scripts/sheet-music/<slug>.py` → `src/assets/articles/<slug>/*.musicxml|svg|mp3|cursor.json`
   (MuseScore 4, version pinned in `.github/workflows/render-assets.yml`).
+- Keyboard charts: those MusicXML + cursor timings → `scripts/keyboards/keyboard.js <slug>` →
+  `src/assets/articles/<slug>/*.keyboard.svg|keys.json` (compact keyboards from the
+  `piano-chord-charts` CLI; `keys.json` lists the keys each chord lights). Re-run it after
+  re-rendering the examples; it needs no MuseScore, so it runs anywhere `npm ci` does.
 - Narration: the article's `h1/h2/h3/p/aside` text → `src/assets/articles/<slug>/narration/`
   (Kokoro TTS). Unchanged paragraphs keep their recording (matched by text hash).
 

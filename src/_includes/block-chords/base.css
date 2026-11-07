@@ -126,12 +126,112 @@ html {
     no-repeat center / contain;
 }
       /* Course outline (sidebar and landing page): parts, each with its lessons or "coming soon". */
+      /* Drawn as a metro line: the track runs down a gutter left of the titles. */
       ol.course-parts {
+        --gutter: 1.75rem;
+        --track-x: 0.5rem; /* the line's centre, from the gutter's left edge */
         list-style: none;
         padding-left: 0;
       }
+      .course-part {
+        position: relative;
+        padding-left: var(--gutter);
+      }
       .course-part + .course-part {
         margin-top: 1.25rem;
+      }
+      ol.course-track {
+        position: relative;
+        list-style: none;
+        margin: 0.5rem 0 0;
+        padding: 0;
+      }
+      .course-track::before {
+        content: "";
+        position: absolute;
+        left: calc(var(--track-x) - var(--gutter) - 1.5px);
+        top: 0.7em;
+        bottom: 0.7em;
+        width: 3px;
+        background: #93c5fd;
+      }
+      .track-station {
+        position: relative;
+      }
+      .track-station + .track-station {
+        margin-top: 0.55rem;
+      }
+      .track-stop {
+        position: absolute;
+        z-index: 1;
+        left: calc(var(--track-x) - var(--gutter) - 8px);
+        top: calc(0.7em - 8px);
+        width: 16px;
+        height: 16px;
+        box-sizing: border-box;
+        padding: 0;
+        font: inherit; /* so 0.7em matches the title's first line */
+        border: 3px solid #93c5fd;
+        border-radius: 50%;
+        background: #fff;
+        cursor: pointer;
+      }
+      .track-stop:hover {
+        border-color: #2563eb;
+      }
+      .track-stop:focus-visible {
+        outline: 2px solid #2563eb;
+        outline-offset: 2px;
+      }
+      .is-current > .track-stop {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 4px #dbeafe;
+      }
+      .is-completed > .track-stop {
+        border-color: #2563eb;
+        background: #2563eb;
+      }
+      .is-completed > .track-stop::after {
+        /* a check mark */
+        content: "";
+        position: absolute;
+        left: 3px;
+        top: 0;
+        width: 3px;
+        height: 6px;
+        border: solid #fff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      /* A part still to come: the line carries on dashed, with an unbuilt station at its title. */
+      .is-coming-soon::before {
+        content: "";
+        position: absolute;
+        left: calc(var(--track-x) - 1.5px);
+        top: -2rem;
+        bottom: 0;
+        border-left: 3px dashed #d1d5db;
+      }
+      .is-coming-soon:last-child::before {
+        /* the line ends at the last station rather than trailing past it */
+        bottom: auto;
+        height: calc(2rem + 1.65rem);
+      }
+      .is-coming-soon > .course-part-title {
+        position: relative;
+      }
+      .is-coming-soon > .course-part-title::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        left: calc(var(--track-x) - var(--gutter) - 7px);
+        top: calc(0.65em - 7px);
+        width: 14px;
+        height: 14px;
+        box-sizing: border-box;
+        border: 3px solid #d1d5db;
+        border-radius: 50%;
+        background: #fff;
       }
       .course-part-number {
         display: block;

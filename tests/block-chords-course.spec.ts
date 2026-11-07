@@ -495,3 +495,87 @@ test.describe("Block chords course landing page", () => {
     expect(overflow).toBe(false);
   });
 });
+
+// The course index is a metro-style track: one stop per lesson, the current lesson marked on
+// the line, and each stop a toggle the learner clicks to mark that lesson completed. Visiting a
+// lesson never completes it; only the click does, and it is remembered in this browser.
+test.describe("Block chords course progress track", () => {
+  const stops = (page: import("@playwright/test").Page) =>
+    page.locator("nav.course-index .course-track .track-stop");
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  });
+
+  test("puts every lesson on the track as a stop, marking where you are", async ({ page }) => {
+    await page.goto(lessons[2].path);
+    const track = page.locator("nav.course-index .course-track");
+    await expect(track.locator("a")).toHaveText(lessons.map((l) => l.h1));
+    await expect(stops(page)).toHaveCount(lessons.length);
+    // Exactly one station is the current one: this lesson's.
+    const current = track.locator("li.is-current");
+    await expect(current).toHaveCount(1);
+    await expect(current.locator("a")).toHaveAttribute("aria-current", "page");
+    await expect(current.locator("a")).toHaveText(lessons[2].h1);
+    // The line itself joins the stops: drawn from the first stop to the last.
+    const line = await track.evaluate((el) => getComputedStyle(el, "::before").content);
+    expect(line).not.toBe("none");
+  });
+
+  test("starts with no lesson completed, and visiting one does not complete it", async ({
+    page,
+  }) => {
+    await page.goto(lessons[0].path);
+    await page.goto(lessons[1].path);
+    await expect(stops(page)).toHaveCount(lessons.length);
+    for (const stop of await stops(page).all())
+      await expect(stop).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("toggles a lesson completed by clicking its stop, without leaving the page", async ({
+    page,
+  }) => {
+    await page.goto(lessons[0].path);
+    const stop = stops(page).nth(3);
+    await expect(stop).toHaveAccessibleName(`Mark “${lessons[3].h1}” as completed`);
+    await stop.click();
+    await expect(page).toHaveURL(new RegExp(`${lessons[0].path}$`));
+    await expect(stop).toHaveAttribute("aria-pressed", "true");
+    await expect(stop.locator("xpath=..")).toHaveClass(/is-completed/);
+
+    // Remembered across pages and reloads.
+    await page.goto(lessons[5].path);
+    await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "true");
+    await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "false");
+
+    // A second click undoes it.
+    await stops(page).nth(3).click();
+    await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "false");
+    await page.reload();
+    await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("shows the same progress on the landing page's contents", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    await stops(page).nth(0).click();
+    await page.goto(BASE);
+    const landingStops = page.locator("main .course-contents .track-stop");
+    await expect(landingStops).toHaveCount(lessons.length);
+    await expect(landingStops.nth(0)).toHaveAttribute("aria-pressed", "true");
+    await expect(landingStops.nth(1)).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("still lists every lesson when the browser blocks storage", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, "localStorage", {
+        get() {
+          throw new Error("blocked");
+        },
+      });
+    });
+    await page.goto(lessons[0].path);
+    await expect(stops(page)).toHaveCount(lessons.length);
+    await stops(page).nth(0).click();
+    await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "true");
+  });
+});

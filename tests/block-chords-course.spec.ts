@@ -41,11 +41,31 @@ const lessons = [
 
 // The course's parts, in order. Part 1 is the six lessons above; the rest are announced as
 // coming soon until their lessons are written, and link nowhere until then.
+// Lessons planned for parts still to come: listed on the line by title, unlinked, with no
+// completion toggle, until they are written.
+const planned: Record<string, string[]> = {
+  "Part 2": [
+    "Building the minor 7th block chords",
+    "The minor 7th bebop scale",
+    "Diminished passing tones for the minor 7th",
+    "Diatonic passing tones for the minor 7th",
+    "Chromatic passing tones for the minor 7th",
+  ],
+  "Part 3": [
+    "Building the dominant block chords",
+    "The dominant bebop scale",
+    "Diminished passing tones for the dominant",
+    "Diatonic passing tones for the dominant",
+    "Chromatic passing tones for the dominant",
+  ],
+};
 const parts = [
   { number: "Part 1", title: "Harmonisation techniques", lessons },
-  { number: "Part 2", title: "Harmonising a major 2 5 1", lessons: [] },
-  { number: "Part 3", title: "Harmonising a minor 2 5 1", lessons: [] },
-  { number: "Part 4", title: "Arranging a jazz standard", lessons: [] },
+  { number: "Part 2", title: "Harmonising a minor 7th chord", lessons: [] },
+  { number: "Part 3", title: "Harmonising a dominant 7th chord", lessons: [] },
+  { number: "Part 4", title: "Harmonising a 2 5 1 progression", lessons: [] },
+  { number: "Part 5", title: "Harmonising a minor 2 5 1 progression", lessons: [] },
+  { number: "Part 6", title: "Arranging a jazz standard", lessons: [] },
 ];
 
 async function expectSyllabus(contents: import("@playwright/test").Locator) {
@@ -71,7 +91,9 @@ async function expectSyllabus(contents: import("@playwright/test").Locator) {
       await expect(item.locator(".coming-soon")).toHaveCount(0);
     } else {
       await expect(item.locator("a")).toHaveCount(0);
+      await expect(item.locator("button")).toHaveCount(0);
       await expect(item.locator(".coming-soon")).toHaveText("Coming soon");
+      await expect(item.locator(".planned-lesson")).toHaveText(planned[part.number] ?? []);
     }
   }
 }
@@ -193,6 +215,9 @@ test.describe("Block chords course", () => {
         const scrolled = (await index.locator("ol").first().boundingBox())!;
         expect(scrolled.y).toBeGreaterThanOrEqual(0);
         expect(scrolled.y).toBeLessThan(900);
+        // A sidebar taller than the window scrolls on its own, never past the window's bottom.
+        const details = (await index.locator(":scope > details").boundingBox())!;
+        expect(details.y + details.height).toBeLessThanOrEqual(900);
       });
 
       test("gives the sidebar the room beside the lesson without leaving the window", async ({
@@ -217,7 +242,7 @@ test.describe("Block chords course", () => {
         await page.goto(lesson.path);
         const index = page.locator("nav.course-index");
         await expect(index.locator("ol").first()).toBeHidden();
-        await index.locator("summary").click();
+        await index.locator(":scope > details > summary").click();
         await expect(index.locator("ol").first()).toBeVisible();
         const box = (await index.boundingBox())!;
         const article = (await page.locator("article").boundingBox())!;
@@ -467,7 +492,7 @@ test.describe("Block chords course landing page", () => {
     expect(box.y).toBeLessThan(main.y + 200);
     // The page grows to fit the sidebar: the footer never runs over it.
     const listBottom = await index
-      .locator("ol.course-parts")
+      .locator(":scope > details")
       .evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
     const footerTop = await page
       .locator("footer")
@@ -480,7 +505,7 @@ test.describe("Block chords course landing page", () => {
     await page.goto(BASE);
     const index = page.locator("nav.course-index");
     await expect(index.locator("ol").first()).toBeHidden();
-    await index.locator("summary").click();
+    await index.locator(":scope > details > summary").click();
     await expect(index.locator("ol").first()).toBeVisible();
   });
 
@@ -604,4 +629,102 @@ test.describe("Block chords course progress track", () => {
     await stops(page).nth(0).click();
     await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "true");
   });
+});
+
+// The sidebar is a dark panel beside the light page, its parts collapsible: the part holding the
+// current lesson (Part 1 on the landing page) opens by default and the rest stay folded, so it
+// only scrolls when even that cannot fit the window.
+test.describe("Block chords course sidebar", () => {
+  const luminance = (rgb: string) => {
+    const [r, g, b] = rgb.match(/\d+(\.\d+)?/g)!.map(Number);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  });
+
+  for (const [name, path] of [
+    ["a lesson", lessons[3].path],
+    ["the landing page", BASE],
+  ]) {
+    test(`opens only the part you are in on ${name}`, async ({ page }) => {
+      await page.goto(path);
+      const toggles = page.locator("nav.course-index .course-part > details");
+      await expect(toggles).toHaveCount(parts.length);
+      for (let i = 0; i < parts.length; i++) {
+        if (i === 0) await expect(toggles.nth(i)).toHaveAttribute("open", "");
+        else await expect(toggles.nth(i)).not.toHaveAttribute("open");
+      }
+      // Folded that way it fits the window: no scrollbar of its own.
+      const scrolls = await page
+        .locator("nav.course-index > details")
+        .evaluate((el) => el.scrollHeight > el.clientHeight);
+      expect(scrolls).toBe(false);
+    });
+  }
+
+  test("expands and collapses a part from its heading", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    const part2 = page.locator("nav.course-index .course-part").nth(1);
+    await expect(part2.locator(".planned-lesson").first()).toBeHidden();
+    // The heading still says it is coming soon while folded.
+    await expect(part2.locator("summary .coming-soon")).toBeVisible();
+    await part2.locator("summary").click();
+    await expect(part2.locator(".planned-lesson").first()).toBeVisible();
+    await part2.locator("summary").click();
+    await expect(part2.locator(".planned-lesson").first()).toBeHidden();
+
+    const part1 = page.locator("nav.course-index .course-part").nth(0);
+    await part1.locator("summary").click();
+    await expect(part1.locator(".track-stop").first()).toBeHidden();
+  });
+
+  test("sets the sidebar dark against the light page", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    const sidebar = await page
+      .locator("nav.course-index")
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const title = await page
+      .locator("nav.course-index .course-part-title")
+      .first()
+      .evaluate((el) => getComputedStyle(el).color);
+    const main = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(luminance(sidebar)).toBeLessThan(60);
+    expect(luminance(title)).toBeGreaterThan(200);
+    expect(luminance(main)).toBeGreaterThan(240);
+  });
+
+  test("lines the sidebar's heading up with its contents", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    const heading = (await page.locator("nav.course-index > details > summary .course-index-heading").boundingBox())!;
+    const label = (await page.locator("nav.course-index .course-part-number").first().boundingBox())!;
+    expect(Math.abs(heading.x - label.x)).toBeLessThanOrEqual(1);
+  });
+});
+
+test.describe("Block chords course header", () => {
+  for (const width of [1280, 1440, 1920]) {
+    test(`lines the JazzJam logo up with the sidebar at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of [BASE, lessons[0].path]) {
+        await page.goto(path);
+        const logo = (await page.locator(".site-header a").boundingBox())!;
+        const heading = (await page.locator(".course-index-heading").boundingBox())!;
+        expect(Math.abs(logo.x - heading.x), path).toBeLessThanOrEqual(1);
+      }
+    });
+  }
+
+  for (const width of [375, 1000]) {
+    test(`lines the JazzJam logo up with the page at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of [BASE, lessons[0].path]) {
+        await page.goto(path);
+        const logo = (await page.locator(".site-header a").boundingBox())!;
+        const title = (await page.locator("h1").boundingBox())!;
+        expect(Math.abs(logo.x - title.x), path).toBeLessThanOrEqual(1);
+      }
+    });
+  }
 });

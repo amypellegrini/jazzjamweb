@@ -2,7 +2,7 @@
    Lives inside a .course-layout, next to the page's own column. #}
       <nav class="course-index" aria-label="Course contents">
         <details open>
-          <summary>Course contents</summary>
+          <summary><span class="course-index-heading">Course contents</span></summary>
 {% include "block-chords/syllabus.njk" %}
         </details>
       </nav>
@@ -10,12 +10,12 @@
         // Always open as a sidebar on wide screens; folded by default above the page otherwise.
         // Without JavaScript the index simply stays open.
         (() => {
-          const index = document.querySelector(".course-index details");
+          const index = document.querySelector(".course-index > details");
           const wide = matchMedia("(min-width: 80rem)");
           const sync = () => (index.open = wide.matches);
           sync();
           wide.addEventListener("change", sync);
-          index.querySelector("summary").addEventListener("click", (e) => {
+          index.querySelector(":scope > summary").addEventListener("click", (e) => {
             if (wide.matches) e.preventDefault();
           });
         })();

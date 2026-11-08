@@ -216,7 +216,7 @@ test.describe("Block chords course", () => {
         expect(scrolled.y).toBeGreaterThanOrEqual(0);
         expect(scrolled.y).toBeLessThan(900);
         // A sidebar taller than the window scrolls on its own, never past the window's bottom.
-        const details = (await index.locator("details").boundingBox())!;
+        const details = (await index.locator(":scope > details").boundingBox())!;
         expect(details.y + details.height).toBeLessThanOrEqual(900);
       });
 
@@ -242,7 +242,7 @@ test.describe("Block chords course", () => {
         await page.goto(lesson.path);
         const index = page.locator("nav.course-index");
         await expect(index.locator("ol").first()).toBeHidden();
-        await index.locator("summary").click();
+        await index.locator(":scope > details > summary").click();
         await expect(index.locator("ol").first()).toBeVisible();
         const box = (await index.boundingBox())!;
         const article = (await page.locator("article").boundingBox())!;
@@ -492,7 +492,7 @@ test.describe("Block chords course landing page", () => {
     expect(box.y).toBeLessThan(main.y + 200);
     // The page grows to fit the sidebar: the footer never runs over it.
     const listBottom = await index
-      .locator("details")
+      .locator(":scope > details")
       .evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
     const footerTop = await page
       .locator("footer")
@@ -505,7 +505,7 @@ test.describe("Block chords course landing page", () => {
     await page.goto(BASE);
     const index = page.locator("nav.course-index");
     await expect(index.locator("ol").first()).toBeHidden();
-    await index.locator("summary").click();
+    await index.locator(":scope > details > summary").click();
     await expect(index.locator("ol").first()).toBeVisible();
   });
 
@@ -628,5 +628,77 @@ test.describe("Block chords course progress track", () => {
     await expect(stops(page)).toHaveCount(lessons.length);
     await stops(page).nth(0).click();
     await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "true");
+  });
+});
+
+// The sidebar is a dark panel beside the light page, its parts collapsible: the part holding the
+// current lesson (Part 1 on the landing page) opens by default and the rest stay folded, so it
+// only scrolls when even that cannot fit the window.
+test.describe("Block chords course sidebar", () => {
+  const luminance = (rgb: string) => {
+    const [r, g, b] = rgb.match(/\d+(\.\d+)?/g)!.map(Number);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  });
+
+  for (const [name, path] of [
+    ["a lesson", lessons[3].path],
+    ["the landing page", BASE],
+  ]) {
+    test(`opens only the part you are in on ${name}`, async ({ page }) => {
+      await page.goto(path);
+      const toggles = page.locator("nav.course-index .course-part > details");
+      await expect(toggles).toHaveCount(parts.length);
+      for (let i = 0; i < parts.length; i++) {
+        if (i === 0) await expect(toggles.nth(i)).toHaveAttribute("open", "");
+        else await expect(toggles.nth(i)).not.toHaveAttribute("open");
+      }
+      // Folded that way it fits the window: no scrollbar of its own.
+      const scrolls = await page
+        .locator("nav.course-index > details")
+        .evaluate((el) => el.scrollHeight > el.clientHeight);
+      expect(scrolls).toBe(false);
+    });
+  }
+
+  test("expands and collapses a part from its heading", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    const part2 = page.locator("nav.course-index .course-part").nth(1);
+    await expect(part2.locator(".planned-lesson").first()).toBeHidden();
+    // The heading still says it is coming soon while folded.
+    await expect(part2.locator("summary .coming-soon")).toBeVisible();
+    await part2.locator("summary").click();
+    await expect(part2.locator(".planned-lesson").first()).toBeVisible();
+    await part2.locator("summary").click();
+    await expect(part2.locator(".planned-lesson").first()).toBeHidden();
+
+    const part1 = page.locator("nav.course-index .course-part").nth(0);
+    await part1.locator("summary").click();
+    await expect(part1.locator(".track-stop").first()).toBeHidden();
+  });
+
+  test("sets the sidebar dark against the light page", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    const sidebar = await page
+      .locator("nav.course-index")
+      .evaluate((el) => getComputedStyle(el).backgroundColor);
+    const title = await page
+      .locator("nav.course-index .course-part-title")
+      .first()
+      .evaluate((el) => getComputedStyle(el).color);
+    const main = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(luminance(sidebar)).toBeLessThan(60);
+    expect(luminance(title)).toBeGreaterThan(200);
+    expect(luminance(main)).toBeGreaterThan(240);
+  });
+
+  test("lines the sidebar's heading up with its contents", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    const heading = (await page.locator("nav.course-index > details > summary .course-index-heading").boundingBox())!;
+    const label = (await page.locator("nav.course-index .course-part-number").first().boundingBox())!;
+    expect(Math.abs(heading.x - label.x)).toBeLessThanOrEqual(1);
   });
 });

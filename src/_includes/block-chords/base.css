@@ -125,12 +125,43 @@ html {
   background: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2255c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='11' cy='13' r='9'/><circle cx='11' cy='13' r='5'/><circle cx='11' cy='13' r='1' fill='%23c2255c'/><path d='M11 13 20 4'/><path d='M17 2v5h5'/></svg>")
     no-repeat center / contain;
 }
-      /* Course outline (sidebar and landing page): parts, each with its lessons or "coming soon". */
-      /* Drawn as a metro line: the track runs down a gutter left of the titles. */
-      ol.course-parts {
+      /* Course outline, in the sidebar: a dark panel beside the light page, drawn as a metro
+         line down a gutter left of the titles. Each part folds open and closed. */
+      .course-index {
+        --panel: #111827;
+        --panel-raised: #1f2937;
+        --ink: #f9fafb;
+        --ink-soft: #d1d5db;
+        --ink-muted: #9ca3af;
+        --link: #93c5fd;
+        --line: #60a5fa;
+        --line-strong: #3b82f6;
+        --unbuilt: #4b5563;
         --gutter: 1.75rem;
         --track-x: 0.5rem; /* the line's centre, from the gutter's left edge */
+        margin: 0 0 1.5rem;
+        color: var(--ink-soft);
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      .course-index > details {
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        background: var(--panel);
+      }
+      .course-index > details > summary {
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+      }
+      ol.course-parts {
         list-style: none;
+        margin: 1rem 0 0;
         padding-left: 0;
       }
       .course-part {
@@ -138,13 +169,86 @@ html {
         padding-left: var(--gutter);
       }
       .course-part + .course-part {
-        margin-top: 1.5rem;
+        margin-top: 1.1rem;
       }
-      ol.course-track {
+      .course-part > details > summary {
+        display: block;
+        cursor: pointer;
+        list-style: none;
+      }
+      .course-part > details > summary::-webkit-details-marker {
+        display: none;
+      }
+      .course-part-number {
+        display: block;
+        margin-bottom: 0.15rem;
+        font:
+          600 0.7rem system-ui,
+          -apple-system,
+          sans-serif;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-muted);
+      }
+      .course-part-number::after {
+        /* folds open and closed */
+        content: "";
+        display: inline-block;
+        margin-left: 0.45rem;
+        width: 0.35rem;
+        height: 0.35rem;
+        border: solid currentColor;
+        border-width: 0 1.5px 1.5px 0;
+        transform: translateY(-0.15rem) rotate(45deg);
+        transition: transform 0.15s;
+      }
+      .course-part > details:not([open]) .course-part-number::after {
+        transform: translateY(-0.05rem) rotate(-45deg);
+      }
+      .course-part > details > summary:hover .course-part-number {
+        color: var(--ink);
+      }
+      .course-part > details > summary:focus-visible {
+        outline: 2px solid var(--link);
+        outline-offset: 2px;
+        border-radius: 2px;
+      }
+      .course-part-title {
+        display: block;
+        font:
+          700 0.8rem/1.35 system-ui,
+          -apple-system,
+          sans-serif;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-decoration: underline 1.5px var(--unbuilt);
+        text-underline-offset: 0.35em;
+        color: var(--ink);
+      }
+      .coming-soon {
+        display: inline-block;
+        margin-top: 0.55rem; /* clear of the title's underline */
+        padding: 0.1rem 0.5rem;
+        border-radius: 999px;
+        background: var(--panel-raised);
+        color: var(--ink-muted);
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      ol.course-track,
+      ol.planned-track {
         position: relative;
         list-style: none;
-        margin: 0.75rem 0 0;
+        margin: 0.75rem 0 0.25rem;
         padding: 0;
+        font-size: 0.95rem;
+        line-height: 1.4;
       }
       .course-track::before {
         content: "";
@@ -153,13 +257,26 @@ html {
         top: 0.7em;
         bottom: 0.7em;
         width: 3px;
-        background: #93c5fd;
+        background: var(--line);
       }
-      .track-station {
+      .track-station,
+      .planned-station {
         position: relative;
       }
-      .track-station + .track-station {
+      .track-station + .track-station,
+      .planned-station + .planned-station {
         margin-top: 0.55rem;
+      }
+      .course-track a {
+        color: var(--link);
+        text-decoration: none;
+      }
+      .course-track a:hover {
+        text-decoration: underline;
+      }
+      .course-track a[aria-current="page"] {
+        color: var(--ink);
+        font-weight: 600;
       }
       .track-stop {
         position: absolute;
@@ -171,25 +288,25 @@ html {
         box-sizing: border-box;
         padding: 0;
         font: inherit; /* so 0.7em matches the title's first line */
-        border: 3px solid #93c5fd;
+        border: 3px solid var(--line);
         border-radius: 50%;
-        background: #fff;
+        background: var(--panel);
         cursor: pointer;
       }
       .track-stop:hover {
-        border-color: #2563eb;
+        border-color: var(--ink);
       }
       .track-stop:focus-visible {
-        outline: 2px solid #2563eb;
+        outline: 2px solid var(--ink);
         outline-offset: 2px;
       }
       .is-current > .track-stop {
-        border-color: #2563eb;
-        box-shadow: 0 0 0 4px #dbeafe;
+        border-color: var(--ink);
+        box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.35);
       }
       .is-completed > .track-stop {
-        border-color: #2563eb;
-        background: #2563eb;
+        border-color: var(--line-strong);
+        background: var(--line-strong);
       }
       .is-completed > .track-stop::after {
         /* a check mark */
@@ -203,171 +320,96 @@ html {
         border-width: 0 2px 2px 0;
         transform: rotate(45deg);
       }
-      /* A part still to come: the line carries on dashed, with an unbuilt station at its title. */
+      /* A part still to come: the line carries on dashed, with an unbuilt station at its title
+         and at each planned lesson. */
       .is-coming-soon::before {
         content: "";
         position: absolute;
         left: calc(var(--track-x) - 1.5px);
-        top: -2.25rem;
+        top: -2rem;
         bottom: 0;
-        border-left: 3px dashed #d1d5db;
-      }
-      /* Planned lessons of a part still to come: unbuilt stops on its dashed line. */
-      ol.planned-track {
-        list-style: none;
-        margin: 0.6rem 0 0;
-        padding: 0;
-      }
-      .planned-station {
-        position: relative;
-        color: #6b7280;
-      }
-      .planned-station + .planned-station {
-        margin-top: 0.55rem;
-      }
-      .planned-station::before {
-        content: "";
-        position: absolute;
-        z-index: 1;
-        left: calc(var(--track-x) - var(--gutter) - 5px);
-        top: calc(0.7em - 5px);
-        width: 10px;
-        height: 10px;
-        box-sizing: border-box;
-        border: 2px solid #d1d5db;
-        border-radius: 50%;
-        background: #fff;
+        border-left: 3px dashed var(--unbuilt);
       }
       .is-coming-soon:last-child::before {
         /* the line ends at the last station rather than trailing past it */
         bottom: auto;
-        height: calc(2.25rem + 1.45rem);
+        height: calc(2rem + 1.45rem);
       }
-      .is-coming-soon > .course-part-title {
+      .is-coming-soon .course-part-title {
         position: relative;
       }
-      .is-coming-soon > .course-part-title::before {
+      .is-coming-soon .course-part-title::before,
+      .planned-station::before {
         content: "";
         position: absolute;
         z-index: 1;
+        box-sizing: border-box;
+        border-radius: 50%;
+        background: var(--panel);
+      }
+      .is-coming-soon .course-part-title::before {
         left: calc(var(--track-x) - var(--gutter) - 7px);
         top: calc(0.65em - 7px);
         width: 14px;
         height: 14px;
-        box-sizing: border-box;
-        border: 3px solid #d1d5db;
-        border-radius: 50%;
-        background: #fff;
+        border: 3px solid var(--unbuilt);
       }
-      .course-part-number {
-        display: block;
-        margin-bottom: 0.15rem;
-        font:
-          600 0.7rem system-ui,
-          -apple-system,
-          sans-serif;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #6b7280;
+      .planned-station {
+        color: var(--ink-muted);
       }
-      .course-part-title {
-        display: block;
-        font:
-          700 0.8rem/1.35 system-ui,
-          -apple-system,
-          sans-serif;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        text-decoration: underline 1.5px #9ca3af;
-        text-underline-offset: 0.35em;
-        color: #1d1d1f;
-      }
-      .coming-soon {
-        display: inline-block;
-        margin-top: 0.55rem; /* clear of the title's underline */
-        padding: 0.1rem 0.5rem;
-        border-radius: 999px;
-        background: #f3f4f6;
-        color: #6b7280;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-      /* Course index: a sidebar left of the page on wide screens, folded above it otherwise. */
-      .course-index {
-        margin: 0 0 1.5rem;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
-      .course-index details {
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 0.6rem 1rem;
-      }
-      .course-index summary {
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #6b7280;
-      }
-      .course-index .course-track,
-      .course-index .planned-track {
-        margin: 0.75rem 0 0.25rem;
-        font-size: 0.95rem;
-        line-height: 1.4;
-      }
-      .course-index ol a {
-        color: #2563eb;
-        text-decoration: none;
-      }
-      .course-index ol a:hover {
-        text-decoration: underline;
-      }
-      .course-index ol a[aria-current="page"] {
-        color: #1d1d1f;
-        font-weight: 600;
+      .planned-station::before {
+        left: calc(var(--track-x) - var(--gutter) - 5px);
+        top: calc(0.7em - 5px);
+        width: 10px;
+        height: 10px;
+        border: 2px solid var(--unbuilt);
       }
       @media (min-width: 80rem) {
         /* The sidebar takes all the room left of the 44rem column, less a 2rem gap and a 1rem
            window margin; as a grid column it stretches to the page's height (so its sticky list
-           stays in view to the end) and a short page grows to fit it. */
+           stays in view to the end) and a short page grows to fit it. Its dark panel runs from
+           the window's left edge, between the header and the footer. */
         .course-layout {
           --index-width: min(19rem, calc(50vw - 22rem - 3rem));
           display: grid;
           grid-template-columns: var(--index-width) minmax(0, 1fr);
-          column-gap: 2rem;
-          margin-left: calc(-1 * (var(--index-width) + 2rem));
+          column-gap: 2.5rem;
+          /* up against the header, whose bottom margin is 2.5rem */
+          margin: -2.5rem 0 0 calc(-1 * (var(--index-width) + 2.5rem));
+          flex: 1 0 auto; /* reaches down to the footer on a short page */
+        }
+        .course-layout > :not(.course-index) {
+          padding-top: 2.5rem;
         }
         .course-index {
           margin: 0;
+          background: var(--panel);
+          /* paint the panel out to the window's left edge without widening the page */
+          border-image: linear-gradient(var(--panel), var(--panel)) fill 0 / 0 / 0 0 0 100vw;
         }
-        .course-index details {
+        .course-index > details {
           position: sticky;
-          top: 2rem;
-          /* Taller than the window, it scrolls on its own rather than running off the bottom. */
-          max-height: calc(100vh - 4rem);
+          top: 0;
+          /* Taller than the window (only with several parts open), it scrolls on its own. */
+          max-height: 100vh;
+          box-sizing: border-box;
           overflow-y: auto;
           overscroll-behavior: contain;
           scrollbar-width: thin;
-          border: 0;
-          border-left: 2px solid #e5e7eb;
+          scrollbar-color: var(--unbuilt) transparent;
           border-radius: 0;
-          padding: 0 0 0 0.75rem;
+          padding: 2.5rem 1rem 2rem 0;
         }
-        .course-index summary {
+        .course-index > details > summary {
           cursor: default;
           list-style: none;
         }
-        .course-index summary::-webkit-details-marker {
+        .course-index > details > summary::-webkit-details-marker {
           display: none;
+        }
+        /* The heading lines up with the parts' labels. */
+        .course-index > details > summary .course-index-heading {
+          display: inline-block;
+          margin-left: var(--gutter);
         }
       }

@@ -3,13 +3,18 @@
    browser only; visiting a lesson never completes it). A part still to be written is a dashed,
    coming-soon stretch of line that links nowhere until its lessons exist; its planned lessons
    are listed on it by title, with no link and no completion toggle. #}
+{# The part holding the current lesson opens; on the landing page, Part 1. The rest stay folded. #}
+{% set openPart = current.part if current else 1 %}
 <ol class="course-parts">
   {% for part in parts %}
   <li class="course-part{% if part.comingSoon %} is-coming-soon{% endif %}">
-    <span class="course-part-number">Part {{ part.number }}</span>
-    <span class="course-part-title">{{ part.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span>
+    <details{% if part.number == openPart %} open{% endif %}>
+    <summary>
+      <span class="course-part-number">Part {{ part.number }}</span>
+      <span class="course-part-title">{{ part.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span>
+      {% if part.comingSoon %}<span class="coming-soon">Coming soon</span>{% endif %}
+    </summary>
     {% if part.comingSoon %}
-    <span class="coming-soon">Coming soon</span>
     {% if part.planned %}
     <ol class="planned-track">
       {% for title in part.planned %}
@@ -27,6 +32,7 @@
       {% endif %}{% endfor %}
     </ol>
     {% endif %}
+    </details>
   </li>
   {% endfor %}
 </ol>

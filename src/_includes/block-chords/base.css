@@ -56,9 +56,8 @@ h3 {
   margin: -2rem 0 2.5rem calc(50% - 50vw);
 }
 .site-header .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem 1.5rem;
+  /* The logo lines up with the page's column (with the sidebar's heading when there is one). */
+  padding: 1rem 1rem 1rem max(1rem, calc(50vw - 22rem));
 }
 .site-header a {
   font:
@@ -369,8 +368,14 @@ html {
            window margin; as a grid column it stretches to the page's height (so its sticky list
            stays in view to the end) and a short page grows to fit it. Its dark panel runs from
            the window's left edge, between the header and the footer. */
-        .course-layout {
+        :root {
           --index-width: min(19rem, calc(50vw - 22rem - 3rem));
+        }
+        .site-header .container {
+          /* the sidebar's left edge, plus its gutter */
+          padding-left: calc(50vw - 22rem - 2.5rem - var(--index-width) + 1.75rem);
+        }
+        .course-layout {
           display: grid;
           grid-template-columns: var(--index-width) minmax(0, 1fr);
           column-gap: 2.5rem;

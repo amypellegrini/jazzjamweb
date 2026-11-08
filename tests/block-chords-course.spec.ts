@@ -702,3 +702,29 @@ test.describe("Block chords course sidebar", () => {
     expect(Math.abs(heading.x - label.x)).toBeLessThanOrEqual(1);
   });
 });
+
+test.describe("Block chords course header", () => {
+  for (const width of [1280, 1440, 1920]) {
+    test(`lines the JazzJam logo up with the sidebar at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of [BASE, lessons[0].path]) {
+        await page.goto(path);
+        const logo = (await page.locator(".site-header a").boundingBox())!;
+        const heading = (await page.locator(".course-index-heading").boundingBox())!;
+        expect(Math.abs(logo.x - heading.x), path).toBeLessThanOrEqual(1);
+      }
+    });
+  }
+
+  for (const width of [375, 1000]) {
+    test(`lines the JazzJam logo up with the page at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of [BASE, lessons[0].path]) {
+        await page.goto(path);
+        const logo = (await page.locator(".site-header a").boundingBox())!;
+        const title = (await page.locator("h1").boundingBox())!;
+        expect(Math.abs(logo.x - title.x), path).toBeLessThanOrEqual(1);
+      }
+    });
+  }
+});

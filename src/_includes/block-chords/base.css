@@ -252,11 +252,13 @@ html {
           sans-serif;
         letter-spacing: 0.05em;
         text-transform: uppercase;
+        text-decoration: underline 2px #9ca3af;
+        text-underline-offset: 0.35em;
         color: #1d1d1f;
       }
       .coming-soon {
         display: inline-block;
-        margin-top: 0.3rem;
+        margin-top: 0.55rem; /* clear of the title's underline */
         padding: 0.1rem 0.5rem;
         border-radius: 999px;
         background: #f3f4f6;

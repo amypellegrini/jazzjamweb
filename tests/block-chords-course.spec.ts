@@ -41,6 +41,24 @@ const lessons = [
 
 // The course's parts, in order. Part 1 is the six lessons above; the rest are announced as
 // coming soon until their lessons are written, and link nowhere until then.
+// Lessons planned for parts still to come: listed on the line by title, unlinked, with no
+// completion toggle, until they are written.
+const planned: Record<string, string[]> = {
+  "Part 2": [
+    "Building the minor 7th block chords",
+    "The minor 7th bebop scale",
+    "Diminished passing tones for the minor 7th",
+    "Diatonic passing tones for the minor 7th",
+    "Chromatic passing tones for the minor 7th",
+  ],
+  "Part 3": [
+    "Building the dominant block chords",
+    "The dominant bebop scale",
+    "Diminished passing tones for the dominant",
+    "Diatonic passing tones for the dominant",
+    "Chromatic passing tones for the dominant",
+  ],
+};
 const parts = [
   { number: "Part 1", title: "Harmonisation techniques", lessons },
   { number: "Part 2", title: "Harmonising a minor 7th chord", lessons: [] },
@@ -73,7 +91,9 @@ async function expectSyllabus(contents: import("@playwright/test").Locator) {
       await expect(item.locator(".coming-soon")).toHaveCount(0);
     } else {
       await expect(item.locator("a")).toHaveCount(0);
+      await expect(item.locator("button")).toHaveCount(0);
       await expect(item.locator(".coming-soon")).toHaveText("Coming soon");
+      await expect(item.locator(".planned-lesson")).toHaveText(planned[part.number] ?? []);
     }
   }
 }
@@ -195,6 +215,9 @@ test.describe("Block chords course", () => {
         const scrolled = (await index.locator("ol").first().boundingBox())!;
         expect(scrolled.y).toBeGreaterThanOrEqual(0);
         expect(scrolled.y).toBeLessThan(900);
+        // A sidebar taller than the window scrolls on its own, never past the window's bottom.
+        const details = (await index.locator("details").boundingBox())!;
+        expect(details.y + details.height).toBeLessThanOrEqual(900);
       });
 
       test("gives the sidebar the room beside the lesson without leaving the window", async ({
@@ -469,7 +492,7 @@ test.describe("Block chords course landing page", () => {
     expect(box.y).toBeLessThan(main.y + 200);
     // The page grows to fit the sidebar: the footer never runs over it.
     const listBottom = await index
-      .locator("ol.course-parts")
+      .locator("details")
       .evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
     const footerTop = await page
       .locator("footer")

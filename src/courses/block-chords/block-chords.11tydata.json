@@ -58,12 +58,26 @@
     {
       "number": 2,
       "title": "Harmonising a minor 7th chord",
-      "comingSoon": true
+      "comingSoon": true,
+      "planned": [
+        "Building the minor 7th block chords",
+        "The minor 7th bebop scale",
+        "Diminished passing tones for the minor 7th",
+        "Diatonic passing tones for the minor 7th",
+        "Chromatic passing tones for the minor 7th"
+      ]
     },
     {
       "number": 3,
       "title": "Harmonising a dominant 7th chord",
-      "comingSoon": true
+      "comingSoon": true,
+      "planned": [
+        "Building the dominant block chords",
+        "The dominant bebop scale",
+        "Diminished passing tones for the dominant",
+        "Diatonic passing tones for the dominant",
+        "Chromatic passing tones for the dominant"
+      ]
     },
     {
       "number": 4,

@@ -1,7 +1,8 @@
 {# The course outline as a metro line, part by part: each lesson is a stop, the current lesson
    is marked on the line, and clicking a stop toggles that lesson completed (remembered in this
    browser only; visiting a lesson never completes it). A part still to be written is a dashed,
-   coming-soon stretch of line that links nowhere until its lessons exist. #}
+   coming-soon stretch of line that links nowhere until its lessons exist; its planned lessons
+   are listed on it by title, with no link and no completion toggle. #}
 <ol class="course-parts">
   {% for part in parts %}
   <li class="course-part{% if part.comingSoon %} is-coming-soon{% endif %}">
@@ -9,6 +10,13 @@
     <span class="course-part-title">{{ part.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span>
     {% if part.comingSoon %}
     <span class="coming-soon">Coming soon</span>
+    {% if part.planned %}
+    <ol class="planned-track">
+      {% for title in part.planned %}
+      <li class="planned-station"><span class="planned-lesson">{{ title }}</span></li>
+      {% endfor %}
+    </ol>
+    {% endif %}
     {% else %}
     <ol class="course-track">
       {% for item in lessons %}{% if item.part == part.number %}

@@ -212,6 +212,32 @@ html {
         bottom: 0;
         border-left: 3px dashed #d1d5db;
       }
+      /* Planned lessons of a part still to come: unbuilt stops on its dashed line. */
+      ol.planned-track {
+        list-style: none;
+        margin: 0.6rem 0 0;
+        padding: 0;
+      }
+      .planned-station {
+        position: relative;
+        color: #6b7280;
+      }
+      .planned-station + .planned-station {
+        margin-top: 0.55rem;
+      }
+      .planned-station::before {
+        content: "";
+        position: absolute;
+        z-index: 1;
+        left: calc(var(--track-x) - var(--gutter) - 5px);
+        top: calc(0.7em - 5px);
+        width: 10px;
+        height: 10px;
+        box-sizing: border-box;
+        border: 2px solid #d1d5db;
+        border-radius: 50%;
+        background: #fff;
+      }
       .is-coming-soon:last-child::before {
         /* the line ends at the last station rather than trailing past it */
         bottom: auto;
@@ -293,7 +319,8 @@ html {
         text-transform: uppercase;
         color: #6b7280;
       }
-      .course-index .course-track {
+      .course-index .course-track,
+      .course-index .planned-track {
         margin: 0.75rem 0 0.25rem;
         font-size: 0.95rem;
         line-height: 1.4;
@@ -326,6 +353,11 @@ html {
         .course-index details {
           position: sticky;
           top: 2rem;
+          /* Taller than the window, it scrolls on its own rather than running off the bottom. */
+          max-height: calc(100vh - 4rem);
+          overflow-y: auto;
+          overscroll-behavior: contain;
+          scrollbar-width: thin;
           border: 0;
           border-left: 2px solid #e5e7eb;
           border-radius: 0;

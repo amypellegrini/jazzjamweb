@@ -39,6 +39,43 @@ const lessons = [
   },
 ];
 
+// The course's parts, in order. Part 1 is the six lessons above; the rest are announced as
+// coming soon until their lessons are written, and link nowhere until then.
+const parts = [
+  { number: "Part 1", title: "Harmonisation techniques", lessons },
+  { number: "Part 2", title: "Harmonising a major 2 5 1", lessons: [] },
+  { number: "Part 3", title: "Harmonising a minor 2 5 1", lessons: [] },
+  { number: "Part 4", title: "Arranging a jazz standard", lessons: [] },
+];
+
+async function expectSyllabus(contents: import("@playwright/test").Locator) {
+  const items = contents.locator(".course-part");
+  // "Part N" is a small label of its own above the part's title, not run into it.
+  await expect(items.locator(".course-part-number")).toHaveText(parts.map((p) => p.number));
+  await expect(items.locator(".course-part-title")).toHaveText(parts.map((p) => p.title));
+  const [label, title] = await Promise.all(
+    [".course-part-number", ".course-part-title"].map((sel) =>
+      items.first().locator(sel).evaluate((el) => ({
+        size: parseFloat(getComputedStyle(el).fontSize),
+        bottom: el.getBoundingClientRect().bottom,
+        top: el.getBoundingClientRect().top,
+      })),
+    ),
+  );
+  expect(label.size).toBeLessThan(title.size);
+  expect(label.bottom).toBeLessThanOrEqual(title.top);
+  for (const [i, part] of parts.entries()) {
+    const item = items.nth(i);
+    if (part.lessons.length) {
+      await expect(item.locator("a")).toHaveText(part.lessons.map((l) => l.h1));
+      await expect(item.locator(".coming-soon")).toHaveCount(0);
+    } else {
+      await expect(item.locator("a")).toHaveCount(0);
+      await expect(item.locator(".coming-soon")).toHaveText("Coming soon");
+    }
+  }
+}
+
 test.describe("Block chords course", () => {
   lessons.forEach((lesson, i) => {
     const n = i + 1;
@@ -59,6 +96,13 @@ test.describe("Block chords course", () => {
             'script[src="https://plausible.io/js/pa-6gVA4g1_BezmrRwhMYs_B.js"]',
           ),
         ).toHaveCount(1);
+      });
+
+      test("names its part and lesson number above the lesson", async ({ page }) => {
+        await page.goto(lesson.path);
+        await expect(page.locator(".course-eyebrow")).toHaveText(
+          `Piano Block Chords · Part 1 · Lesson ${n}`,
+        );
       });
 
       test("ends on its exercise", async ({ page }) => {
@@ -108,8 +152,16 @@ test.describe("Block chords course", () => {
           // Named exactly as the lesson it leads to is titled.
           await expect(prev.locator(".lesson-nav-title")).toHaveText(lessons[i - 1].h1);
         }
-        if (i === lessons.length - 1) await expect(next).toHaveCount(0);
-        else {
+        if (i === lessons.length - 1) {
+          // Part 1's last lesson points ahead to Part 2, announced but not yet linked.
+          await expect(next).toHaveCount(0);
+          const upcoming = nav.locator(".lesson-nav-upcoming");
+          await expect(upcoming.locator(".lesson-nav-step")).toHaveText(
+            `${parts[1].number} · Coming soon`,
+          );
+          await expect(upcoming.locator(".lesson-nav-title")).toHaveText(parts[1].title);
+          await expect(upcoming.locator("a")).toHaveCount(0);
+        } else {
           await expect(next).toHaveAttribute("href", lessons[i + 1].path);
           await expect(next.locator(".lesson-nav-title")).toHaveText(lessons[i + 1].h1);
         }
@@ -127,18 +179,35 @@ test.describe("Block chords course", () => {
           "href",
           lesson.path,
         );
-        await expect(index.locator("ol")).toBeVisible();
+        await expect(index.locator("ol").first()).toBeVisible();
+        // Lessons sit under their part, with the parts still to come announced after them.
+        await expectSyllabus(index);
 
-        const box = (await index.locator("ol").boundingBox())!;
+        const box = (await index.locator("ol").first().boundingBox())!;
         const article = (await page.locator("article").boundingBox())!;
         expect(box.x + box.width).toBeLessThanOrEqual(article.x);
         expect(box.y).toBeLessThan(article.y + 200);
 
         // It stays in view while the lesson scrolls.
         await page.locator("details.exercise").scrollIntoViewIfNeeded();
-        const scrolled = (await index.locator("ol").boundingBox())!;
+        const scrolled = (await index.locator("ol").first().boundingBox())!;
         expect(scrolled.y).toBeGreaterThanOrEqual(0);
         expect(scrolled.y).toBeLessThan(900);
+      });
+
+      test("gives the sidebar the room beside the lesson without leaving the window", async ({
+        page,
+      }) => {
+        for (const width of [1280, 1440]) {
+          await page.setViewportSize({ width, height: 900 });
+          await page.goto(lesson.path);
+          const box = (await page.locator("nav.course-index ol").first().boundingBox())!;
+          const article = (await page.locator("article").boundingBox())!;
+          expect(box.x).toBeGreaterThanOrEqual(8);
+          expect(box.x + box.width).toBeLessThanOrEqual(article.x);
+          // Wide enough that most lesson titles fit on one line.
+          expect(box.width).toBeGreaterThanOrEqual(width >= 1440 ? 260 : 220);
+        }
       });
 
       test("folds the lesson index above the lesson on a phone", async ({
@@ -147,9 +216,9 @@ test.describe("Block chords course", () => {
         await page.setViewportSize({ width: 375, height: 812 });
         await page.goto(lesson.path);
         const index = page.locator("nav.course-index");
-        await expect(index.locator("ol")).toBeHidden();
+        await expect(index.locator("ol").first()).toBeHidden();
         await index.locator("summary").click();
-        await expect(index.locator("ol")).toBeVisible();
+        await expect(index.locator("ol").first()).toBeVisible();
         const box = (await index.boundingBox())!;
         const article = (await page.locator("article").boundingBox())!;
         expect(box.y + box.height).toBeLessThanOrEqual(article.y);
@@ -374,10 +443,64 @@ test.describe("Block chords course landing page", () => {
     await expect(page.locator("article h1")).toHaveText(lessons[0].h1);
   });
 
+  test("outlines the course in the same sidebar as the lessons, left of the page", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(BASE);
+    await expect(page.locator(".course-eyebrow")).toHaveText(
+      `Course · ${parts.length} parts`,
+    );
+    // No separate contents section: the sidebar is the outline.
+    await expect(page.locator(".course-contents")).toHaveCount(0);
+    const index = page.locator("nav.course-index");
+    await expectSyllabus(index);
+    for (const [i, l] of lessons.entries())
+      await expect(index.locator(".course-track a").nth(i)).toHaveAttribute("href", l.path);
+    // Nothing is the current lesson on the landing page.
+    await expect(index.locator(".is-current")).toHaveCount(0);
+
+    const box = (await index.locator("ol").first().boundingBox())!;
+    const main = (await page.locator("main h1").boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(8);
+    expect(box.x + box.width).toBeLessThanOrEqual(main.x);
+    expect(box.y).toBeLessThan(main.y + 200);
+    // The page grows to fit the sidebar: the footer never runs over it.
+    const listBottom = await index
+      .locator("ol.course-parts")
+      .evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
+    const footerTop = await page
+      .locator("footer")
+      .evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+    expect(listBottom).toBeLessThanOrEqual(footerTop);
+  });
+
+  test("folds the outline above the landing page on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(BASE);
+    const index = page.locator("nav.course-index");
+    await expect(index.locator("ol").first()).toBeHidden();
+    await index.locator("summary").click();
+    await expect(index.locator("ol").first()).toBeVisible();
+  });
+
+  test("links only to pages that exist", async ({ page, request }) => {
+    for (const path of [BASE, ...lessons.map((l) => l.path)]) {
+      await page.goto(path);
+      const hrefs = await page.$$eval("a[href^='/']", (as) =>
+        as.map((a) => a.getAttribute("href")!),
+      );
+      for (const href of new Set(hrefs)) {
+        const res = await request.get(href);
+        expect(res.status(), `${href} linked from ${path}`).toBe(200);
+      }
+    }
+  });
+
   test("keeps the footer at the bottom of a window taller than the page", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 1440, height: 1400 });
+    await page.setViewportSize({ width: 1440, height: 2000 });
     await page.goto(BASE);
     const { bottom, viewport, scrollable } = await page.evaluate(() => ({
       bottom: document.querySelector("footer")!.getBoundingClientRect().bottom,
@@ -396,5 +519,89 @@ test.describe("Block chords course landing page", () => {
       () => document.documentElement.scrollWidth > window.innerWidth,
     );
     expect(overflow).toBe(false);
+  });
+});
+
+// The course index is a metro-style track: one stop per lesson, the current lesson marked on
+// the line, and each stop a toggle the learner clicks to mark that lesson completed. Visiting a
+// lesson never completes it; only the click does, and it is remembered in this browser.
+test.describe("Block chords course progress track", () => {
+  const stops = (page: import("@playwright/test").Page) =>
+    page.locator("nav.course-index .course-track .track-stop");
+
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+  });
+
+  test("puts every lesson on the track as a stop, marking where you are", async ({ page }) => {
+    await page.goto(lessons[2].path);
+    const track = page.locator("nav.course-index .course-track");
+    await expect(track.locator("a")).toHaveText(lessons.map((l) => l.h1));
+    await expect(stops(page)).toHaveCount(lessons.length);
+    // Exactly one station is the current one: this lesson's.
+    const current = track.locator("li.is-current");
+    await expect(current).toHaveCount(1);
+    await expect(current.locator("a")).toHaveAttribute("aria-current", "page");
+    await expect(current.locator("a")).toHaveText(lessons[2].h1);
+    // The line itself joins the stops: drawn from the first stop to the last.
+    const line = await track.evaluate((el) => getComputedStyle(el, "::before").content);
+    expect(line).not.toBe("none");
+  });
+
+  test("starts with no lesson completed, and visiting one does not complete it", async ({
+    page,
+  }) => {
+    await page.goto(lessons[0].path);
+    await page.goto(lessons[1].path);
+    await expect(stops(page)).toHaveCount(lessons.length);
+    for (const stop of await stops(page).all())
+      await expect(stop).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("toggles a lesson completed by clicking its stop, without leaving the page", async ({
+    page,
+  }) => {
+    await page.goto(lessons[0].path);
+    const stop = stops(page).nth(3);
+    await expect(stop).toHaveAccessibleName(`Mark “${lessons[3].h1}” as completed`);
+    await stop.click();
+    await expect(page).toHaveURL(new RegExp(`${lessons[0].path}$`));
+    await expect(stop).toHaveAttribute("aria-pressed", "true");
+    await expect(stop.locator("xpath=..")).toHaveClass(/is-completed/);
+
+    // Remembered across pages and reloads.
+    await page.goto(lessons[5].path);
+    await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "true");
+    await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "false");
+
+    // A second click undoes it.
+    await stops(page).nth(3).click();
+    await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "false");
+    await page.reload();
+    await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("shows the same progress on the landing page's contents", async ({ page }) => {
+    await page.goto(lessons[0].path);
+    await stops(page).nth(0).click();
+    await page.goto(BASE);
+    const landingStops = page.locator("nav.course-index .track-stop");
+    await expect(landingStops).toHaveCount(lessons.length);
+    await expect(landingStops.nth(0)).toHaveAttribute("aria-pressed", "true");
+    await expect(landingStops.nth(1)).toHaveAttribute("aria-pressed", "false");
+  });
+
+  test("still lists every lesson when the browser blocks storage", async ({ page }) => {
+    await page.addInitScript(() => {
+      Object.defineProperty(window, "localStorage", {
+        get() {
+          throw new Error("blocked");
+        },
+      });
+    });
+    await page.goto(lessons[0].path);
+    await expect(stops(page)).toHaveCount(lessons.length);
+    await stops(page).nth(0).click();
+    await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "true");
   });
 });

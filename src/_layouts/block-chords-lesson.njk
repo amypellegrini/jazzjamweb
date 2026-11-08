@@ -292,6 +292,17 @@
         border-color: #2563eb;
         color: #2563eb;
       }
+      .lesson-nav-upcoming {
+        margin-left: auto;
+        text-align: right;
+        padding: 0.75rem 1rem;
+        max-width: 50%;
+        border: 1px dashed #d1d5db;
+        border-radius: 8px;
+        color: #6b7280;
+        font-weight: 600;
+        line-height: 1.3;
+      }
       .lesson-nav-steps a[rel="next"] {
         margin-left: auto;
         text-align: right;
@@ -302,110 +313,16 @@
         font-weight: 500;
         color: #6b7280;
       }
-      /* Course index: a sidebar left of the lesson on wide screens, folded above it otherwise. */
-      .lesson-layout {
-        position: relative;
-      }
-      .course-index {
-        margin: 0 0 1.5rem;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
-      .course-index details {
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 0.6rem 1rem;
-      }
-      .course-index summary {
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #6b7280;
-      }
-      .course-index ol {
-        margin: 0.5rem 0 0.25rem;
-        padding-left: 1.4rem;
-        font-size: 0.95rem;
-        line-height: 1.4;
-      }
-      .course-index li + li {
-        margin-top: 0.55rem;
-      }
-      .course-index ol a {
-        color: #2563eb;
-        text-decoration: none;
-      }
-      .course-index ol a:hover {
-        text-decoration: underline;
-      }
-      .course-index ol a[aria-current="page"] {
-        color: #1d1d1f;
-        font-weight: 600;
-      }
-      @media (min-width: 80rem) {
-        /* Spans the lesson's height so its sticky list stays in view down to the exercise. */
-        .course-index {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          right: calc(100% + 3rem);
-          width: 13rem;
-          margin: 0;
-        }
-        .course-index details {
-          position: sticky;
-          top: 2rem;
-          border: 0;
-          border-left: 2px solid #e5e7eb;
-          border-radius: 0;
-          padding: 0 0 0 1rem;
-        }
-        .course-index summary {
-          cursor: default;
-          list-style: none;
-        }
-        .course-index summary::-webkit-details-marker {
-          display: none;
-        }
-      }
     </style>
   </head>
   <body>
     {% include "block-chords/header.njk" %}
-    <div class="lesson-layout">
-      <nav class="course-index" aria-label="Course contents">
-        <details open>
-          <summary>Course contents</summary>
-          <ol>
-            {% for item in lessons %}
-            <li>
-              <a href="{{ item.url }}"{% if loop.index == lesson %} aria-current="page"{% endif %}>{{ item.title }}</a>
-            </li>
-            {% endfor %}
-          </ol>
-        </details>
-      </nav>
-      <script>
-        // Always open as a sidebar on wide screens; folded by default above the lesson otherwise.
-        // Without JavaScript the index simply stays open.
-        (() => {
-          const index = document.querySelector(".course-index details");
-          const wide = matchMedia("(min-width: 80rem)");
-          const sync = () => (index.open = wide.matches);
-          sync();
-          wide.addEventListener("change", sync);
-          index.querySelector("summary").addEventListener("click", (e) => {
-            if (wide.matches) e.preventDefault();
-          });
-        })();
-      </script>
+    <div class="course-layout">
+{% include "block-chords/course-index.njk" %}
+      <div class="course-main">
       <p class="course-eyebrow">
-        <a href="/courses/block-chords/">Piano Block Chords</a> · Lesson
-        {{ lesson }} of {{ lessons.length }}
+        <a href="/courses/block-chords/">Piano Block Chords</a> · Part
+        {{ current.part }} · Lesson {{ lesson }}
       </p>
       <article
         data-narration="/assets/courses/block-chords/narration/{{ current.slug }}/"
@@ -413,22 +330,28 @@
         data-exercise-start="{{ current.exerciseStart }}"
       >
 {{ content | safe }}      </article>
-    </div>
-    <nav class="lesson-nav" aria-label="Previous and next lesson">
-      <div class="lesson-nav-steps">
-        {% if lesson > 1 %}{% set prev = lessons[lesson - 2] %}
-        <a rel="prev" href="{{ prev.url }}"
-          ><span class="lesson-nav-step">← Lesson {{ lesson - 1 }}</span
-          ><span class="lesson-nav-title">{{ prev.title }}</span></a
-        >
-        {% endif %}{% if lesson < lessons.length %}{% set next = lessons[lesson] %}
-        <a rel="next" href="{{ next.url }}"
-          ><span class="lesson-nav-step">Lesson {{ lesson + 1 }} →</span
-          ><span class="lesson-nav-title">{{ next.title }}</span></a
-        >
-        {% endif %}
+      <nav class="lesson-nav" aria-label="Previous and next lesson">
+        <div class="lesson-nav-steps">
+          {% if lesson > 1 %}{% set prev = lessons[lesson - 2] %}
+          <a rel="prev" href="{{ prev.url }}"
+            ><span class="lesson-nav-step">← Lesson {{ lesson - 1 }}</span
+            ><span class="lesson-nav-title">{{ prev.title }}</span></a
+          >
+          {% endif %}{% if lesson < lessons.length %}{% set next = lessons[lesson] %}
+          <a rel="next" href="{{ next.url }}"
+            ><span class="lesson-nav-step">Lesson {{ lesson + 1 }} →</span
+            ><span class="lesson-nav-title">{{ next.title }}</span></a
+          >
+          {% else %}{% set upcoming = parts[current.part] %}{% if upcoming %}
+          <div class="lesson-nav-upcoming"
+            ><span class="lesson-nav-step">Part {{ upcoming.number }} · Coming soon</span
+            ><span class="lesson-nav-title">{{ upcoming.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span></div
+          >
+          {% endif %}{% endif %}
+        </div>
+      </nav>
       </div>
-    </nav>
+    </div>
     {% include "block-chords/footer.njk" %}
     <button id="listen" type="button" hidden>▶ Listen</button>
 

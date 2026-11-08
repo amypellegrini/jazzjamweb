@@ -1,0 +1,54 @@
+{# The course outline as a metro line, part by part: each lesson is a stop, the current lesson
+   is marked on the line, and clicking a stop toggles that lesson completed (remembered in this
+   browser only; visiting a lesson never completes it). A part still to be written is a dashed,
+   coming-soon stretch of line that links nowhere until its lessons exist. #}
+<ol class="course-parts">
+  {% for part in parts %}
+  <li class="course-part{% if part.comingSoon %} is-coming-soon{% endif %}">
+    <span class="course-part-number">Part {{ part.number }}</span>
+    <span class="course-part-title">{{ part.title | replace("2 5 1", "2&nbsp;5&nbsp;1") | safe }}</span>
+    {% if part.comingSoon %}
+    <span class="coming-soon">Coming soon</span>
+    {% else %}
+    <ol class="course-track">
+      {% for item in lessons %}{% if item.part == part.number %}
+      <li class="track-station{% if item.url == page.url %} is-current{% endif %}" data-lesson="{{ item.slug }}">
+        <button type="button" class="track-stop" aria-pressed="false" aria-label="Mark “{{ item.title }}” as completed"></button>
+        <a href="{{ item.url }}"{% if item.url == page.url %} aria-current="page"{% endif %}>{{ item.title }}</a>
+      </li>
+      {% endif %}{% endfor %}
+    </ol>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>
+<script>
+  (() => {
+    // Completed lessons live in this browser only. Storage may be blocked (private windows,
+    // blocked site data): the toggles then still work for the page view.
+    const KEY = "jazzjam:block-chords:completed";
+    let saved = [];
+    try {
+      saved = JSON.parse(localStorage.getItem(KEY) || "[]");
+    } catch {}
+    const done = new Set(Array.isArray(saved) ? saved : []);
+    const render = () =>
+      document.querySelectorAll(".track-station").forEach((station) => {
+        const on = done.has(station.dataset.lesson);
+        station.classList.toggle("is-completed", on);
+        station.querySelector(".track-stop").setAttribute("aria-pressed", String(on));
+      });
+    document.querySelectorAll(".track-stop").forEach((stop) =>
+      stop.addEventListener("click", () => {
+        const lesson = stop.closest(".track-station").dataset.lesson;
+        if (done.has(lesson)) done.delete(lesson);
+        else done.add(lesson);
+        try {
+          localStorage.setItem(KEY, JSON.stringify([...done]));
+        } catch {}
+        render();
+      }),
+    );
+    render();
+  })();
+</script>

@@ -47,11 +47,14 @@
   </head>
   <body>
     {% include "block-chords/header.njk" %}
+    <div class="course-layout">
+{% include "block-chords/course-index.njk" %}
     <main class="course-landing">
-      <p class="course-eyebrow">Course · {{ lessons.length }} lessons</p>
+      <p class="course-eyebrow">Course · {{ parts.length }} parts</p>
       <h1>Piano Block Chords</h1>
 {{ content | safe }}      <a class="course-start" href="{{ lessons[0].url }}">Start the course</a>
     </main>
+    </div>
     {% include "block-chords/footer.njk" %}
   </body>
 </html>

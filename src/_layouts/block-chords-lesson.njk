@@ -313,98 +313,13 @@
         font-weight: 500;
         color: #6b7280;
       }
-      /* Course index: a sidebar left of the lesson on wide screens, folded above it otherwise. */
-      .lesson-layout {
-        position: relative;
-      }
-      .course-index {
-        margin: 0 0 1.5rem;
-        font-family:
-          system-ui,
-          -apple-system,
-          sans-serif;
-      }
-      .course-index details {
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 0.6rem 1rem;
-      }
-      .course-index summary {
-        cursor: pointer;
-        font-size: 0.8rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-        color: #6b7280;
-      }
-      .course-index .course-track {
-        margin: 0.75rem 0 0.25rem;
-        font-size: 0.95rem;
-        line-height: 1.4;
-      }
-      .course-index ol a {
-        color: #2563eb;
-        text-decoration: none;
-      }
-      .course-index ol a:hover {
-        text-decoration: underline;
-      }
-      .course-index ol a[aria-current="page"] {
-        color: #1d1d1f;
-        font-weight: 600;
-      }
-      @media (min-width: 80rem) {
-        /* Spans the lesson and its bottom nav so its sticky list stays in view to the end. */
-        .course-index {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          /* All the room left of the 44rem column, less a 2rem gap and a 1rem window margin. */
-          right: calc(100% + 2rem);
-          width: min(19rem, calc(50vw - 22rem - 3rem));
-          margin: 0;
-        }
-        .course-index details {
-          position: sticky;
-          top: 2rem;
-          border: 0;
-          border-left: 2px solid #e5e7eb;
-          border-radius: 0;
-          padding: 0 0 0 0.75rem;
-        }
-        .course-index summary {
-          cursor: default;
-          list-style: none;
-        }
-        .course-index summary::-webkit-details-marker {
-          display: none;
-        }
-      }
     </style>
   </head>
   <body>
     {% include "block-chords/header.njk" %}
-    <div class="lesson-layout">
-      <nav class="course-index" aria-label="Course contents">
-        <details open>
-          <summary>Course contents</summary>
-{% include "block-chords/syllabus.njk" %}
-        </details>
-      </nav>
-      <script>
-        // Always open as a sidebar on wide screens; folded by default above the lesson otherwise.
-        // Without JavaScript the index simply stays open.
-        (() => {
-          const index = document.querySelector(".course-index details");
-          const wide = matchMedia("(min-width: 80rem)");
-          const sync = () => (index.open = wide.matches);
-          sync();
-          wide.addEventListener("change", sync);
-          index.querySelector("summary").addEventListener("click", (e) => {
-            if (wide.matches) e.preventDefault();
-          });
-        })();
-      </script>
+    <div class="course-layout">
+{% include "block-chords/course-index.njk" %}
+      <div class="course-main">
       <p class="course-eyebrow">
         <a href="/courses/block-chords/">Piano Block Chords</a> · Part
         {{ current.part }} · Lesson {{ lesson }}
@@ -435,6 +350,7 @@
           {% endif %}{% endif %}
         </div>
       </nav>
+      </div>
     </div>
     {% include "block-chords/footer.njk" %}
     <button id="listen" type="button" hidden>▶ Listen</button>

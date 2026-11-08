@@ -443,19 +443,45 @@ test.describe("Block chords course landing page", () => {
     await expect(page.locator("article h1")).toHaveText(lessons[0].h1);
   });
 
-  test("outlines the course part by part, with what is still to come", async ({ page }) => {
+  test("outlines the course in the same sidebar as the lessons, left of the page", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto(BASE);
     await expect(page.locator(".course-eyebrow")).toHaveText(
       `Course · ${parts.length} parts`,
     );
-    const contents = page.locator("main .course-contents");
-    await expect(contents.locator("h2")).toHaveText("Course contents");
-    await expectSyllabus(contents);
+    // No separate contents section: the sidebar is the outline.
+    await expect(page.locator(".course-contents")).toHaveCount(0);
+    const index = page.locator("nav.course-index");
+    await expectSyllabus(index);
     for (const [i, l] of lessons.entries())
-      await expect(contents.locator(".course-part").first().locator("a").nth(i)).toHaveAttribute(
-        "href",
-        l.path,
-      );
+      await expect(index.locator(".course-track a").nth(i)).toHaveAttribute("href", l.path);
+    // Nothing is the current lesson on the landing page.
+    await expect(index.locator(".is-current")).toHaveCount(0);
+
+    const box = (await index.locator("ol").first().boundingBox())!;
+    const main = (await page.locator("main h1").boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(8);
+    expect(box.x + box.width).toBeLessThanOrEqual(main.x);
+    expect(box.y).toBeLessThan(main.y + 200);
+    // The page grows to fit the sidebar: the footer never runs over it.
+    const listBottom = await index
+      .locator("ol.course-parts")
+      .evaluate((el) => el.getBoundingClientRect().bottom + window.scrollY);
+    const footerTop = await page
+      .locator("footer")
+      .evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+    expect(listBottom).toBeLessThanOrEqual(footerTop);
+  });
+
+  test("folds the outline above the landing page on a phone", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto(BASE);
+    const index = page.locator("nav.course-index");
+    await expect(index.locator("ol").first()).toBeHidden();
+    await index.locator("summary").click();
+    await expect(index.locator("ol").first()).toBeVisible();
   });
 
   test("links only to pages that exist", async ({ page, request }) => {
@@ -559,7 +585,7 @@ test.describe("Block chords course progress track", () => {
     await page.goto(lessons[0].path);
     await stops(page).nth(0).click();
     await page.goto(BASE);
-    const landingStops = page.locator("main .course-contents .track-stop");
+    const landingStops = page.locator("nav.course-index .track-stop");
     await expect(landingStops).toHaveCount(lessons.length);
     await expect(landingStops.nth(0)).toHaveAttribute("aria-pressed", "true");
     await expect(landingStops.nth(1)).toHaveAttribute("aria-pressed", "false");

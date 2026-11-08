@@ -24,8 +24,8 @@
   const rect = (el) => el.getBoundingClientRect();
 
   // A copy of an element, pinned where it is now, to fade out while the real one goes.
-  const ghost = (el, fadeOver = 0.6) => {
-    const r = rect(el), g = el.cloneNode(true);
+  const ghost = (el, fadeOver = 0.6, r = rect(el)) => {
+    const g = el.cloneNode(true);
     Object.assign(g.style, { position: "absolute", left: r.left + "px", top: r.top + "px",
       width: r.width + "px", height: r.height + "px", margin: "0", transform: "none" });
     g.querySelectorAll("svg").forEach((s) => Object.assign(s.style, { width: "100%", height: "100%" }));
@@ -62,15 +62,21 @@
     },
     title(spec) {
       const el = document.createElement("div"); el.className = "titlebox";
-      el.innerHTML = `<div class="title"></div><div class="sub"></div>`;
+      el.innerHTML = `<div class="title"></div><div class="sub"></div><div class="note"></div>`;
       el.querySelector(".title").textContent = spec.text; el.querySelector(".sub").textContent = spec.sub || "";
+      el.querySelector(".note").textContent = spec.note || "";
       return el;
     },
     score(spec) {
       const el = document.createElement("div"); el.className = "wrap";
-      el.innerHTML = spec.svg + `<div class="cursor"></div>`;
+      el.innerHTML = spec.svg;
       const svg = el.querySelector("svg"); svg.removeAttribute("width"); svg.removeAttribute("height");
       return el;
+    },
+    // A key word: the newest is in its accent colour, the others settle to ink.
+    word(spec) {
+      const el = document.createElement("div"); el.className = "kw"; el.textContent = spec.text;
+      el.style.setProperty("--accent", spec.accent); return el;
     },
     keys(spec) {
       const el = document.createElement("div"); el.className = "kb"; el.innerHTML = spec.svg;
@@ -102,6 +108,43 @@
     }
   };
 
+  // Which staff an element sits on: every system is a grand staff (right hand above, left below),
+  // so staves alternate right, left, right, ... down the page. A one-staff score is all right hand.
+  const staves = (svg) => {
+    if (svg._staves) return svg._staves;
+    const ys = [...svg.querySelectorAll(".StaffLines")].map((l) => { const b = l.getBBox(); return b.y + b.height / 2; })
+      .sort((a, b) => a - b);
+    const out = [];
+    for (let i = 0; i + 4 < ys.length; i += 5) out.push({ top: ys[i], bottom: ys[i + 4] });
+    return (svg._staves = out);
+  };
+  const isLeft = (svg, e) => {
+    const st = staves(svg);
+    if (st.length < 2) return false;
+    const b = e.getBBox(), y = b.y + b.height / 2;
+    const gap = (s) => (y < s.top ? s.top - y : y > s.bottom ? y - s.bottom : 0);
+    let best = 0;
+    st.forEach((s, i) => { if (gap(s) < gap(st[best])) best = i; });
+    return best % 2 === 1;
+  };
+  // Picking out part of a score while the sentence names it: the left hand's notes or the right
+  // hand's rests, in the explanation's orange (playback lights notes blue, so the two never mix).
+  const EXPLAIN = "#E8590C";
+  const MARK = { lh: { sel: "path.Note", left: true, fill: EXPLAIN }, rests: { sel: ".Rest", left: false, fill: EXPLAIN } };
+  const mark = (wrap, which) => {
+    const svg = wrap.querySelector("svg");
+    for (const [name, m] of Object.entries(MARK)) {
+      for (const e of svg.querySelectorAll(m.sel)) {
+        if (isLeft(svg, e) !== m.left) continue;
+        const on = which === name, was = e.style.fill !== "";
+        if (on === was) continue;
+        const from = getComputedStyle(e).fill;
+        e.style.fill = on ? m.fill : "";
+        animate(e, [{ fill: from }, { fill: getComputedStyle(e).fill }]);
+      }
+    }
+  };
+
   const recolourKeys = (oldEl, newSvg) => {
     const tmp = document.createElement("div"); tmp.innerHTML = newSvg;
     const next = [...tmp.querySelectorAll("rect")], rects = [...oldEl.querySelectorAll("rect")];
@@ -122,13 +165,17 @@
       if (spec.title) want.push([`title:${spec.title.text}|${spec.title.sub || ""}`, spec.title]);
       if (spec.score) want.push([`score:${spec.score.id}`, spec.score]);
       if (spec.keys) want.push(["keys", spec.keys]);
+      const ACCENTS = ["#2563EB", "#2F9E44", "#C2255C", "#7048E8"];
+      (spec.words || []).forEach((text, i) => want.push([`word:${text}`, { text, accent: ACCENTS[i % ACCENTS.length],
+        newest: i === spec.words.length - 1 }]));
       const before = new Map([...nodes].map(([id, el]) => [id, rect(el)]));
       const personBefore = new Map([...vis.querySelectorAll(".person")].map((p) => [p.dataset.id, rect(p)]));
 
       // Leaving: fade out where they are.
-      for (const [id, el] of [...nodes]) {
-        if (!want.some(([w]) => w === id)) { ghost(el); el.remove(); nodes.delete(id); }
-      }
+      // (All are measured first: removing one would reflow the others before they are pinned.)
+      const leaving = [...nodes].filter(([id]) => !want.some(([w]) => w === id));
+      for (const [id, el] of leaving) ghost(el, 0.6, before.get(id));
+      for (const [id, el] of leaving) { el.remove(); nodes.delete(id); }
       // Arriving or staying, in layout order.
       const fresh = new Set();
       for (const [id, s] of want) {
@@ -136,7 +183,15 @@
         if (!el) { el = build[id.split(":")[0]](s); nodes.set(id, el); fresh.add(id); }
         else if (id === "keys") recolourKeys(el, s.svg);
         vis.append(el);
-        if (id.startsWith("score:")) el.classList.toggle("example", !!s.example);
+        if (id.startsWith("score:")) {
+          el.classList.toggle("example", !!s.example);
+          if (s.height) el.querySelector("svg").style.height = s.height + "px";
+        }
+        if (id.startsWith("word:")) {
+          const was = el.classList.contains("newest");
+          el.classList.toggle("newest", s.newest);
+          if (was && !s.newest) animate(el, [{ color: s.accent }, { color: "#142030" }]);
+        }
       }
       // Photos: reconcile the people inside the row.
       const people = nodes.get("people");
@@ -155,11 +210,15 @@
         }
       }
       // Scores: reveal state.
-      for (const [id, s] of want) if (id.startsWith("score:")) reveal(nodes.get(id), s.reveal, !fresh.has(id));
+      for (const [id, s] of want) if (id.startsWith("score:")) {
+        reveal(nodes.get(id), s.reveal, !fresh.has(id));
+        mark(nodes.get(id), s.mark || null);
+      }
 
       // Now everything is in its final place: animate from where it was.
       // (The photo row itself is not flipped: each photo flips on its own, from its own old box.)
-      for (const [id, el] of nodes) fresh.has(id) ? enter(el) : id !== "people" && flip(el, before.get(id));
+      for (const [id, el] of nodes) fresh.has(id) ? enter(el, id.startsWith("word:") ? "translateY(40px) scale(.8)" : undefined)
+        : id !== "people" && flip(el, before.get(id));
       if (people) for (const p of people.children) {
         personBefore.has(p.dataset.id) && !fresh.has("people") ? flip(p, personBefore.get(p.dataset.id)) : enter(p, "translateX(60px)");
       }
@@ -174,55 +233,70 @@
       anims = []; ghosts = [];
       for (const el of document.querySelectorAll("[style]")) if (el.style.transformOrigin) el.style.transformOrigin = "";
     },
-    // Chord spellings: light the first `upto`+1 spelled notes on the score and keyboard (or none).
-    // A chord's noteheads, lowest on the page first, are its pitches lowest first: across the two
-    // staves and within each, a lower note always sits lower.
-    spell(l) {
-      document.querySelectorAll(".vis .spelled").forEach((e) => e.classList.remove("spelled"));
-      document.querySelectorAll(".vis .kb rect[data-fill]").forEach((r) => { r.style.fill = r.dataset.fill; delete r.dataset.fill; });
-      if (!l) return;
-      const wrap = $(".vis .wrap");
-      if (l.score && wrap) {
-        const heads = indexBars(wrap).filter(({ e, bar }) => bar === l.score.bar && e.getAttribute("class") === "Note")
-          .map(({ e }) => ({ e, b: e.getBBox() })).sort((p, q) => p.b.x - q.b.x);
-        const chords = [];
-        for (const h of heads) {
-          const last = chords.at(-1);
-          last && h.b.x - last.at(-1).b.x < 150 ? last.push(h) : chords.push([h]);
-        }
-        const chord = chords[l.score.chord];
-        if (chord && chord.length === l.score.size) {
-          const low = chord.sort((p, q) => (q.b.y + q.b.height / 2) - (p.b.y + p.b.height / 2)).map((h) => h.e);
-          l.score.idx.slice(0, l.upto + 1).forEach((i) => low[i].classList.add("spelled"));
-        } else console.warn("spell: chord shape does not match", l.score, chord && chord.length);
-      }
-      if (l.keys) {
-        const rects = [...document.querySelectorAll(".vis .kb rect")];
-        l.keys.slice(0, l.upto + 1).forEach((i) => {
-          const r = rects[i]; if (!r) return;
-          if (r.dataset.fill === undefined) r.dataset.fill = r.style.fill;
-          r.style.fill = "#E8955A";
-        });
-      }
-    },
-    // Examples: light the chord sounding at event k (or none).
-    prepareExample(id, events) {
-      const wrap = nodes.get(`score:${id}`), svg = wrap.querySelector("svg"), width = svg.viewBox.baseVal.width;
+    // Playback lighting. Both kinds of score end up with heads[k] (chord k's noteheads) and an
+    // optional keyboard per chord; window.light(k) lights chord k on both, or clears them (k < 0).
+    // An article example: its cursor gives each chord's x and line.
+    prepareExample(id, events, keys) {
+      const wrap = nodes.get(`score:${id}`), svg = wrap.querySelector("svg"), box = svg.viewBox.baseVal;
       const heads = events.map(() => []);
+      // Match each notehead to a chord on its own line (the cursor's top/bottom band), then by x:
+      // on a two-line score the second line's x positions repeat the first line's.
       for (const h of svg.querySelectorAll("path.Note")) {
-        const x = ((parseFloat(h.getAttribute("d").slice(1)) + 54) / width) * 100;
+        const [hx, hy] = h.getAttribute("d").slice(1).split(/[ ,]/).map(parseFloat);
+        const x = ((hx + 54) / box.width) * 100, y = (hy / box.height) * 100;
+        const gap = (e) => (y < e.top ? e.top - y : y > e.bottom ? y - e.bottom : 0);
         let best = 0;
-        events.forEach((e, k) => { if (Math.abs(e.x - x) < Math.abs(events[best].x - x)) best = k; });
+        events.forEach((e, k) => {
+          const b = events[best], d = gap(e) - gap(b);
+          if (d < 0 || (d === 0 && Math.abs(e.x - x) < Math.abs(b.x - x))) best = k;
+        });
         heads[best].push(h);
       }
-      window.light = (k) => {
-        wrap.querySelectorAll(".sounding").forEach((h) => h.classList.remove("sounding"));
-        const c = wrap.querySelector(".cursor");
-        if (k < 0) return (c.style.display = "none");
-        heads[k].forEach((h) => h.classList.add("sounding"));
-        c.style.display = "block"; c.style.left = events[k].x + "%";
-      };
-      window.light(-1);
+      lights(wrap, heads, keys);
     },
+    // A storyboard snippet: the bars being played (from bar `from`, counts[i] chords in each); in
+    // each bar the heads split into its chords at the widest gaps between them.
+    prepareMusic(id, from, counts, keys) {
+      const wrap = nodes.get(`score:${id}`), heads = [];
+      const cx = (e) => { const b = e.getBBox(); return b.x + b.width / 2; };
+      counts.forEach((n, i) => {
+        const hs = indexBars(wrap).filter(({ e, bar }) => bar === from + i && e.matches("path.Note"))
+          .map(({ e }) => ({ e, x: cx(e) })).sort((a, b) => a.x - b.x);
+        const cuts = hs.slice(1).map((h, j) => ({ j: j + 1, gap: h.x - hs[j].x }))
+          .sort((a, b) => b.gap - a.gap).slice(0, n - 1).map((c) => c.j).sort((a, b) => a - b);
+        [0, ...cuts].forEach((c, k) => heads.push(hs.slice(c, k + 1 < n ? cuts[k] : hs.length).map((h) => h.e)));
+      });
+      lights(wrap, heads, keys);
+    },
+  };
+
+  // Recolour the keyboard at once (playback, not a transition).
+  const setKeys = (svg) => {
+    const kb = nodes.get("keys");
+    if (!kb) return;
+    const tmp = document.createElement("div"); tmp.innerHTML = svg;
+    const next = [...tmp.querySelectorAll("rect")];
+    kb.querySelectorAll("rect").forEach((r, i) => { r.style.fill = next[i].style.fill; });
+  };
+  const lights = (wrap, heads, keys) => {
+    const svg = wrap.querySelector("svg");
+    heads.flat().forEach((h) => h.classList.toggle("lh", isLeft(svg, h)));
+    // k: a chord, a list of chords, or -1 for none. An entry [chord, "rh"] lights only its right
+    // hand, [chord, [i, ...]] only those notes (top down). cls: "sounding" for playback, "lit"
+    // for the chords an explanation names.
+    const top = (h) => { const b = h.getBBox(); return b.y + b.height / 2; };
+    window.light = (k, cls = "sounding") => {
+      const ks = [].concat(k).filter((e) => Array.isArray(e) || e >= 0);
+      wrap.querySelectorAll(".sounding, .lit").forEach((h) => h.classList.remove("sounding", "lit"));
+      for (const e of ks) {
+        const [i, which] = Array.isArray(e) ? e : [e, null];
+        let hs = [...(heads[i] || [])].sort((a, b) => top(a) - top(b));
+        if (which === "rh") hs = hs.filter((h) => !h.classList.contains("lh"));
+        else if (Array.isArray(which)) hs = which.map((j) => hs[j]).filter(Boolean);
+        hs.forEach((h) => h.classList.add(cls));
+      }
+      if (keys) setKeys(ks.length === 1 && !Array.isArray(ks[0]) && keys.play[ks[0]] ? keys.play[ks[0]] : keys.blank);
+    };
+    window.light(-1);
   };
 })();

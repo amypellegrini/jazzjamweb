@@ -9,12 +9,12 @@
    engine's piano channel, program and velocity, through the same soundfont. Also writes each
    example's swung chord timings for the on-screen highlighting.
 
-3. Chords played as a storyboard build-up reveals them (frames with "play"): each newly revealed
-   bar as one chord, a whole note, same piano.
+3. The storyboard's scores, played over the narration as they appear: each frame's newly shown
+   bars, swung, same piano.
 
     python3 scripts/video/audio.py <engine.mid> <musicpracticepro dir> <out-dir> [storyboard.json]
 Writes <out-dir>/drums.wav, <out-dir>/<example>.wav, <out-dir>/<example>.events.json and
-<out-dir>/chords/<notes>.wav (e.g. C4-E4-G4-A4-C5.wav).
+<out-dir>/music/<music_id>.wav, one per storyboard score (storyboard.json names each).
 """
 import importlib.util, json, os, struct, subprocess, sys
 
@@ -99,18 +99,18 @@ def tempo_of(track):
     i = track.find(b"\xFF\x51\x03")
     return 60e6 / int.from_bytes(track[i + 3:i + 6], "big")
 
-# ---- piano examples ----------------------------------------------------------------------------
-def example(name, measures, bpm, mpp, out):
+# ---- piano ------------------------------------------------------------------------------------
+def swung(chords, bpm, mpp, mid, wav):
+    """Chords as (eighths, notes), one after another, swung like the engine and played on its
+    piano through the app's soundfont. Returns each chord's (start, end) in seconds."""
     eighth = TPQ // 2
-    on_off, events, t = [], [], 0
-    for meas in measures:
-        for c in meas:
-            dur, rh, lh = c[0], c[2], c[3]
-            start, end = swing_time(t), swing_time(t + dur * eighth)
-            for n in rh + lh:
-                on_off.append((start, 1, bc_midi(n))); on_off.append((end, 0, bc_midi(n)))
-            events.append({"t": round(start / TPQ * 60 / bpm, 3), "end": round(end / TPQ * 60 / bpm, 3)})
-            t += dur * eighth
+    on_off, spans, t = [], [], 0
+    for dur, notes in chords:
+        start, end = swing_time(t), swing_time(t + dur * eighth)
+        for n in notes:
+            on_off.append((start, 1, bc_midi(n))); on_off.append((end, 0, bc_midi(n)))
+        spans.append((start / TPQ * 60 / bpm, end / TPQ * 60 / bpm))
+        t += dur * eighth
     on_off.sort(key=lambda e: (e[0], e[1]))  # note-offs before note-ons at the same tick
     track, last = bytearray(), 0
     track += vlq(0) + bytes([0xFF, 0x51, 0x03]) + round(60e6 / bpm).to_bytes(3, "big")
@@ -119,32 +119,23 @@ def example(name, measures, bpm, mpp, out):
         track += vlq(tick - last) + bytes([(0x90 if kind else 0x80) | PIANO_CHANNEL, note, PIANO_VELOCITY if kind else 0])
         last = tick
     track += vlq(0) + b"\xFF\x2F\x00"
-    mid = os.path.join(out, f"{name}.mid")
     open(mid, "wb").write(smf([bytes(track)]))
-    fluidsynth(mid, os.path.join(out, f"{name}.wav"), mpp)
-    # x positions come from the notation's cursor file (the same chords, in the same order)
-    xs = json.load(open(os.path.join(ROOT, f"src/assets/articles/block-chords/{name}.cursor.json")))
-    for e, x in zip(events, xs): e["x"] = x["x"]
-    json.dump(events, open(os.path.join(out, f"{name}.events.json"), "w"))
+    fluidsynth(mid, wav, mpp)
+    return spans
 
-def chord(notes, beats, mpp, out):
-    """One chord held for `beats`, on the engine's piano, through the app's soundfont."""
-    end = beats * TPQ
-    track = bytearray(vlq(0) + bytes([0xFF, 0x51, 0x03]) + round(60e6 / bc.BPM).to_bytes(3, "big"))
-    track += vlq(0) + bytes([0xC0 | PIANO_CHANNEL, PIANO_PROGRAM])
-    for n in notes: track += vlq(0) + bytes([0x90 | PIANO_CHANNEL, bc_midi(n), PIANO_VELOCITY])
-    for i, n in enumerate(notes): track += vlq(end if i == 0 else 0) + bytes([0x80 | PIANO_CHANNEL, bc_midi(n), 0])
-    track += vlq(0) + b"\xFF\x2F\x00"
-    name = os.path.join(out, "-".join(notes))
-    open(name + ".mid", "wb").write(smf([bytes(track)]))
-    fluidsynth(name + ".mid", name + ".wav", mpp)
+def example(name, measures, bpm, mpp, out):
+    """An article example, plus its chord timings (with the notation's x positions) for highlighting."""
+    spans = swung([(c[0], c[2] + c[3]) for m in measures for c in m], bpm, mpp,
+                  os.path.join(out, f"{name}.mid"), os.path.join(out, f"{name}.wav"))
+    xs = json.load(open(os.path.join(ROOT, f"src/assets/articles/block-chords/{name}.cursor.json")))
+    events = [{"t": round(a, 3), "end": round(b, 3), "x": x["x"], "top": x.get("top", 0), "bottom": x.get("bottom", 100)} for (a, b), x in zip(spans, xs)]
+    json.dump(events, open(os.path.join(out, f"{name}.events.json"), "w"))
 
 STEP = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
 def bc_midi(n):
-    letter, rest = n[0], n[1:]
-    alter = {"b": -1, "#": 1}.get(rest[0], 0) if rest[0] in "b#" else 0
-    octave = int(rest[1:] if rest[0] in "b#" else rest)
-    return STEP[letter] + alter + 12 * (octave + 1)
+    import re
+    m = re.fullmatch(r"([A-G])(bb|b|#)?(-?\d)", n)
+    return STEP[m[1]] + {"bb": -2, "b": -1, "#": 1, None: 0}[m[2]] + 12 * (int(m[3]) + 1)
 
 if __name__ == "__main__":
     engine_mid, mpp, out = sys.argv[1:4]
@@ -155,9 +146,13 @@ if __name__ == "__main__":
     for name, (_, measures) in bc.E.items():
         example(name, measures, bc.BPM, mpp, out)
     if len(sys.argv) > 4:
-        played = {tuple(f["bars"][f["reveal"] - 1][0]) for r in json.load(open(sys.argv[4]))
-                  for f in r.get("frames", []) if f.get("play")}
-        os.makedirs(os.path.join(out, "chords"), exist_ok=True)
-        for notes in played: chord(list(notes), 4, mpp, os.path.join(out, "chords"))
-        print(f"{len(played)} build-up chords")
+        music = {f["music_id"]: f["music"] for r in json.load(open(sys.argv[4]))
+                 for f in r.get("frames", []) if f.get("music")}
+        os.makedirs(os.path.join(out, "music"), exist_ok=True)
+        for k, m in music.items():
+            spans = swung([(c[0], c[1] + c[2]) for bar in m for c in bar], bc.BPM, mpp,
+                          os.path.join(out, "music", k + ".mid"), os.path.join(out, "music", k + ".wav"))
+            json.dump([{"t": round(a, 3), "end": round(b, 3)} for a, b in spans],
+                      open(os.path.join(out, "music", k + ".events.json"), "w"))
+        print(f"{len(music)} storyboard scores")
     print(f"drums + {len(bc.E)} swung piano examples at {bc.BPM} BPM -> {out}")

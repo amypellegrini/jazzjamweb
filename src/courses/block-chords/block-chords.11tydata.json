@@ -57,16 +57,26 @@
     },
     {
       "number": 2,
-      "title": "Harmonising a major 2 5 1",
+      "title": "Harmonising a minor 7th chord",
       "comingSoon": true
     },
     {
       "number": 3,
-      "title": "Harmonising a minor 2 5 1",
+      "title": "Harmonising a dominant 7th chord",
       "comingSoon": true
     },
     {
       "number": 4,
+      "title": "Harmonising a 2 5 1 progression",
+      "comingSoon": true
+    },
+    {
+      "number": 5,
+      "title": "Harmonising a minor 2 5 1 progression",
+      "comingSoon": true
+    },
+    {
+      "number": 6,
       "title": "Arranging a jazz standard",
       "comingSoon": true
     }

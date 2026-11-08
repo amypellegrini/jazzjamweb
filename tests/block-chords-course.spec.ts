@@ -43,9 +43,11 @@ const lessons = [
 // coming soon until their lessons are written, and link nowhere until then.
 const parts = [
   { number: "Part 1", title: "Harmonisation techniques", lessons },
-  { number: "Part 2", title: "Harmonising a major 2 5 1", lessons: [] },
-  { number: "Part 3", title: "Harmonising a minor 2 5 1", lessons: [] },
-  { number: "Part 4", title: "Arranging a jazz standard", lessons: [] },
+  { number: "Part 2", title: "Harmonising a minor 7th chord", lessons: [] },
+  { number: "Part 3", title: "Harmonising a dominant 7th chord", lessons: [] },
+  { number: "Part 4", title: "Harmonising a 2 5 1 progression", lessons: [] },
+  { number: "Part 5", title: "Harmonising a minor 2 5 1 progression", lessons: [] },
+  { number: "Part 6", title: "Arranging a jazz standard", lessons: [] },
 ];
 
 async function expectSyllabus(contents: import("@playwright/test").Locator) {

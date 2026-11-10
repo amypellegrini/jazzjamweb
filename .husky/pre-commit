@@ -1,1 +1,2 @@
 npm test
+bash scripts/check-registry.sh --staged

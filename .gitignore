@@ -147,3 +147,7 @@ playwright-report/
 .envrc
 .claude/reports/
 __pycache__/
+
+# Wrangler local secrets (Supabase keys for `wrangler dev`)
+.dev.vars
+.dev.vars.*

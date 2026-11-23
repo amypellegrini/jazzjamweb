@@ -8,6 +8,7 @@
 //   GET  /__control/outbox?email=…        the latest email "sent" to that address
 //   POST /__control/expire-access-tokens  every issued access token stops working
 //   POST /__control/sessions {email}      a session for a (new or existing) user
+//   POST /__control/users {email,password} a confirmed email-and-password account
 const encoder = new TextEncoder();
 
 async function sha256Base64Url(value) {
@@ -198,6 +199,12 @@ export function createFakeSupabase({
       return json(issueSession(email));
     },
 
+    "POST /__control/users": async (request) => {
+      const { email, password } = await body(request);
+      createUser(email, password, true);
+      return new Response(null, { status: 204 });
+    },
+
     "POST /__control/expire-access-tokens": async () => {
       accessTokens.clear();
       return new Response(null, { status: 204 });
@@ -214,7 +221,9 @@ export function createFakeSupabase({
     calls.push({ method: request.method, path, search: url.search, headers: request.headers });
     const route = routes[`${request.method} ${path}`];
     if (!route) return apiError(404, "not_found", `No fake for ${request.method} ${path}`);
-    if (path.startsWith("/auth/v1/") && request.headers.get("apikey") !== FAKE_ANON_KEY) {
+    // The browser itself opens /authorize, without the API key; every server call carries it.
+    const needsKey = path.startsWith("/auth/v1/") && path !== "/auth/v1/authorize";
+    if (needsKey && request.headers.get("apikey") !== FAKE_ANON_KEY) {
       return json({ message: "No API key found in request" }, 401);
     }
     return route(request, url);

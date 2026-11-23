@@ -13,6 +13,12 @@
       area.querySelectorAll("[data-return-here]").forEach(function (input) {
         input.value = location.pathname;
       });
+      // Back to this page after signing in, unless this is an account page already.
+      if (location.pathname.indexOf("/account/") !== 0) {
+        area.querySelectorAll("a[data-signed-out]").forEach(function (link) {
+          link.setAttribute("href", "/account/sign-in/?next=" + encodeURIComponent(location.pathname));
+        });
+      }
       area.setAttribute("data-state", state);
     });
   }

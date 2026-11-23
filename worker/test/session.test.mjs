@@ -36,3 +36,43 @@ test("unknown auth routes are not found", async () => {
   const { request } = setup();
   assert.equal((await request("/auth/nope")).status, 404);
 });
+
+test("a student whose access token has expired stays signed in on the refresh token", async () => {
+  const { supabase, request, jar } = setup();
+  supabase.addUser("student@example.com", "correct horse");
+  await request("/auth/sign-in", { method: "POST", form: { email: "student@example.com", password: "correct horse" } });
+  const before = { access: jar.get("jj_at"), refresh: jar.get("jj_rt") };
+  supabase.expireAccessTokens();
+
+  const response = await request("/auth/session");
+  assert.deepEqual(await response.json(), { signedIn: true, user: { email: "student@example.com" } });
+  // Supabase rotates the refresh token; the browser keeps the new pair.
+  assert.notEqual(jar.get("jj_at"), before.access);
+  assert.notEqual(jar.get("jj_rt"), before.refresh);
+  const refreshed = response.headers.getSetCookie().find((c) => c.startsWith("jj_rt="));
+  assert.match(refreshed, /Max-Age=\d+/);
+
+  // ...and the new pair keeps working.
+  const again = await request("/auth/session");
+  assert.deepEqual(await again.json(), { signedIn: true, user: { email: "student@example.com" } });
+});
+
+test("a session Supabase no longer honours is signed out and its cookies cleared", async () => {
+  const { request, jar } = setup();
+  jar.set("jj_at", "revoked-access");
+  jar.set("jj_rt", "revoked-refresh");
+  const response = await request("/auth/session");
+  assert.deepEqual(await response.json(), { signedIn: false });
+  assert.equal(jar.has("jj_at"), false);
+  assert.equal(jar.has("jj_rt"), false);
+});
+
+test("an outage at Supabase does not sign the student out for good", async () => {
+  const { request, jar, env } = setup();
+  jar.set("jj_at", "some-access");
+  jar.set("jj_rt", "some-refresh");
+  env.SUPABASE_URL = "https://down.supabase.test"; // the test fetch throws for any other host
+  const response = await request("/auth/session");
+  assert.deepEqual(await response.json(), { signedIn: false });
+  assert.equal(jar.get("jj_rt"), "some-refresh");
+});

@@ -4,3 +4,15 @@ title: Sign in
 description: Sign in to your JazzJam account.
 permalink: /account/sign-in/
 ---
+      <a class="button button-secondary" href="/auth/google" data-keep-next>Continue with Google</a>
+      <p class="divider">or</p>
+      <form method="post" action="/auth/sign-in">
+        <input type="hidden" name="next" value="" />
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required />
+        <button type="submit">Sign in</button>
+      </form>
+      <p><a href="/account/forgot-password/">Forgot your password?</a></p>
+      <p>New to JazzJam? <a href="/account/sign-up/" data-keep-next>Create an account</a></p>

@@ -36,7 +36,10 @@ export function createSupabaseAuth({ url, anonKey, fetch = globalThis.fetch }) {
   }
 
   async function call(path, { method = "POST", body, token, query } = {}) {
-    const headers = { apikey: anonKey, authorization: `Bearer ${token ?? anonKey}` };
+    // The key goes in apikey only: Supabase's newer publishable keys are not JWTs,
+    // so Authorization carries nothing but a signed-in user's own access token.
+    const headers = { apikey: anonKey };
+    if (token) headers.authorization = `Bearer ${token}`;
     if (body !== undefined) headers["content-type"] = "application/json";
     let response;
     try {
@@ -59,6 +62,25 @@ export function createSupabaseAuth({ url, anonKey, fetch = globalThis.fetch }) {
   }
 
   return {
+    signUp: ({ email, password, redirectTo }) =>
+      call("/signup", { query: { redirect_to: redirectTo }, body: { email, password } }),
+    signInWithPassword: ({ email, password }) =>
+      call("/token", { query: { grant_type: "password" }, body: { email, password } }),
+    exchangeCode: ({ code, verifier }) =>
+      call("/token", { query: { grant_type: "pkce" }, body: { auth_code: code, code_verifier: verifier } }),
+    // Where the browser goes to sign in with a provider; Supabase comes back to
+    // redirectTo with ?code= (or ?error=).
+    authorizeUrl: ({ provider, redirectTo, codeChallenge }) =>
+      endpoint("/authorize", {
+        provider,
+        redirect_to: redirectTo,
+        code_challenge: codeChallenge,
+        code_challenge_method: "s256",
+      }).toString(),
+    verifyEmailLink: ({ tokenHash, type }) => call("/verify", { body: { token_hash: tokenHash, type } }),
+    recover: ({ email, redirectTo }) => call("/recover", { query: { redirect_to: redirectTo }, body: { email } }),
+    updateUser: (accessToken, attributes) => call("/user", { method: "PUT", token: accessToken, body: attributes }),
+    signOut: (accessToken) => call("/logout", { token: accessToken, query: { scope: "local" } }),
     getUser: (accessToken) => call("/user", { method: "GET", token: accessToken }),
     refreshSession: (refreshToken) =>
       call("/token", { query: { grant_type: "refresh_token" }, body: { refresh_token: refreshToken } }),

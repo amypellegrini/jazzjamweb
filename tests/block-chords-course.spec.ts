@@ -513,6 +513,25 @@ test.describe("Block chords course Part 2", () => {
   }
 });
 
+// Course-wide wording: the course always says "melody", never "tune".
+test.describe("Block chords course wording", () => {
+  for (const path of [BASE, ...lessons.map((l) => l.path)]) {
+    test(`never says "tune" on ${path}`, async ({ page }) => {
+      await page.goto(path);
+      // What a reader sees: the rendered text of the whole page, sidebar included.
+      await page.locator("nav.course-index details").evaluateAll((all) =>
+        all.forEach((d) => ((d as HTMLDetailsElement).open = true)),
+      );
+      await page.locator("details.exercise").evaluateAll((all) =>
+        all.forEach((d) => ((d as HTMLDetailsElement).open = true)),
+      );
+      const text = await page.locator("body").innerText();
+      expect(text.length).toBeGreaterThan(0);
+      expect(text.match(/\btunes?\b/gi) ?? []).toEqual([]);
+    });
+  }
+});
+
 test.describe("Block chords course lesson 1", () => {
   const path = `${BASE}building-block-chords/`;
 

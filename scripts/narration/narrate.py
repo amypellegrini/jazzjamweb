@@ -52,7 +52,7 @@ class Blocks(HTMLParser):
 # ---- how it is spoken ----------------------------------------------------------------------
 
 ACC = {"♭": " flat", "♯": " sharp", "": ""}
-QUALITY = {"": "", "6": " six", "7": " seven", "m7": " minor seven", "maj7": " major seven",
+QUALITY = {"": "", "6": " six", "7": " seven", "m7": " minor seven", "m9": " minor nine", "maj7": " major seven",
            "maj9": " major nine", "°7": " diminished seven", "7♭9": " seven flat nine"}
 CHORD = re.compile(r"([A-G])([♭♯]?)(" + "|".join(sorted(map(re.escape, QUALITY), key=len, reverse=True)) + r")")
 

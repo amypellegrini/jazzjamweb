@@ -245,7 +245,7 @@ def up_down(up, down):
     """Plain black, and only the opening C6 named: the voicings are explained in the text."""
     blocks = [(d, sym if i == 0 else None, rh, lh, PLAIN) for i, (d, sym, rh, lh, *_) in enumerate(run(up + down, 1))]
     return bars_of(blocks) + [[(8, None, V['C'], [oct_down(V['C'][0])], PLAIN)]]
-DIM_UP = [('C','C6'),('D.dim','G7b9'),('E','C6'),('F.dim','G7b9'),('G','C6'),('Ab.dim','G7b9'),('A','C6'),('B.dim','G7b9')]
+DIM_UP = [('C','C6'),('D.dim','G7b9'),('E','C6'),('F.dim','G7b9'),('G','C6'),('Ab.dim','G7b9'),('A','C6'),('B.dim','Ddim7')]
 DIA_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','G7b9'),('A','C6'),('B.maj9','Cmaj9')]
 CHR_UP = [('C','C6'),('D.maj9','Cmaj9'),('E','C6'),('F.G7','G7'),('G','C6'),('G#.m7','G#m7'),('A','Am7'),('B.6','B6')]
 TFO_UP = [('C','C6'),('D.G7','G7'),('E','C6'),('F.G7','G7'),('G','C6'),('Ab.dim','G7b9'),('A.Dm7','Dm7'),('B.G7','G7')]
@@ -266,10 +266,12 @@ E['exercise-chromatic']  = ("Exercise: chromatic",  up_down(CHR_UP, CHROM_DOWN))
 E['exercise-two-five-one'] = ("Exercise: 2 5 1",    up_down(TFO_UP, desc(TFO_UP)))
 
 # ---- Course Part 2: harmonising a minor 7th chord ---------------------------------------------
-# The same steps as Part 1, on Dm7, the 2 chord of the 2 5 1 in C that Part 1 ends on. Dm7 is F6
-# from its sixth (D-F-A-C = F-A-C-D), so the scale is F sixth-diminished started from D:
-# D E F G A Bb C C#. Chord tones D, F, A, C on the beat; the passing tones E, G, Bb, C# spell a
-# diminished seventh, the rootless A7(b9) (and, with Db for C#, the rootless C7(b9) of F6).
+# Dm7, the 2 chord of the 2 5 1 in C that Part 1 ends on, in D Dorian. No bebop scale here: that
+# folds the 2 chord into its dominant, while block chords keep Dm7 a chord in its own right, its
+# chord tones harmonised differently from its passing tones (so no G7 or C7 standing in). The
+# material is the "group of 7", the mode from the root up to the seventh, D E F G A B C. In
+# eighth notes the chord tones D, F, A, C fall on the beat and the passing tones E, G, B between
+# them, both on the way up and (from C) on the way back down; the last note fills its beat.
 # Colours are explicit here: the default passing-tone test above only knows C6.
 M7_TONES = {'D', 'F', 'A', 'C'}
 def m7_passing(n): return n[:-1] not in M7_TONES
@@ -277,67 +279,59 @@ def m7_passing(n): return n[:-1] not in M7_TONES
 M = {
  'D': ['D5','C5','A4','F4'], 'F': ['F5','D5','C5','A4'], 'A': ['A5','F5','D5','C5'],
  'C': ['C6','A5','F5','D5'], "D'": ['D6','C6','A5','F5'],
- # Rootless A7(b9): the diminished seventh E-G-Bb-C#.
- 'E.dim': ['E5','C#5','Bb4','G4'], 'G.dim': ['G5','E5','C#5','Bb4'],
- 'Bb.dim': ['Bb5','G5','E5','C#5'], 'C#.dim': ['C#6','Bb5','G5','E5'],
- 'E.m9': ['E5','C5','A4','F4'],                                   # rootless Dm9: F-A-C-E
- 'G.C7': ['G5','E5','C5','Bb4'], 'Bb.C7': ['Bb5','G5','E5','C5'],  # C7, the dominant of F6
- # Chromatic approaches from below: the target's voicing a half step lower.
- 'E.6': ['E5','C#5','B4','G#4'],        # F's voicing (F6: F-D-C-A) down a half step: E6
- 'C#.m7': ['C#6','B5','G#5','E5'],      # the top D's voicing (Dm7: D-C-A-F) down a half step: C#m7
- # ...and from above: the target's voicing a half step higher.
- 'Db.Ebm7': ['Db6','Bb5','Gb5','Eb5'],  # C's voicing (Dm7/C: C-A-F-D) up a half step
- 'Bb.Ebm7': ['Bb5','Gb5','Eb5','Db5'],  # A's voicing (Dm7/A: A-F-D-C) up a half step
+ # Diminished: E and G sit in E-G-Bb-C#, the rootless A7(b9), D minor's own dominant; B is not
+ # in that chord and takes the diminished chord on Dm7's root, D-F-Ab-B (D dim7), which keeps D
+ # and F in place.
+ 'E.dim': ['E5','C#5','Bb4','G4'], 'G.dim': ['G5','E5','C#5','Bb4'], 'B.dim': ['B5','Ab5','F5','D5'],
+ # Diatonic: the rootless Dm9 (F-A-C-E) on E; Em7 (E-G-B-D), the chord a step above, on G and B.
+ 'E.m9': ['E5','C5','A4','F4'], 'G.Em7': ['G5','E5','D5','B4'], 'B.Em7': ['B5','G5','E5','D5'],
+ # Chromatic, from below: the target's Dm7 voicing a half step lower, a C#m7.
+ 'E.C#m7': ['E5','C#5','B4','G#4'],   # F's voicing (F-D-C-A) down a half step
+ 'B.C#m7': ['B5','G#5','E5','C#5'],   # C's voicing (C-A-F-D) down a half step
 }
 def m_blk(d, sym, v, plain=False):
     """A Part 2 block: blue when its melody note is a passing tone, unless `plain`."""
     rh = M[v]
     return blk(d, sym, rh) + (BLUE if m7_passing(rh[0]) and not plain else BLACK,)
 def m_run(steps, dur, plain=False): return [m_blk(dur, sym, v, plain) for v, sym in steps]
+def group_bar(steps, plain=False):
+    """One group of 7 in a bar: six eighth notes, then the seventh note held for the last beat."""
+    return m_run(steps[:-1], 1, plain) + m_run(steps[-1:], 2, plain)
 
-# The same four notes stacked from F and from D.
-E['detail-m7-f6-dm7'] = ("F6 and Dm7", [
- [chord(4, 'F6', ['D5','C5','A4','F4']), chord(4, 'Dm7', ['C5','A4','F4','D4'])]])
 E['m7-positions'] = ("Dm7 in every position", [
  [ex_blk('Dm7', M['D'])] + [ex_blk(None, M[n]) for n in 'FAC'],
  [ex_blk(None, M[n]) for n in ["D'", 'C', 'A', 'F']],
  [ex_blk(None, M['D'], 8)]])
 
-# The scale, melody only, from the D above middle C: passing tones in blue.
-M7_SCALE = ['D4','E4','F4','G4','A4','Bb4','C5','C#5']
-E['m7-bebop-scale'] = ("The minor 7th bebop scale", [
- [(1, 'Dm7' if i == 0 else None, [n], [], BLUE if m7_passing(n) else BLACK) for i, n in enumerate(M7_SCALE)],
- [chord(8, None, ['D5'])]])
-# The scale in the left hand, an octave below the melody; Dm7 blocks on the chord tones only.
-def m_lh_step(n, first=False):
-    """`n` is a left-hand note: a chord tone takes its block above it, a passing tone stands alone."""
-    if not m7_passing(n):
-        v = "D'" if n == 'D5' else n[:-1]
-        return blk(1, 'Dm7' if first else None, M[v]) + (PLAIN,)
-    return (1, None, [], [n], PLAIN)
-E['m7-scale-chord-tones'] = ("Scale in the left hand, Dm7 on the chord tones", [
- [m_lh_step(n, i == 0) for i, n in enumerate(M7_SCALE)], [blk(8, None, M["D'"]) + (PLAIN,)]])
-E['exercise-m7-scale-chord-tones'] = ("Exercise: minor 7th scale in the left hand", [
- [m_lh_step(n, i == 0) for i, n in enumerate(M7_SCALE)],
- [m_lh_step(n) for n in ['D5'] + M7_SCALE[:0:-1]],
- [blk(8, None, M['D']) + (PLAIN,)]])
+# The group of 7, melody only, from the D above middle C: up to the seventh, then back down from
+# it. Passing tones in blue.
+M7_GROUP = ['D4','E4','F4','G4','A4','B4','C5']
+def melody_bar(ns, sym=None):
+    return [(2 if i == len(ns) - 1 else 1, sym if i == 0 else None, [n], [], BLUE if m7_passing(n) else BLACK)
+            for i, n in enumerate(ns)]
+E['m7-group-of-7'] = ("The D Dorian group of 7", [melody_bar(M7_GROUP, 'Dm7'), melody_bar(M7_GROUP[::-1])])
+# The group in the left hand, an octave below the melody; Dm7 blocks on the chord tones only.
+def m_lh_bar(ns, sym=None):
+    """`ns` are left-hand notes: a chord tone takes its block above it, a passing tone stands alone."""
+    out = []
+    for i, n in enumerate(ns):
+        d = 2 if i == len(ns) - 1 else 1
+        if m7_passing(n): out.append((d, None, [], [n], PLAIN))
+        else: out.append(blk(d, sym if i == 0 else None, M[n[:-1]]) + (PLAIN,))
+    return out
+E['m7-group-chord-tones'] = ("Group of 7 in the left hand, Dm7 on the chord tones", [m_lh_bar(M7_GROUP, 'Dm7')])
+E['exercise-m7-group-chord-tones'] = ("Exercise: group of 7 in the left hand", [
+ m_lh_bar(M7_GROUP, 'Dm7'), m_lh_bar(M7_GROUP[::-1])])
 
-# Dm7 (green) against the diminished chord (blue) voiced from E4, the inversion closest to it:
-# each note sits a step from a Dm7 note. Then the scale, each note in its chord's colour.
-E['detail-m7-dm7-dim'] = ("Dm7 and the diminished chord", [
- [chord(8, 'Dm7', ['C5','A4','F4','D4'], GREEN)], [chord(8, 'A7b9', ['C#5','Bb4','G4','E4'], BLUE)],
- [chord(1, None, [n], BLUE if m7_passing(n) else GREEN) for n in M7_SCALE]])
-M7_DIM_UP = [('D','Dm7'),('E.dim','A7b9'),('F','Dm7'),('G.dim','A7b9'),('A','Dm7'),('Bb.dim','A7b9'),('C','Dm7'),('C#.dim','A7b9')]
-M7_TOP = [("D'",'Dm7')]
-E['m7-diminished'] = ("Diminished, on Dm7", [m_run(M7_DIM_UP, 1), m_run(M7_TOP, 8)])
-# The diminished chord over an A bass is A7(b9) without its root, resolving to Dm7.
+# The two diminished chords the group needs, each voiced a step from the Dm7 notes around it.
+E['detail-m7-two-dims'] = ("Two diminished chords", [
+ [chord(4, 'A7b9', ['C#5','Bb4','G4','E4']), chord(4, 'Ddim7', ['B4','Ab4','F4','D4'])]])
+M7_DIM = [('D','Dm7'),('E.dim','A7b9'),('F','Dm7'),('G.dim','A7b9'),('A','Dm7'),('B.dim','Ddim7'),('C','Dm7')]
+E['m7-diminished'] = ("Diminished, on Dm7", [group_bar(M7_DIM)])
+# The first diminished chord over an A bass is A7(b9) without its root, resolving to Dm7.
 E['detail-m7-a7b9-dm7'] = ("A7(b9) to Dm7", [
  [(4, 'A7b9', ['C#5','Bb4','G4','E4'], ['A2'], BLACK), (4, 'Dm7', ['D5','C5','A4','F4'], ['D3'], BLACK)]])
-# The same chord over A and over C: A7(b9), the dominant of D minor, and (C# respelled Db)
-# C7(b9), the dominant of F6.
-E['detail-m7-two-dominants'] = ("One diminished chord, two dominants", [
- [(4, 'A7b9', ['C#5','Bb4','G4','E4'], ['A2'], BLACK), (4, 'C7b9', ['Db5','Bb4','G4','E4'], ['C3'], BLACK)]])
-BASS_CLEF |= {'detail-m7-a7b9-dm7', 'detail-m7-two-dominants'}
+BASS_CLEF |= {'detail-m7-a7b9-dm7'}
 
 # Dm9 with its root (in red, for contrast), then without it: the rootless shape F-A-C-E.
 E['detail-m7-rootless'] = ("Rootless minor ninth", [
@@ -347,33 +341,30 @@ E['detail-m7-rootless'] = ("Rootless minor ninth", [
 E['m7-rootless-ninth'] = ("Rootless minor ninth", [
  m_run([('D','Dm7'),('E.m9','Dm9'),('F','Dm7'),('A',None)], 2),
  m_run([('F',None),('E.m9','Dm9')], 2) + m_run([('D','Dm7')], 4)])
-E['detail-m7-c7'] = ("C7 on G and on B flat", [[m_blk(4, 'C7', 'G.C7', True), m_blk(4, 'C7', 'Bb.C7', True)]])
-M7_DIA_UP = [('D','Dm7'),('E.m9','Dm9'),('F','Dm7'),('G.C7','C7'),('A','Dm7'),('Bb.C7','C7'),('C','Dm7'),('C#.dim','A7b9')]
-E['m7-diatonic'] = ("Diatonic, on Dm7", [m_run(M7_DIA_UP, 1), m_run(M7_TOP, 8)])
+E['detail-m7-em7'] = ("Em7 on G and on B", [[m_blk(4, 'Em7', 'G.Em7', True), m_blk(4, 'Em7', 'B.Em7', True)]])
+M7_DIA = [('D','Dm7'),('E.m9','Dm9'),('F','Dm7'),('G.Em7','Em7'),('A','Dm7'),('B.Em7','Em7'),('C','Dm7')]
+E['m7-diatonic'] = ("Diatonic, on Dm7", [group_bar(M7_DIA)])
 
-# Chromatic, ascending: E and C# sit a half step below F and D, so each takes its target's voicing
-# a half step lower. F's voicing is read as F6 (Dm7 over F), so its approach is E6.
-M7_CHR_UP = [('D','Dm7'),('E.6','E6'),('F','F6'),('G.C7','C7'),('A','Dm7'),('Bb.C7','C7'),('C','Dm7'),('C#.m7','C#m7')]
-# Descending: Db and Bb sit a half step above C and A, so each takes its target's voicing a half
-# step higher (Ebm7 over the melody note); E no longer approaches by a half step: rootless Dm9.
-M7_CHR_DOWN = [("D'",'Dm7'),('Db.Ebm7','Ebm7/Db'),('C','Dm7/C'),('Bb.Ebm7','Ebm7/Bb'),
-               ('A','Dm7/A'),('G.C7','C7'),('F','Dm7'),('E.m9','Dm9')]
+# Chromatic, ascending: E and B sit a half step below F and C, so each takes its target's Dm7
+# voicing a half step lower, a C#m7 under the melody note. G is a whole step from A: it keeps Em7.
+M7_CHR_UP = [('D','Dm7'),('E.C#m7','C#m7/E'),('F','Dm7/F'),('G.Em7','Em7'),('A','Dm7'),('B.C#m7','C#m7/B'),('C','Dm7/C')]
+# Descending, no passing tone sits a half step above its target (B-A, G-F and E-D are whole
+# steps), so the technique does not apply: every passing tone falls back to its diatonic voicing.
+M7_CHR_DOWN = list(reversed(M7_DIA))
 E['detail-m7-chromatic-up'] = ("Chromatic approaches from below, on Dm7", [
- [m_blk(4, 'E6', 'E.6', True), m_blk(4, 'F6', 'F', True)], [m_blk(4, 'C#m7', 'C#.m7', True), m_blk(4, 'Dm7', "D'", True)]])
-E['m7-chromatic'] = ("Chromatic, on Dm7", [m_run(M7_CHR_UP, 1), m_run(M7_TOP, 8)])
-E['detail-m7-chromatic-down'] = ("Chromatic approaches from above, on Dm7", [
- [m_blk(4, 'Ebm7/Db', 'Db.Ebm7', True), m_blk(4, 'Dm7/C', 'C', True)],
- [m_blk(4, 'Ebm7/Bb', 'Bb.Ebm7', True), m_blk(4, 'Dm7/A', 'A', True)]])
-E['m7-chromatic-descending'] = ("Chromatic, descending, on Dm7", [m_run(M7_CHR_DOWN, 1), m_run([('D','Dm7')], 8)])
+ [m_blk(4, 'C#m7/E', 'E.C#m7', True), m_blk(4, 'Dm7/F', 'F', True)],
+ [m_blk(4, 'C#m7/B', 'B.C#m7', True), m_blk(4, 'Dm7/C', 'C', True)]])
+E['m7-chromatic'] = ("Chromatic, on Dm7", [group_bar(M7_CHR_UP)])
+E['m7-chromatic-descending'] = ("Chromatic, descending, on Dm7", [group_bar(M7_CHR_DOWN)])
 
-# Exercises: each technique up the minor 7th bebop scale and back down, one block per eighth note.
+# Exercises: each technique up the group of 7 and back down from the seventh, a bar each way.
 def m_up_down(up, down):
     """Plain black, and only the opening Dm7 named: the voicings are explained in the text."""
-    blocks = [(d, sym if i == 0 else None, rh, lh, PLAIN) for i, (d, sym, rh, lh, *_) in enumerate(m_run(up + down, 1))]
-    return bars_of(blocks) + [[(8, None, M['D'], [oct_down(M['D'][0])], PLAIN)]]
-m_desc = lambda up: M7_TOP + list(reversed(up[1:]))  # same voicings as ascending, top D down to E
-E['exercise-m7-diminished'] = ("Exercise: diminished, on Dm7", m_up_down(M7_DIM_UP, m_desc(M7_DIM_UP)))
-E['exercise-m7-diatonic']   = ("Exercise: diatonic, on Dm7",   m_up_down(M7_DIA_UP, m_desc(M7_DIA_UP)))
+    bars = [group_bar(up, True), group_bar(down, True)]
+    return [[(d, sym if (i, j) == (0, 0) else None, rh, lh, PLAIN) for j, (d, sym, rh, lh, *_) in enumerate(bar)]
+            for i, bar in enumerate(bars)]
+E['exercise-m7-diminished'] = ("Exercise: diminished, on Dm7", m_up_down(M7_DIM, M7_DIM[::-1]))
+E['exercise-m7-diatonic']   = ("Exercise: diatonic, on Dm7",   m_up_down(M7_DIA, M7_DIA[::-1]))
 E['exercise-m7-chromatic']  = ("Exercise: chromatic, on Dm7",  m_up_down(M7_CHR_UP, M7_CHR_DOWN))
 
 # Render: MusicXML source -> SVG (notation) + MP3 (playback) with MuseScore 4's CLI.

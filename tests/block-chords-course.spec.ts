@@ -63,21 +63,21 @@ const lessons = [
     path: `${BASE}minor-seventh-diminished-passing-tones/`,
     h1: "Diminished passing tones for the minor 7th",
     part: 2,
-    firstExample: 25,
+    firstExample: 24,
     examples: 3,
   },
   {
     path: `${BASE}minor-seventh-diatonic-passing-tones/`,
     h1: "Diatonic passing tones for the minor 7th",
     part: 2,
-    firstExample: 28,
+    firstExample: 27,
     examples: 4,
   },
   {
     path: `${BASE}minor-seventh-chromatic-passing-tones/`,
     h1: "Chromatic passing tones for the minor 7th",
     part: 2,
-    firstExample: 32,
+    firstExample: 31,
     examples: 3,
   },
 ];
@@ -532,6 +532,14 @@ test.describe("Block chords course Part 2", () => {
         });
       expect(text.match(/bebop/gi) ?? [], lesson.path).toEqual([]);
       if (lesson !== part2[0]) expect(text.match(/\b[GC]7/g) ?? [], lesson.path).toEqual([]);
+    }
+  });
+
+  test("numbers its examples without a gap, straight on from Part 1", async () => {
+    let next = 22; // Part 1 ends on Example 21
+    for (const lesson of part2) {
+      if (lesson.examples) expect(lesson.firstExample, lesson.path).toBe(next);
+      next += lesson.examples!;
     }
   });
 

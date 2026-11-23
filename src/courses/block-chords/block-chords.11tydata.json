@@ -48,6 +48,46 @@
       "exampleStart": 16,
       "exerciseStart": 5,
       "part": 1
+    },
+    {
+      "url": "/courses/block-chords/minor-seventh-block-chords/",
+      "slug": "minor-seventh-block-chords",
+      "title": "Building the minor 7th block chords",
+      "exampleStart": 21,
+      "exerciseStart": 6,
+      "part": 2
+    },
+    {
+      "url": "/courses/block-chords/minor-seventh-bebop-scale/",
+      "slug": "minor-seventh-bebop-scale",
+      "title": "The minor 7th bebop scale",
+      "exampleStart": 23,
+      "exerciseStart": 7,
+      "part": 2
+    },
+    {
+      "url": "/courses/block-chords/minor-seventh-diminished-passing-tones/",
+      "slug": "minor-seventh-diminished-passing-tones",
+      "title": "Diminished passing tones for the minor 7th",
+      "exampleStart": 25,
+      "exerciseStart": 8,
+      "part": 2
+    },
+    {
+      "url": "/courses/block-chords/minor-seventh-diatonic-passing-tones/",
+      "slug": "minor-seventh-diatonic-passing-tones",
+      "title": "Diatonic passing tones for the minor 7th",
+      "exampleStart": 29,
+      "exerciseStart": 9,
+      "part": 2
+    },
+    {
+      "url": "/courses/block-chords/minor-seventh-chromatic-passing-tones/",
+      "slug": "minor-seventh-chromatic-passing-tones",
+      "title": "Chromatic passing tones for the minor 7th",
+      "exampleStart": 33,
+      "exerciseStart": 10,
+      "part": 2
     }
   ],
   "parts": [
@@ -57,15 +97,7 @@
     },
     {
       "number": 2,
-      "title": "Harmonising a minor 7th chord",
-      "comingSoon": true,
-      "planned": [
-        "Building the minor 7th block chords",
-        "The minor 7th bebop scale",
-        "Diminished passing tones for the minor 7th",
-        "Diatonic passing tones for the minor 7th",
-        "Chromatic passing tones for the minor 7th"
-      ]
+      "title": "Harmonising a minor 7th chord"
     },
     {
       "number": 3,

@@ -3,54 +3,85 @@ import { createHash } from "node:crypto";
 
 const BASE = "/courses/block-chords/";
 
-// The course is the block chords article cut into lessons, each ending on its exercise, behind
-// a landing page at BASE. firstExample pins the article-wide example numbering, which the
-// lessons continue (lesson 6's text refers back to "Example 16" in lesson 5).
+// Part 1 is the block chords article cut into lessons, each ending on its exercise, behind a
+// landing page at BASE; Part 2 carries on from it with the minor 7th chord. firstExample pins the
+// course-wide example numbering, which the lessons continue (lesson 6's text refers back to
+// "Example 16" in lesson 5).
 const lessons = [
   {
     path: `${BASE}building-block-chords/`,
     h1: "Building block chords",
+    part: 1,
     firstExample: 1,
   },
   {
     path: `${BASE}sixth-diminished-scale/`,
     h1: "Harmonising the sixth-diminished scale",
+    part: 1,
     firstExample: 3,
   },
   {
     path: `${BASE}diminished-passing-tones/`,
     h1: "Diminished passing tones",
+    part: 1,
     firstExample: 5,
   },
   {
     path: `${BASE}diatonic-passing-tones/`,
     h1: "Diatonic passing tones",
+    part: 1,
     firstExample: 9,
   },
   {
     path: `${BASE}chromatic-passing-tones/`,
     h1: "Chromatic passing tones",
+    part: 1,
     firstExample: 13,
   },
   {
     path: `${BASE}two-five-one-passing-tones/`,
     h1: "2 5 1 passing tones",
+    part: 1,
     firstExample: 17,
   },
+  {
+    path: `${BASE}minor-seventh-block-chords/`,
+    h1: "Building the minor 7th block chords",
+    part: 2,
+    firstExample: 22,
+  },
+  {
+    path: `${BASE}minor-seventh-bebop-scale/`,
+    h1: "The minor 7th bebop scale",
+    part: 2,
+    firstExample: 24,
+  },
+  {
+    path: `${BASE}minor-seventh-diminished-passing-tones/`,
+    h1: "Diminished passing tones for the minor 7th",
+    part: 2,
+    firstExample: 26,
+  },
+  {
+    path: `${BASE}minor-seventh-diatonic-passing-tones/`,
+    h1: "Diatonic passing tones for the minor 7th",
+    part: 2,
+    firstExample: 30,
+  },
+  {
+    path: `${BASE}minor-seventh-chromatic-passing-tones/`,
+    h1: "Chromatic passing tones for the minor 7th",
+    part: 2,
+    firstExample: 34,
+  },
 ];
+const lastOfPart1 = lessons.findLastIndex((l) => l.part === 1);
 
-// The course's parts, in order. Part 1 is the six lessons above; the rest are announced as
+// The course's parts, in order. Parts 1 and 2 are the lessons above; the rest are announced as
 // coming soon until their lessons are written, and link nowhere until then.
 // Lessons planned for parts still to come: listed on the line by title, unlinked, with no
 // completion toggle, until they are written.
 const planned: Record<string, string[]> = {
-  "Part 2": [
-    "Building the minor 7th block chords",
-    "The minor 7th bebop scale",
-    "Diminished passing tones for the minor 7th",
-    "Diatonic passing tones for the minor 7th",
-    "Chromatic passing tones for the minor 7th",
-  ],
   "Part 3": [
     "Building the dominant block chords",
     "The dominant bebop scale",
@@ -60,8 +91,16 @@ const planned: Record<string, string[]> = {
   ],
 };
 const parts = [
-  { number: "Part 1", title: "Harmonisation techniques", lessons },
-  { number: "Part 2", title: "Harmonising a minor 7th chord", lessons: [] },
+  {
+    number: "Part 1",
+    title: "Harmonisation techniques",
+    lessons: lessons.filter((l) => l.part === 1),
+  },
+  {
+    number: "Part 2",
+    title: "Harmonising a minor 7th chord",
+    lessons: lessons.filter((l) => l.part === 2),
+  },
   { number: "Part 3", title: "Harmonising a dominant 7th chord", lessons: [] },
   { number: "Part 4", title: "Harmonising a 2 5 1 progression", lessons: [] },
   { number: "Part 5", title: "Harmonising a minor 2 5 1 progression", lessons: [] },
@@ -89,6 +128,9 @@ async function expectSyllabus(contents: import("@playwright/test").Locator) {
     if (part.lessons.length) {
       await expect(item.locator("a")).toHaveText(part.lessons.map((l) => l.h1));
       await expect(item.locator(".coming-soon")).toHaveCount(0);
+      await expect(item.locator(".planned-lesson")).toHaveCount(0);
+      for (const [j, l] of part.lessons.entries())
+        await expect(item.locator("a").nth(j)).toHaveAttribute("href", l.path);
     } else {
       await expect(item.locator("a")).toHaveCount(0);
       await expect(item.locator("button")).toHaveCount(0);
@@ -123,7 +165,7 @@ test.describe("Block chords course", () => {
       test("names its part and lesson number above the lesson", async ({ page }) => {
         await page.goto(lesson.path);
         await expect(page.locator(".course-eyebrow")).toHaveText(
-          `Piano Block Chords · Part 1 · Lesson ${n}`,
+          `Piano Block Chords · Part ${lesson.part} · Lesson ${n}`,
         );
       });
 
@@ -175,17 +217,18 @@ test.describe("Block chords course", () => {
           await expect(prev.locator(".lesson-nav-title")).toHaveText(lessons[i - 1].h1);
         }
         if (i === lessons.length - 1) {
-          // Part 1's last lesson points ahead to Part 2, announced but not yet linked.
+          // The last written lesson points ahead to Part 3, announced but not yet linked.
           await expect(next).toHaveCount(0);
           const upcoming = nav.locator(".lesson-nav-upcoming");
           await expect(upcoming.locator(".lesson-nav-step")).toHaveText(
-            `${parts[1].number} · Coming soon`,
+            `${parts[2].number} · Coming soon`,
           );
-          await expect(upcoming.locator(".lesson-nav-title")).toHaveText(parts[1].title);
+          await expect(upcoming.locator(".lesson-nav-title")).toHaveText(parts[2].title);
           await expect(upcoming.locator("a")).toHaveCount(0);
         } else {
           await expect(next).toHaveAttribute("href", lessons[i + 1].path);
           await expect(next.locator(".lesson-nav-title")).toHaveText(lessons[i + 1].h1);
+          await expect(nav.locator(".lesson-nav-upcoming")).toHaveCount(0);
         }
       });
 
@@ -379,6 +422,73 @@ test.describe("Block chords course", () => {
   });
 });
 
+// Part 2, "Harmonising a minor 7th chord": five lessons that carry straight on from Part 1.
+test.describe("Block chords course Part 2", () => {
+  const part2 = lessons.filter((l) => l.part === 2);
+
+  test("is five published lessons, reachable from the outline", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(BASE);
+    const item = page.locator("nav.course-index .course-part").nth(1);
+    await expect(item.locator(".course-part-title")).toHaveText("Harmonising a minor 7th chord");
+    await expect(item.locator(".coming-soon")).toHaveCount(0);
+    await expect(item.locator(".course-track a")).toHaveText([
+      "Building the minor 7th block chords",
+      "The minor 7th bebop scale",
+      "Diminished passing tones for the minor 7th",
+      "Diatonic passing tones for the minor 7th",
+      "Chromatic passing tones for the minor 7th",
+    ]);
+    // Each one opens from the outline, on its own page under the course.
+    for (const [i, lesson] of part2.entries()) {
+      await page.goto(BASE);
+      await item.locator("summary").click();
+      await item.locator(".course-track a").nth(i).click();
+      await expect(page).toHaveURL(new RegExp(`${lesson.path}$`));
+      await expect(page.locator("article h1")).toHaveText(lesson.h1);
+    }
+  });
+
+  test("follows on from the last Part 1 lesson", async ({ page }) => {
+    await page.goto(lessons[lastOfPart1].path);
+    const next = page.locator('nav.lesson-nav a[rel="next"]');
+    await expect(next).toHaveAttribute("href", part2[0].path);
+    await next.click();
+    await expect(page.locator("article h1")).toHaveText(part2[0].h1);
+    await expect(page.locator(".course-eyebrow")).toContainText("Part 2");
+  });
+
+  for (const lesson of part2) {
+    test(`plays every example of “${lesson.h1}” from its own score, keys and timings`, async ({
+      page,
+      request,
+    }) => {
+      await page.goto(lesson.path);
+      const sources = await page
+        .locator("article figure audio")
+        .evaluateAll((els) => els.map((el) => el.getAttribute("src")!));
+      expect(sources.length).toBeGreaterThan(1);
+      // The exercise's own example is among them.
+      await expect(page.locator("article details.exercise figure audio")).toHaveCount(1);
+      for (const src of sources) {
+        // Everything the read-along needs to play an example: the audio, the score it lights
+        // up, the chord timings and the keyboard chart with the keys of each chord.
+        const base = src.replace(/\.mp3$/, "");
+        for (const ext of [".mp3", ".svg", ".cursor.json", ".keys.json", ".keyboard.svg"])
+          expect((await request.get(base + ext)).status(), base + ext).toBe(200);
+        const cursor = await (await request.get(`${base}.cursor.json`)).json();
+        const keys = await (await request.get(`${base}.keys.json`)).json();
+        expect(cursor.length).toBeGreaterThan(0);
+        expect(keys.chords.length).toBe(cursor.length);
+        for (const chord of keys.chords) {
+          expect(chord.length).toBeGreaterThan(0);
+          for (const rect of chord) expect(rect).toBeGreaterThanOrEqual(0);
+        }
+      }
+    });
+  }
+});
+
 test.describe("Block chords course lesson 1", () => {
   const path = `${BASE}building-block-chords/`;
 
@@ -569,7 +679,9 @@ test.describe("Block chords course progress track", () => {
     await expect(current.locator("a")).toHaveAttribute("aria-current", "page");
     await expect(current.locator("a")).toHaveText(lessons[2].h1);
     // The line itself joins the stops: drawn from the first stop to the last.
-    const line = await track.evaluate((el) => getComputedStyle(el, "::before").content);
+    const line = await track
+      .first()
+      .evaluate((el) => getComputedStyle(el, "::before").content);
     expect(line).not.toBe("none");
   });
 
@@ -595,7 +707,7 @@ test.describe("Block chords course progress track", () => {
     await expect(stop.locator("xpath=..")).toHaveClass(/is-completed/);
 
     // Remembered across pages and reloads.
-    await page.goto(lessons[5].path);
+    await page.goto(lessons[lastOfPart1].path);
     await expect(stops(page).nth(3)).toHaveAttribute("aria-pressed", "true");
     await expect(stops(page).nth(0)).toHaveAttribute("aria-pressed", "false");
 
@@ -644,16 +756,17 @@ test.describe("Block chords course sidebar", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
   });
 
-  for (const [name, path] of [
-    ["a lesson", lessons[3].path],
-    ["the landing page", BASE],
-  ]) {
+  for (const [name, path, open] of [
+    ["a Part 1 lesson", lessons[3].path, 0],
+    ["a Part 2 lesson", lessons[lastOfPart1 + 2].path, 1],
+    ["the landing page", BASE, 0],
+  ] as const) {
     test(`opens only the part you are in on ${name}`, async ({ page }) => {
       await page.goto(path);
       const toggles = page.locator("nav.course-index .course-part > details");
       await expect(toggles).toHaveCount(parts.length);
       for (let i = 0; i < parts.length; i++) {
-        if (i === 0) await expect(toggles.nth(i)).toHaveAttribute("open", "");
+        if (i === open) await expect(toggles.nth(i)).toHaveAttribute("open", "");
         else await expect(toggles.nth(i)).not.toHaveAttribute("open");
       }
       // Folded that way it fits the window: no scrollbar of its own.
@@ -666,14 +779,21 @@ test.describe("Block chords course sidebar", () => {
 
   test("expands and collapses a part from its heading", async ({ page }) => {
     await page.goto(lessons[0].path);
-    const part2 = page.locator("nav.course-index .course-part").nth(1);
-    await expect(part2.locator(".planned-lesson").first()).toBeHidden();
+    const part3 = page.locator("nav.course-index .course-part").nth(2);
+    await expect(part3.locator(".planned-lesson").first()).toBeHidden();
     // The heading still says it is coming soon while folded.
-    await expect(part2.locator("summary .coming-soon")).toBeVisible();
+    await expect(part3.locator("summary .coming-soon")).toBeVisible();
+    await part3.locator("summary").click();
+    await expect(part3.locator(".planned-lesson").first()).toBeVisible();
+    await part3.locator("summary").click();
+    await expect(part3.locator(".planned-lesson").first()).toBeHidden();
+
+    // A written part unfolds to its lessons, each a link with its own stop.
+    const part2 = page.locator("nav.course-index .course-part").nth(1);
+    await expect(part2.locator(".track-stop").first()).toBeHidden();
     await part2.locator("summary").click();
-    await expect(part2.locator(".planned-lesson").first()).toBeVisible();
-    await part2.locator("summary").click();
-    await expect(part2.locator(".planned-lesson").first()).toBeHidden();
+    await expect(part2.locator("a").first()).toBeVisible();
+    await expect(part2.locator(".track-stop")).toHaveCount(parts[1].lessons.length);
 
     const part1 = page.locator("nav.course-index .course-part").nth(0);
     await part1.locator("summary").click();

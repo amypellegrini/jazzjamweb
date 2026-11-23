@@ -58,9 +58,9 @@
       "part": 2
     },
     {
-      "url": "/courses/block-chords/minor-seventh-bebop-scale/",
-      "slug": "minor-seventh-bebop-scale",
-      "title": "The minor 7th bebop scale",
+      "url": "/courses/block-chords/minor-seventh-group-of-7/",
+      "slug": "minor-seventh-group-of-7",
+      "title": "The minor 7th group of 7",
       "exampleStart": 21,
       "exerciseStart": 7,
       "part": 2
@@ -77,7 +77,7 @@
       "url": "/courses/block-chords/minor-seventh-diatonic-passing-tones/",
       "slug": "minor-seventh-diatonic-passing-tones",
       "title": "Diatonic passing tones for the minor 7th",
-      "exampleStart": 28,
+      "exampleStart": 27,
       "exerciseStart": 9,
       "part": 2
     },
@@ -85,7 +85,7 @@
       "url": "/courses/block-chords/minor-seventh-chromatic-passing-tones/",
       "slug": "minor-seventh-chromatic-passing-tones",
       "title": "Chromatic passing tones for the minor 7th",
-      "exampleStart": 32,
+      "exampleStart": 31,
       "exerciseStart": 10,
       "part": 2
     }

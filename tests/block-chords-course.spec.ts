@@ -50,30 +50,35 @@ const lessons = [
     part: 2,
     // Introduces the goal and goes straight to its exercise: no example of its own.
     firstExample: null,
+    examples: 0,
   },
   {
-    path: `${BASE}minor-seventh-bebop-scale/`,
-    h1: "The minor 7th bebop scale",
+    path: `${BASE}minor-seventh-group-of-7/`,
+    h1: "The minor 7th group of 7",
     part: 2,
     firstExample: 22,
+    examples: 2,
   },
   {
     path: `${BASE}minor-seventh-diminished-passing-tones/`,
     h1: "Diminished passing tones for the minor 7th",
     part: 2,
     firstExample: 25,
+    examples: 3,
   },
   {
     path: `${BASE}minor-seventh-diatonic-passing-tones/`,
     h1: "Diatonic passing tones for the minor 7th",
     part: 2,
-    firstExample: 29,
+    firstExample: 28,
+    examples: 4,
   },
   {
     path: `${BASE}minor-seventh-chromatic-passing-tones/`,
     h1: "Chromatic passing tones for the minor 7th",
     part: 2,
-    firstExample: 33,
+    firstExample: 32,
+    examples: 3,
   },
 ];
 const lastOfPart1 = lessons.findLastIndex((l) => l.part === 1);
@@ -469,7 +474,7 @@ test.describe("Block chords course Part 2", () => {
     await expect(item.locator(".coming-soon")).toHaveCount(0);
     await expect(item.locator(".course-track a")).toHaveText([
       "Building the minor 7th block chords",
-      "The minor 7th bebop scale",
+      "The minor 7th group of 7",
       "Diminished passing tones for the minor 7th",
       "Diatonic passing tones for the minor 7th",
       "Chromatic passing tones for the minor 7th",
@@ -503,6 +508,46 @@ test.describe("Block chords course Part 2", () => {
       "/assets/articles/block-chords/m7-positions.mp3",
     );
   });
+
+  // Part 2 practises on the D Dorian group of 7 (D E F G A B C: the root up to the seventh), not
+  // on a bebop scale: no added chromatic note, and B natural rather than B flat.
+  test("builds on the D Dorian group of 7, not on a bebop scale", async ({ page, request }) => {
+    expect((await request.get(`${BASE}minor-seventh-bebop-scale/`)).status()).toBe(404);
+    await page.goto(part2[1].path);
+    const article = page.locator("article");
+    await expect(article).toContainText("Dorian");
+    await expect(article).toContainText("group of 7");
+    await expect(article).toContainText("D, E, F, G, A, B, C");
+    for (const lesson of part2) {
+      await page.goto(lesson.path);
+      await page.locator("details.exercise").evaluate((d: HTMLDetailsElement) => (d.open = true));
+      // Only the note that says why the bebop scale is left behind may name it; and the minor
+      // 7th is never folded into the dominant: no G7 or C7 harmonises its passing tones.
+      const text = await page
+        .locator("article")
+        .evaluate((el) => {
+          const copy = el.cloneNode(true) as HTMLElement;
+          copy.querySelectorAll("aside.note").forEach((n) => n.remove());
+          return copy.textContent ?? "";
+        });
+      expect(text.match(/bebop/gi) ?? [], lesson.path).toEqual([]);
+      if (lesson !== part2[0]) expect(text.match(/\b[GC]7/g) ?? [], lesson.path).toEqual([]);
+    }
+  });
+
+  for (const lesson of part2) {
+    test(`numbers the ${lesson.examples} examples of “${lesson.h1}”, then one exercise`, async ({
+      page,
+    }) => {
+      await page.goto(lesson.path);
+      await expect(page.locator("article .example-title")).toHaveCount(lesson.examples!);
+      if (lesson.examples)
+        await expect(page.locator("article .example-title").last()).toHaveText(
+          `Example ${lesson.firstExample! + lesson.examples - 1}`,
+        );
+      await expect(page.locator("article details.exercise figure")).toHaveCount(1);
+    });
+  }
 
   test("follows on from the last Part 1 lesson", async ({ page }) => {
     await page.goto(lessons[lastOfPart1].path);

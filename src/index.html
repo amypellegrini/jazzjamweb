@@ -874,11 +874,30 @@
           max-width: 100%;
         }
       }
+      /* The account area (sign in / signed in as), over the hero's top-right corner. */
+      .hero-account {
+        position: absolute;
+        top: 1.25rem;
+        right: 1.5rem;
+        z-index: 2;
+        color: var(--text-primary);
+      }
+
+      @media (max-width: 768px) {
+        .hero-account {
+          top: 0.75rem;
+          right: 1rem;
+        }
+        .hero {
+          padding-top: 4rem;
+        }
+      }
     </style>
   </head>
   <body>
     <main>
       <section class="hero">
+        <div class="hero-account">{% include "account-status.njk" %}</div>
         <img
           src="assets/hero.jpg"
           alt="Hero Image"

@@ -709,7 +709,7 @@ test.describe("Block chords course header", () => {
       await page.setViewportSize({ width, height: 900 });
       for (const path of [BASE, lessons[0].path]) {
         await page.goto(path);
-        const logo = (await page.locator(".site-header a").boundingBox())!;
+        const logo = (await page.locator(".site-header .site-logo").boundingBox())!;
         const heading = (await page.locator(".course-index-heading").boundingBox())!;
         expect(Math.abs(logo.x - heading.x), path).toBeLessThanOrEqual(1);
       }
@@ -721,7 +721,7 @@ test.describe("Block chords course header", () => {
       await page.setViewportSize({ width, height: 900 });
       for (const path of [BASE, lessons[0].path]) {
         await page.goto(path);
-        const logo = (await page.locator(".site-header a").boundingBox())!;
+        const logo = (await page.locator(".site-header .site-logo").boundingBox())!;
         const title = (await page.locator("h1").boundingBox())!;
         expect(Math.abs(logo.x - title.x), path).toBeLessThanOrEqual(1);
       }

@@ -301,11 +301,16 @@
         margin: -2rem 0 2.5rem calc(50% - 50vw);
       }
       .site-header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        color: #ffffff;
         max-width: 1200px;
         margin: 0 auto;
         padding: 1rem 1.5rem;
       }
-      .site-header a {
+      .site-header .site-logo {
         font:
           600 1.25rem "Outfit",
           sans-serif;
@@ -313,7 +318,7 @@
         text-decoration: none;
         letter-spacing: 0.01em;
       }
-      .site-header a:hover {
+      .site-header .site-logo:hover {
         color: #c4d8ea;
       }
 
@@ -351,7 +356,10 @@
   </head>
   <body>
     <header class="site-header">
-      <div class="container"><a href="/">JazzJam</a></div>
+      <div class="container">
+        <a class="site-logo" href="/">JazzJam</a>
+        {% include "account-status.njk" %}
+      </div>
     </header>
     <article>
       <h1>Piano Block Chords</h1>

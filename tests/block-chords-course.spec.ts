@@ -182,6 +182,37 @@ test.describe("Block chords course", () => {
         );
       });
 
+      test("keeps the exercise badge on one line on a phone", async ({ page }) => {
+        for (const width of [320, 390]) {
+          await page.setViewportSize({ width, height: 844 });
+          await page.goto(lesson.path);
+          const label = page.locator("article details.exercise .exercise-label");
+          await expect(label).toHaveText(`Exercise ${n}`);
+          // Against the same badge laid out with all the room it wants: one line tall.
+          const { height, oneLine, inside } = await label.evaluate((el) => {
+            const free = el.cloneNode(true) as HTMLElement;
+            free.style.cssText = "position: absolute; visibility: hidden; white-space: nowrap";
+            el.parentElement!.append(free);
+            const oneLine = free.getBoundingClientRect().height;
+            free.remove();
+            const box = el.getBoundingClientRect();
+            const summary = el.closest("summary")!.getBoundingClientRect();
+            return {
+              height: box.height,
+              oneLine,
+              inside: box.left >= summary.left && box.right <= summary.right,
+            };
+          });
+          expect(height, `at ${width}px`).toBeLessThanOrEqual(oneLine + 1);
+          // The long title wraps beside it instead, and nothing spills out of the page.
+          expect(inside, `at ${width}px`).toBe(true);
+          const overflow = await page.evaluate(
+            () => document.documentElement.scrollWidth > window.innerWidth,
+          );
+          expect(overflow, `at ${width}px`).toBe(false);
+        }
+      });
+
       test("continues the course's example numbering", async ({ page }) => {
         await page.goto(lesson.path);
         if (lesson.firstExample === null)

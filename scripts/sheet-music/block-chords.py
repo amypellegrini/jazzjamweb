@@ -295,11 +295,6 @@ def m_blk(d, sym, v, plain=False):
     return blk(d, sym, rh) + (BLUE if m7_passing(rh[0]) and not plain else BLACK,)
 def m_run(steps, dur, plain=False): return [m_blk(dur, sym, v, plain) for v, sym in steps]
 
-E['m7-basic-shape'] = ("The basic shape on Dm7", [
- [(8,'Dm7',['D5'],[], {'rh':[MELODY], 'text':('1. Melody', MELODY)})],
- [(8,None,['D5','C5','A4','F4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD], 'text':('2. Chord tones below', CHORD)})],
- [(8,None,['D5','C5','A4','F4','D4'],[], {'rh':[MELODY,CHORD,CHORD,CHORD,DOUBLE],
-   'text':('3. Double in left hand', DOUBLE)})]])
 # The same four notes stacked from F and from D.
 E['detail-m7-f6-dm7'] = ("F6 and Dm7", [
  [chord(4, 'F6', ['D5','C5','A4','F4']), chord(4, 'Dm7', ['C5','A4','F4','D4'])]])

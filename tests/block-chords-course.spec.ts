@@ -48,31 +48,32 @@ const lessons = [
     path: `${BASE}minor-seventh-block-chords/`,
     h1: "Building the minor 7th block chords",
     part: 2,
-    firstExample: 22,
+    // Introduces the goal and goes straight to its exercise: no example of its own.
+    firstExample: null,
   },
   {
     path: `${BASE}minor-seventh-bebop-scale/`,
     h1: "The minor 7th bebop scale",
     part: 2,
-    firstExample: 24,
+    firstExample: 22,
   },
   {
     path: `${BASE}minor-seventh-diminished-passing-tones/`,
     h1: "Diminished passing tones for the minor 7th",
     part: 2,
-    firstExample: 26,
+    firstExample: 25,
   },
   {
     path: `${BASE}minor-seventh-diatonic-passing-tones/`,
     h1: "Diatonic passing tones for the minor 7th",
     part: 2,
-    firstExample: 30,
+    firstExample: 29,
   },
   {
     path: `${BASE}minor-seventh-chromatic-passing-tones/`,
     h1: "Chromatic passing tones for the minor 7th",
     part: 2,
-    firstExample: 34,
+    firstExample: 33,
   },
 ];
 const lastOfPart1 = lessons.findLastIndex((l) => l.part === 1);
@@ -183,9 +184,12 @@ test.describe("Block chords course", () => {
 
       test("continues the course's example numbering", async ({ page }) => {
         await page.goto(lesson.path);
-        await expect(page.locator(".example-title").first()).toHaveText(
-          `Example ${lesson.firstExample}`,
-        );
+        if (lesson.firstExample === null)
+          await expect(page.locator(".example-title")).toHaveCount(0);
+        else
+          await expect(page.locator(".example-title").first()).toHaveText(
+            `Example ${lesson.firstExample}`,
+          );
       });
 
       test("links to the previous and next lessons from a bottom navigation bar", async ({
@@ -449,6 +453,26 @@ test.describe("Block chords course Part 2", () => {
     }
   });
 
+  // Part 2's first lesson does not teach the block again: it says why the minor 7th comes next
+  // (the 2 of a 2 5 1) and goes straight to Dm7 in every position, as lesson 1 does with C6.
+  test("opens on the goal of playing a 2 5 1, then the Dm7 positions exercise", async ({ page }) => {
+    await page.goto(part2[0].path);
+    const article = page.locator("article");
+    await expect(article.locator("> p").first()).toContainText("different kinds of chords");
+    await expect(article.locator("> p").filter({ hasText: "2 5 1" }).first()).toContainText("Dm7");
+    // No build-up example: the melody on top, chord tones and doubling were lesson 1's subject.
+    await expect(article.locator("> figure")).toHaveCount(0);
+    await expect(article).not.toContainText("three chord tones");
+    const exercise = article.locator("details.exercise");
+    await expect(exercise.locator("summary")).toContainText(
+      "Preparation for block chords scale in Dm7",
+    );
+    await expect(exercise.locator("audio")).toHaveAttribute(
+      "src",
+      "/assets/articles/block-chords/m7-positions.mp3",
+    );
+  });
+
   test("follows on from the last Part 1 lesson", async ({ page }) => {
     await page.goto(lessons[lastOfPart1].path);
     const next = page.locator('nav.lesson-nav a[rel="next"]');
@@ -467,7 +491,7 @@ test.describe("Block chords course Part 2", () => {
       const sources = await page
         .locator("article figure audio")
         .evaluateAll((els) => els.map((el) => el.getAttribute("src")!));
-      expect(sources.length).toBeGreaterThan(1);
+      expect(sources.length).toBeGreaterThan(0);
       // The exercise's own example is among them.
       await expect(page.locator("article details.exercise figure audio")).toHaveCount(1);
       for (const src of sources) {

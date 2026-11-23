@@ -172,6 +172,9 @@
         background: #b7791f;
         border-radius: 999px;
         padding: 0.15rem 0.6rem;
+        /* The badge never breaks or gives way: a long title wraps beside it instead. */
+        white-space: nowrap;
+        flex-shrink: 0;
       }
       .exercise-body {
         padding: 0 1.1rem 1rem;

@@ -141,3 +141,29 @@ test("a mail scanner opening the confirmation link does not use it up", async ()
   assert.equal(location(response).pathname, "/account/");
   assert.deepEqual(await session(), { signedIn: true, user: { email: EMAIL } });
 });
+
+test("a confirmation link with a type Supabase does not send is refused", async () => {
+  const { request } = setup({ confirmEmail: true });
+  const response = await request("/auth/confirm?token_hash=abc&type=magiclink");
+  assert.equal(response.status, 303);
+  assert.equal(location(response).pathname, "/account/sign-in/");
+  assert.equal(location(response).searchParams.get("error"), "link_expired");
+});
+
+test("a confirmation link without a token is refused", async () => {
+  const { request } = setup({ confirmEmail: true });
+  const response = await request("/auth/confirm?type=email");
+  assert.equal(response.status, 303);
+  assert.equal(location(response).pathname, "/account/sign-in/");
+  assert.equal(location(response).searchParams.get("error"), "link_expired");
+});
+
+test("the confirmation page escapes the token it carries", async () => {
+  const { request } = setup({ confirmEmail: true });
+  const tokenHash = '"><script>alert(1)</script>';
+  const response = await request(`/auth/confirm?token_hash=${encodeURIComponent(tokenHash)}&type=email`);
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.doesNotMatch(html, /<script/i);
+  assert.ok(html.includes('value="&#34;&#62;&#60;script&#62;alert(1)&#60;/script&#62;"'));
+});

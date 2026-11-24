@@ -135,6 +135,7 @@ test("a mail scanner opening the confirmation link does not use it up", async ()
   assert.equal(scanned.status, 200);
   assert.equal(scanned.headers.get("cache-control"), "no-store");
   assert.equal(scanned.headers.get("referrer-policy"), "same-origin");
+  assert.equal(scanned.headers.get("content-security-policy"), "frame-ancestors 'none'");
   assert.deepEqual(await session(), { signedIn: false });
 
   const response = await followEmailLink(link);

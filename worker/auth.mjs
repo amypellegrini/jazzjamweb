@@ -93,6 +93,7 @@ function confirmPage({ tokenHash, type }) {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "no-store",
       "referrer-policy": "same-origin",
+      "content-security-policy": "frame-ancestors 'none'",
       "x-robots-tag": "noindex",
     },
   });

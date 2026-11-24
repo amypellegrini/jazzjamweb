@@ -31,7 +31,7 @@ You can create an account on jazzjam.app with an email address and password, or 
 
 ### What We Collect
 
-- **Email sign-up**: When you sign up with an email address, we collect your email address and a password. Your password is stored only in hashed form by our authentication provider — we never see it in plain text.
+- **Email sign-up**: When you sign up with an email address, we collect your email address and a password. Your password is stored only in hashed form by our authentication provider — we never store it in plain text.
 - **Continue with Google**: When you sign in with Google, we request only the basic scopes `openid`, `email`, and `profile`. Through them we receive your Google account's email address, your name, your profile picture, and a Google account identifier. We do not get access to your Gmail, contacts, Google Drive, or anything else in your Google account.
 
 ### Where It Is Stored

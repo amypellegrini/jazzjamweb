@@ -141,6 +141,17 @@ test.describe("Privacy Policy", () => {
     await expect(page.locator("body")).toContainText("hashed");
   });
 
+  // Passwords pass through the jazzjam.app Worker on their way to the
+  // authentication provider, so "never see" would be false; "never store" is
+  // the claim we can stand behind.
+  test("claims only that passwords are never stored in plain text", async ({
+    page,
+  }) => {
+    const body = page.locator("body");
+    await expect(body).toContainText("we never store it in plain text");
+    await expect(body).not.toContainText(/never see it in plain text/i);
+  });
+
   test("discloses the Google scopes requested and the data received", async ({
     page,
   }) => {

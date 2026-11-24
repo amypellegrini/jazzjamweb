@@ -187,9 +187,23 @@ test.describe("Privacy Policy", () => {
     const body = page.locator("body");
     await expect(body).toContainText("session cookies");
     await expect(body).toContainText("HttpOnly");
-    await expect(body).toContainText("30 days");
+    await expect(body).toContainText(
+      "up to 30 days from your most recent visit"
+    );
+    await expect(body).toContainText("renew each time you return");
     await expect(body).toContainText(
       "not used for tracking or advertising"
+    );
+  });
+
+  test("discloses the short-lived cookie set during Google sign-in", async ({
+    page,
+  }) => {
+    const body = page.locator("body");
+    await expect(body).toContainText("short-lived cookie");
+    await expect(body).toContainText("about 10 minutes");
+    await expect(body).toContainText(
+      "used only to finish that sign-in securely"
     );
   });
 
@@ -199,6 +213,9 @@ test.describe("Privacy Policy", () => {
     await expect(body).toContainText("accounts@jazzjam.app");
     await expect(body).toContainText(
       "We do not sell your account data or share it for advertising"
+    );
+    await expect(body).toContainText(
+      "We do not use Google user data for anything other than providing your account and sign-in"
     );
   });
 
@@ -234,9 +251,9 @@ test.describe("Privacy Policy", () => {
       /we do not maintain any databases with user information/i
     );
     await expect(body).not.toContainText(/we do not maintain user databases/i);
-    await expect(body).toContainText(
-      "Beyond that account data, we hold no other databases of user information"
-    );
+    // Third parties (MailerLite, RevenueCat, Sentry) hold data the same way
+    // the authentication provider does, so no "no other databases" claim.
+    await expect(body).not.toContainText(/no other databases/i);
   });
 
   test("lists Supabase and Google sign-in among third-party services", async ({
@@ -248,8 +265,15 @@ test.describe("Privacy Policy", () => {
     await expect(
       services.filter({ hasText: /^Supabase:/ })
     ).toContainText("authentication provider");
-    await expect(
-      services.filter({ hasText: /^Google Sign-In:/ })
-    ).toBeVisible();
+    const googleSignIn = services.filter({ hasText: /^Google Sign-In:/ });
+    await expect(googleSignIn).toBeVisible();
+    const googlePolicyLink = googleSignIn.getByRole("link", {
+      name: "Google's Privacy Policy",
+    });
+    await expect(googlePolicyLink).toBeVisible();
+    await expect(googlePolicyLink).toHaveAttribute(
+      "href",
+      "https://policies.google.com/privacy"
+    );
   });
 });

@@ -40,7 +40,7 @@ Your account data is stored with Supabase (Supabase Auth), our authentication pr
 
 ### Cookies
 
-When you sign in, jazzjam.app sets session cookies to keep you signed in. These cookies are HttpOnly, last up to 30 days, and are strictly necessary for sign-in to work. They are not used for tracking or advertising.
+When you sign in, jazzjam.app sets session cookies to keep you signed in. These cookies are HttpOnly and last up to 30 days from your most recent visit (they renew each time you return). While you complete "Continue with Google", a short-lived cookie (about 10 minutes) is also set, used only to finish that sign-in securely. All of these cookies are strictly necessary for sign-in to work. They are not used for tracking or advertising.
 
 ### How We Use Account Data
 
@@ -51,7 +51,7 @@ We use your account data only to:
 - Send you account emails, such as sign-up confirmation and password reset, from accounts@jazzjam.app
 - In future, link your account to your course progress and to purchases you make
 
-We do not sell your account data or share it for advertising. We do not use Google user data for anything other than providing sign-in.
+We do not sell your account data or share it for advertising. We do not use Google user data for anything other than providing your account and sign-in.
 
 Our use of information received from Google APIs adheres to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements.
 
@@ -86,7 +86,7 @@ We use the following third-party services:
 - **MailerLite**: Manages our email communications. When you provide your email, it will be processed according to MailerLite's privacy policy.
 - **Google Play Store**: Handles beta testing distribution and manages app downloads. Your interaction with the Play Store is governed by Google's privacy policy.
 - **Supabase**: Our authentication provider. Supabase Auth stores your jazzjam.app account data: your email address, your hashed password if you signed up with one, and, if you use Continue with Google, the name, profile picture, and Google account identifier we receive from Google. For more details, see [Supabase's Privacy Policy](https://supabase.com/privacy).
-- **Google Sign-In**: If you choose "Continue with Google", Google acts as the sign-in provider and shares with us only the basic account information described in "Accounts and Google Sign-In" above. Your use of your Google account is governed by Google's privacy policy.
+- **Google Sign-In**: If you choose "Continue with Google", Google acts as the sign-in provider and shares with us only the basic account information described in "Accounts and Google Sign-In" above. Your use of your Google account is governed by [Google's Privacy Policy](https://policies.google.com/privacy).
 - **Sentry**: Provides crash reporting and error tracking for the app. Sentry collects crash reports, device information (device model, OS version), and app state at the time of an error. This data is used to identify and fix bugs and improve app stability. No personally identifiable information is intentionally collected. For more details, see [Sentry's Privacy Policy](https://sentry.io/privacy/).
 - **RevenueCat**: Manages in-app purchases and subscriptions for the app. RevenueCat collects purchase receipts, an anonymous app user ID, and device data used to validate purchases and restore entitlements. This data is used solely to deliver and restore the features you have purchased. For more details, see [RevenueCat's Privacy Policy](https://www.revenuecat.com/privacy/).
 - **Plausible Analytics**: Provides privacy-friendly website analytics. Plausible does not use cookies, does not track users across sites, and does not collect personally identifiable information. All data is aggregated and no individual visitor profiles are created. For more details, see [Plausible's Privacy Policy](https://plausible.io/privacy).
@@ -96,7 +96,6 @@ We use the following third-party services:
 - App data is stored locally on your device
 - Website data (email addresses) is stored securely by our third-party providers (MailerLite and Google)
 - Account data for jazzjam.app accounts is stored by Supabase, our authentication provider. Passwords are stored only in hashed form
-- Beyond that account data, we hold no other databases of user information
 
 ## Your Rights
 

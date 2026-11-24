@@ -50,9 +50,22 @@ test.describe("Home page", () => {
 
   test("displays app showcase section", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "The Jazz Jam App" })
+      page.getByRole("heading", { name: "Jazz Jam Studio", exact: true })
     ).toBeVisible();
-    await expect(page.getByAltText("Jazz Jam App")).toBeVisible();
+    await expect(
+      page.getByAltText("Jazz Jam Studio", { exact: true })
+    ).toBeVisible();
+  });
+
+  // Google's OAuth branding verification looks for the consent screen's app
+  // name as rendered text on the home page; <title> and meta tags don't count.
+  test("shows the app name Jazz Jam Studio as visible text", async ({
+    page,
+  }) => {
+    await expect(
+      page.locator("main").getByText("Jazz Jam Studio").first()
+    ).toBeVisible();
+    await expect(page.locator("body")).not.toContainText("Jazz Jam App");
   });
 
   test("displays three feature cards", async ({ page }) => {

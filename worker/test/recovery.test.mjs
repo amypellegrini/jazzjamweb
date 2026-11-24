@@ -20,21 +20,21 @@ test("asking for a reset link says one was sent, whether or not the account exis
 });
 
 test("the reset link signs the student in and asks for a new password", async () => {
-  const { request, session, supabase } = setup();
+  const { request, session, supabase, followEmailLink } = setup();
   supabase.addUser(EMAIL, "old password");
   await request("/auth/forgot-password", { method: "POST", form: { email: EMAIL } });
   const { token_hash: tokenHash } = supabase.latestEmail(EMAIL);
 
-  const response = await request(`/auth/confirm?token_hash=${tokenHash}&type=recovery`);
+  const response = await followEmailLink(`/auth/confirm?token_hash=${tokenHash}&type=recovery`);
   assert.equal(location(response).pathname, "/account/reset-password/");
   assert.deepEqual(await session(), { signedIn: true, user: { email: EMAIL } });
 });
 
 test("setting the new password lets the student sign back in with it", async () => {
-  const { request, supabase, jar, session } = setup();
+  const { request, supabase, jar, session, followEmailLink } = setup();
   supabase.addUser(EMAIL, "old password");
   await request("/auth/forgot-password", { method: "POST", form: { email: EMAIL } });
-  await request(`/auth/confirm?token_hash=${supabase.latestEmail(EMAIL).token_hash}&type=recovery`);
+  await followEmailLink(`/auth/confirm?token_hash=${supabase.latestEmail(EMAIL).token_hash}&type=recovery`);
 
   const updated = await request("/auth/update-password", { method: "POST", form: { password: "brand new password" } });
   assert.equal(location(updated).pathname, "/account/");
@@ -48,10 +48,10 @@ test("setting the new password lets the student sign back in with it", async () 
 });
 
 test("a too-short new password goes back to the reset form", async () => {
-  const { request, supabase } = setup();
+  const { request, supabase, followEmailLink } = setup();
   supabase.addUser(EMAIL, "old password");
   await request("/auth/forgot-password", { method: "POST", form: { email: EMAIL } });
-  await request(`/auth/confirm?token_hash=${supabase.latestEmail(EMAIL).token_hash}&type=recovery`);
+  await followEmailLink(`/auth/confirm?token_hash=${supabase.latestEmail(EMAIL).token_hash}&type=recovery`);
   const response = await request("/auth/update-password", { method: "POST", form: { password: "123" } });
   assert.equal(location(response).pathname, "/account/reset-password/");
   assert.equal(location(response).searchParams.get("error"), "weak_password");

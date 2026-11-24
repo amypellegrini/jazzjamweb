@@ -52,7 +52,20 @@ export function setup(fakeOptions = {}) {
     return response.json();
   }
 
-  return { supabase, env, jar, request, session };
+  // Opening an email link shows a page whose button posts the link's token back, the
+  // way a student's click does: the GET alone must not use the one-time token up.
+  async function followEmailLink(path) {
+    const page = await request(path);
+    if (page.status !== 200) return page;
+    const html = await page.text();
+    const action = html.match(/<form method="post" action="([^"]+)"/)[1];
+    const fields = Object.fromEntries(
+      [...html.matchAll(/<input type="hidden" name="([^"]+)" value="([^"]*)"/g)].map(([, name, value]) => [name, value]),
+    );
+    return request(action, { method: "POST", form: fields });
+  }
+
+  return { supabase, env, jar, request, session, followEmailLink };
 }
 
 export function location(response) {

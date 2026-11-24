@@ -127,6 +127,7 @@ test.describe("Account flows", () => {
     await expectSignedOut(page);
 
     await page.goto(await emailLink(page, email, "email"));
+    await page.getByRole("button", { name: "Confirm my email" }).click();
     await expect(page).toHaveURL(/\/account\/$/);
     await expectSignedIn(page, email);
     await expect(page.locator("main")).toContainText(`You're signed in as ${email}`);
@@ -181,6 +182,7 @@ test.describe("Account flows", () => {
     await expect(accountMessage(page)).toHaveText(/we've sent it a link/);
 
     await page.goto(await emailLink(page, email, "recovery"));
+    await page.getByRole("button", { name: "Continue to choose a new password" }).click();
     await expect(page).toHaveURL(/\/account\/reset-password\/$/);
     await page.getByLabel("New password").fill("the new password");
     await page.getByRole("button", { name: "Save new password" }).click();

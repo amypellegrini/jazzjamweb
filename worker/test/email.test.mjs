@@ -26,19 +26,19 @@ test("signing up where Supabase asks for confirmation sends the visitor to check
 });
 
 test("the confirmation link signs the new student in", async () => {
-  const { request, session, supabase } = setup({ confirmEmail: true });
+  const { request, session, supabase, followEmailLink } = setup({ confirmEmail: true });
   await request("/auth/sign-up", { method: "POST", form: { email: EMAIL, password: PASSWORD } });
   const { token_hash: tokenHash } = supabase.latestEmail(EMAIL);
 
-  const response = await request(`/auth/confirm?token_hash=${tokenHash}&type=email`);
+  const response = await followEmailLink(`/auth/confirm?token_hash=${tokenHash}&type=email`);
   assert.equal(response.status, 303);
   assert.equal(location(response).pathname, "/account/");
   assert.deepEqual(await session(), { signedIn: true, user: { email: EMAIL } });
 });
 
 test("an expired or reused confirmation link explains itself on the sign-in page", async () => {
-  const { request, session } = setup();
-  const response = await request("/auth/confirm?token_hash=nope&type=email");
+  const { request, session, followEmailLink } = setup();
+  const response = await followEmailLink("/auth/confirm?token_hash=nope&type=email");
   const to = location(response);
   assert.equal(to.pathname, "/account/sign-in/");
   assert.equal(to.searchParams.get("error"), "link_expired");
@@ -124,4 +124,20 @@ test("sign-in says the service is unavailable when Supabase is not configured", 
   delete env.SUPABASE_ANON_KEY;
   const response = await request("/auth/sign-in", { method: "POST", form: { email: EMAIL, password: PASSWORD } });
   assert.equal(location(response).searchParams.get("error"), "unavailable");
+});
+
+test("a mail scanner opening the confirmation link does not use it up", async () => {
+  const { request, session, supabase, followEmailLink } = setup({ confirmEmail: true });
+  await request("/auth/sign-up", { method: "POST", form: { email: EMAIL, password: PASSWORD } });
+  const link = `/auth/confirm?token_hash=${supabase.latestEmail(EMAIL).token_hash}&type=email`;
+
+  const scanned = await request(link, { headers: { cookie: "" } });
+  assert.equal(scanned.status, 200);
+  assert.equal(scanned.headers.get("cache-control"), "no-store");
+  assert.equal(scanned.headers.get("referrer-policy"), "same-origin");
+  assert.deepEqual(await session(), { signedIn: false });
+
+  const response = await followEmailLink(link);
+  assert.equal(location(response).pathname, "/account/");
+  assert.deepEqual(await session(), { signedIn: true, user: { email: EMAIL } });
 });

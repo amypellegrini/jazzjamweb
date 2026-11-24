@@ -45,6 +45,59 @@ function redirect(to, cookies = []) {
   return response;
 }
 
+const CONFIRM_COPY = {
+  email: { title: "Confirm your email", button: "Confirm my email" },
+  signup: { title: "Confirm your email", button: "Confirm my email" },
+  recovery: { title: "Choose a new password", button: "Continue to choose a new password" },
+};
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+}
+
+// Self-contained on purpose: no analytics or third-party script ever sees the
+// token in this page's address, and a same-origin referrer policy keeps it off any
+// other site (no-referrer would send Origin: null and fail the cross-site check).
+function confirmPage({ tokenHash, type }) {
+  const copy = CONFIRM_COPY[type];
+  const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex" />
+<title>${copy.title} - Jazz Jam Studio</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f6f7f9; color: #1d2430;
+    font-family: system-ui, -apple-system, sans-serif; }
+  main { max-width: 26rem; padding: 2rem 1.5rem; text-align: center; }
+  button { font: inherit; font-weight: 600; padding: 0.8rem 1.4rem; min-height: 44px; border: 0; border-radius: 8px;
+    background: #1d4ed8; color: #fff; cursor: pointer; }
+  @media (prefers-color-scheme: dark) { body { background: #12161d; color: #e6e9ef; } }
+</style>
+</head>
+<body>
+<main>
+<h1>${copy.title}</h1>
+<form method="post" action="/auth/confirm">
+<input type="hidden" name="token_hash" value="${escapeHtml(tokenHash)}" />
+<input type="hidden" name="type" value="${escapeHtml(type)}" />
+<button type="submit">${copy.button}</button>
+</form>
+</main>
+</body>
+</html>
+`;
+  return new Response(html, {
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "no-store",
+      "referrer-policy": "same-origin",
+      "x-robots-tag": "noindex",
+    },
+  });
+}
+
 function withQuery(path, params) {
   const query = new URLSearchParams(Object.entries(params).filter(([, value]) => value));
   return query.size ? `${path}?${query}` : path;
@@ -179,9 +232,20 @@ const routes = {
     return redirect(next, [clearPkce, ...sessionCookies(result.data)]);
   },
 
-  "GET /auth/confirm": async ({ url, supabase }) => {
+  // Opening the link only shows a button: mail scanners (Outlook Safe Links and the
+  // like) fetch links before the student does, and a GET that verified the one-time
+  // token would leave the student a "link expired" page. The click posts it back.
+  "GET /auth/confirm": async ({ url }) => {
     const tokenHash = url.searchParams.get("token_hash");
     const type = url.searchParams.get("type");
+    if (!tokenHash || !Object.hasOwn(EMAIL_LINK_LANDING, type)) {
+      return redirect(withQuery(PAGES.signIn, { error: "link_expired" }));
+    }
+    return confirmPage({ tokenHash, type });
+  },
+
+  "POST /auth/confirm": async ({ request, supabase }) => {
+    const { token_hash: tokenHash, type } = await form(request);
     if (!supabase) return redirect(withQuery(PAGES.signIn, { error: "unavailable" }));
     const expired = redirect(withQuery(PAGES.signIn, { error: "link_expired" }));
     if (!tokenHash || !Object.hasOwn(EMAIL_LINK_LANDING, type)) return expired;

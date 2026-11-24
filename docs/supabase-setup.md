@@ -58,8 +58,10 @@ the Site URL, which breaks the email links below.
 
 ## 4. Email templates
 
-The Worker confirms email links itself (`GET /auth/confirm`), so the links in the two
-emails it relies on must point there with a token hash. In **Authentication → Emails →
+The Worker confirms email links itself (`/auth/confirm`), so the links in the two
+emails it relies on must point there with a token hash. Opening the link shows a
+one-button page, and only the student's click uses the token, so mail scanners that
+open links ahead of the student don't leave them a "link expired" page. In **Authentication → Emails →
 Templates**:
 
 - **Confirm signup** — replace the link with:

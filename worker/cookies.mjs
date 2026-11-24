@@ -1,3 +1,13 @@
+// Other scripts on the domain can set cookies this Worker never encoded; a stray
+// "%" in one of them must not take the auth routes down, so it is kept as written.
+function decode(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 // Reading the Cookie header and writing Set-Cookie lines for the session cookies.
 export function parseCookies(header) {
   const cookies = {};
@@ -5,7 +15,7 @@ export function parseCookies(header) {
     const index = part.indexOf("=");
     if (index < 0) continue;
     const name = part.slice(0, index).trim();
-    if (name && !(name in cookies)) cookies[name] = decodeURIComponent(part.slice(index + 1).trim());
+    if (name && !(name in cookies)) cookies[name] = decode(part.slice(index + 1).trim());
   }
   return cookies;
 }

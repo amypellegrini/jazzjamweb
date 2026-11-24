@@ -90,3 +90,11 @@ test("a rate limit at Supabase does not sign the student out for good", async ()
   assert.deepEqual(await response.json(), { signedIn: false });
   assert.equal(jar.get("jj_rt"), "some-refresh");
 });
+
+test("a malformed cookie elsewhere on the site does not break the auth routes", async () => {
+  const { request, jar } = setup();
+  jar.set("someone_elses", "100%");
+  const response = await request("/auth/session");
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { signedIn: false });
+});

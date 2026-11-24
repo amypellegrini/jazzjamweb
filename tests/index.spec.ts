@@ -50,9 +50,47 @@ test.describe("Home page", () => {
 
   test("displays app showcase section", async ({ page }) => {
     await expect(
-      page.getByRole("heading", { name: "The Jazz Jam App" })
+      page.getByRole("heading", { name: "Jazz Jam Studio", exact: true })
     ).toBeVisible();
-    await expect(page.getByAltText("Jazz Jam App")).toBeVisible();
+    await expect(
+      page.getByAltText("Jazz Jam Studio", { exact: true })
+    ).toBeVisible();
+  });
+
+  // Google's OAuth branding verification looks for the consent screen's app
+  // name as rendered text on the home page; <title> and meta tags don't count.
+  test("shows the app name Jazz Jam Studio as visible text", async ({
+    page,
+  }) => {
+    await expect(
+      page.locator("main").getByText("Jazz Jam Studio").first()
+    ).toBeVisible();
+    await expect(page.locator("body")).not.toContainText(/Jazz\s+Jam\s+App/i);
+  });
+
+  // The name has to be on the first screen, not only below the fold, and at
+  // every breakpoint — the hero swaps copy between mobile and desktop.
+  for (const viewport of [
+    { name: "mobile", width: 390, height: 844 },
+    { name: "desktop", width: 1440, height: 900 },
+  ]) {
+    test(`names Jazz Jam Studio in the hero on ${viewport.name}`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(viewport);
+      await page.goto("/");
+      const name = page
+        .locator(".hero")
+        .getByText("Jazz Jam Studio", { exact: true });
+      await expect(name).toBeVisible();
+      await expect(name).toBeInViewport({ ratio: 1 });
+    });
+  }
+
+  test("the newsletter copy uses the product name", async ({ page }) => {
+    await expect(page.locator("body")).toContainText(
+      "updates about Jazz Jam Studio"
+    );
   });
 
   test("displays three feature cards", async ({ page }) => {

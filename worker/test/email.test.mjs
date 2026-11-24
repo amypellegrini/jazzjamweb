@@ -72,7 +72,7 @@ test("signing in returns to the page the student came from, but only on this sit
     form: { email: EMAIL, password: PASSWORD, next: "/courses/block-chords/" },
   });
   assert.equal(location(back).href, "https://jazzjam.app/courses/block-chords/");
-  for (const next of ["https://evil.example/", "//evil.example/", "/\\evil.example/"]) {
+  for (const next of ["https://evil.example/", "//evil.example/", "/\\evil.example/", "/\t/evil.example/", "/\n/evil.example/", "/x\r\nSet-Cookie: a=b"]) {
     const response = await request("/auth/sign-in", { method: "POST", form: { email: EMAIL, password: PASSWORD, next } });
     assert.equal(location(response).href, "https://jazzjam.app/account/", next);
   }

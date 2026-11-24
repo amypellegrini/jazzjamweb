@@ -51,11 +51,23 @@ function withQuery(path, params) {
 }
 
 // Only a path on this site: never another origin, nor a protocol-relative URL.
+// Control characters are refused outright: browsers strip tabs and newlines when
+// they read a Location header, so "/\t/evil.example" would arrive as
+// "//evil.example", and a CR or LF would break the header itself.
+const SAME_SITE_BASE = "https://same-site.invalid";
 export function safeNext(value, fallback = PAGES.account) {
-  if (typeof value !== "string" || !value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+  if (
+    typeof value !== "string" ||
+    !value.startsWith("/") ||
+    value.startsWith("//") ||
+    value.includes("\\") ||
+    /[\x00-\x1f\x7f]/.test(value)
+  ) {
     return fallback;
   }
-  return value;
+  const resolved = new URL(value, SAME_SITE_BASE);
+  if (resolved.origin !== SAME_SITE_BASE) return fallback;
+  return resolved.pathname + resolved.search + resolved.hash;
 }
 
 function sessionCookies(session) {

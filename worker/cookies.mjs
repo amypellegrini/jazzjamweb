@@ -1,6 +1,6 @@
 // Other scripts on the domain can set cookies this Worker never encoded; a stray
 // "%" in one of them must not take the auth routes down, so it is kept as written.
-function decode(value) {
+export function decode(value) {
   try {
     return decodeURIComponent(value);
   } catch {

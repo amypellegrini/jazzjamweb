@@ -3,7 +3,7 @@
 // who is signed in from GET /auth/session. Forms post here and get a 303 back to
 // a page, with ?error=<code> or ?notice=<code> for src/assets/js/account-forms.js
 // to put into words.
-import { clearCookie, parseCookies, serializeCookie } from "./cookies.mjs";
+import { clearCookie, decode, parseCookies, serializeCookie } from "./cookies.mjs";
 import { createPkcePair } from "./pkce.mjs";
 import { createSupabaseAuth } from "./supabase.mjs";
 
@@ -230,7 +230,7 @@ const routes = {
     }
     const result = await supabase.exchangeCode({ code, verifier });
     if (!result.ok) return redirect(withQuery(PAGES.signIn, { error: "oauth_failed" }), [clearPkce]);
-    const next = safeNext(decodeURIComponent(encodedNext ?? ""));
+    const next = safeNext(decode(encodedNext ?? ""));
     return redirect(next, [clearPkce, ...sessionCookies(result.data)]);
   },
 

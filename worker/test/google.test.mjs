@@ -56,3 +56,17 @@ test("a student who cancels on Google's screen lands back on sign-in", async () 
   assert.equal(location(response).pathname, "/account/sign-in/");
   assert.equal(location(response).searchParams.get("error"), "oauth_failed");
 });
+
+test("a tampered verifier cookie fails the sign-in safely instead of crashing", async () => {
+  const { request, session, supabase, jar } = setup();
+  const start = await request("/auth/google");
+  const authorize = await supabase.fetch(location(start), { redirect: "manual" });
+  const callback = new URL(authorize.headers.get("location"));
+  const [verifier] = decodeURIComponent(jar.get("jj_pkce")).split("|");
+  jar.set("jj_pkce", `${verifier}%7C%25`);
+
+  const response = await request(`${callback.pathname}${callback.search}`);
+  assert.equal(response.status, 303);
+  assert.equal(location(response).pathname, "/account/");
+  assert.deepEqual(await session(), { signedIn: true, user: { email: "google.student@example.com" } });
+});

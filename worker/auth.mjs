@@ -119,7 +119,8 @@ export function safeNext(value, fallback = PAGES.account) {
     return fallback;
   }
   const resolved = new URL(value, SAME_SITE_BASE);
-  if (resolved.origin !== SAME_SITE_BASE) return fallback;
+  // Dot segments can collapse "/.//host" into "//host", which a browser reads as another site.
+  if (resolved.origin !== SAME_SITE_BASE || resolved.pathname.startsWith("//")) return fallback;
   return resolved.pathname + resolved.search + resolved.hash;
 }
 

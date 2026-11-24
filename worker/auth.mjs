@@ -102,6 +102,7 @@ function clearSessionCookies() {
 // with the access token that proved it. An access token lasts an hour; after that
 // the refresh token gets a new pair, which is what keeps a student signed in
 // across browser restarts. Cookies to send back ride along in setCookies.
+const TOKEN_REJECTED = new Set([400, 401, 403]);
 async function currentUser(supabase, cookies) {
   const access = cookies[COOKIES.access];
   const refresh = cookies[COOKIES.refresh];
@@ -116,8 +117,8 @@ async function currentUser(supabase, cookies) {
       return { user: result.data.user, access: result.data.access_token, setCookies: sessionCookies(result.data) };
     }
     // Only Supabase turning the token down ends the session; an outage (no answer,
-    // or a 5xx) leaves the cookies for the next visit to try again.
-    rejected = result.status >= 400 && result.status < 500;
+    // or a 5xx) or a rate limit (429) leaves the cookies for the next visit to try again.
+    rejected = TOKEN_REJECTED.has(result.status);
   }
   return { user: null, access: null, setCookies: rejected ? clearSessionCookies() : [] };
 }

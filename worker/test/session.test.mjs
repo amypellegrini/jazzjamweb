@@ -76,3 +76,17 @@ test("an outage at Supabase does not sign the student out for good", async () =>
   assert.deepEqual(await response.json(), { signedIn: false });
   assert.equal(jar.get("jj_rt"), "some-refresh");
 });
+
+test("a rate limit at Supabase does not sign the student out for good", async () => {
+  const { request, jar, supabase } = setup();
+  jar.set("jj_at", "some-access");
+  jar.set("jj_rt", "some-refresh");
+  supabase.fetch = async () =>
+    new Response(JSON.stringify({ code: 429, error_code: "over_request_rate_limit" }), {
+      status: 429,
+      headers: { "content-type": "application/json" },
+    });
+  const response = await request("/auth/session");
+  assert.deepEqual(await response.json(), { signedIn: false });
+  assert.equal(jar.get("jj_rt"), "some-refresh");
+});

@@ -8,6 +8,7 @@ const ERROR_CODES = {
   user_already_exists: "email_taken",
   email_exists: "email_taken",
   weak_password: "weak_password",
+  same_password: "same_password",
   email_not_confirmed: "email_not_confirmed",
   email_address_invalid: "invalid_email",
   validation_failed: "invalid_email",

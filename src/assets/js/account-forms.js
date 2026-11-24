@@ -8,6 +8,7 @@
       invalid_credentials: "That email and password don't match an account.",
       email_taken: "There's already an account with that email. Sign in, or reset your password.",
       weak_password: "That password is too short or too easy to guess. Try a longer one.",
+      same_password: "That's the password you already have. Choose a different one.",
       email_not_confirmed: "Confirm your email first: follow the link we sent you.",
       invalid_email: "That doesn't look like an email address.",
       rate_limited: "Too many tries. Wait a minute, then try again.",

@@ -30,6 +30,7 @@ test("maps Supabase's error codes, old and new, onto the codes the pages explain
     [400, { error: "invalid_grant", error_description: "Invalid login credentials" }, "invalid_credentials"],
     [422, { error_code: "user_already_exists" }, "email_taken"],
     [422, { error_code: "weak_password" }, "weak_password"],
+    [422, { error_code: "same_password" }, "same_password"],
     [429, {}, "rate_limited"],
     [500, { msg: "boom" }, "unknown"],
   ];

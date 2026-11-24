@@ -36,10 +36,32 @@ test.describe("Home page", () => {
     await page.goto("/");
   });
 
-  test("has correct title", async ({ page }) => {
-    await expect(page).toHaveTitle(
-      "Jazz Jam Studio - Practice sessions that matter"
-    );
+  // Google's OAuth branding check matches the app name against the home
+  // page, so the title states the name on its own, without the tagline.
+  test("has the app name as its title", async ({ page }) => {
+    await expect(page).toHaveTitle("Jazz Jam Studio");
+  });
+
+  test("declares the app name as the Open Graph site name", async ({
+    page,
+  }) => {
+    await expect(
+      page.locator('meta[property="og:site_name"]')
+    ).toHaveAttribute("content", "Jazz Jam Studio");
+  });
+
+  test("declares the app name in WebSite structured data", async ({
+    page,
+  }) => {
+    const scripts = page.locator('script[type="application/ld+json"]');
+    await expect(scripts).toHaveCount(1);
+    const data = JSON.parse((await scripts.first().textContent()) ?? "");
+    expect(data).toMatchObject({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Jazz Jam Studio",
+      url: "https://jazzjam.app/",
+    });
   });
 
   test("displays main heading", async ({ page }) => {

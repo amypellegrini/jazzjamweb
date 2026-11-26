@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% set pageTitle = title + " - Jazz Jam Studio" %}
+    {% include "block-chords/head.njk" %}
+    <meta name="robots" content="noindex" />
+    <style>
+{% include "block-chords/base.css" %}
+      /* Account pages: one short form at a time, posting to the Worker's /auth/ routes. */
+      .account-page {
+        width: 100%;
+        max-width: 26rem;
+        margin: 0 auto 4rem; /* the footer's own top margin is auto */
+        font-family:
+          system-ui,
+          -apple-system,
+          sans-serif;
+      }
+      .account-page h1 {
+        margin-top: 0;
+      }
+      .account-page form {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        margin: 1.5rem 0;
+      }
+      .account-page label {
+        font-weight: 600;
+        margin-top: 0.6rem;
+      }
+      .account-page input {
+        font: inherit;
+        padding: 0.65rem 0.8rem;
+        border: 1px solid #c5ccd6;
+        border-radius: 8px;
+      }
+      .account-page .hint {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #6b7280;
+      }
+      .account-page button,
+      .account-page .button {
+        display: block;
+        margin-top: 1rem;
+        padding: 0.75rem 1.2rem;
+        border: 1px solid #2563eb;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+        font: 600 1rem system-ui, -apple-system, sans-serif;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .account-page .button-secondary {
+        background: #fff;
+        color: #1d1d1f;
+        border-color: #c5ccd6;
+      }
+      .account-page .divider {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #6b7280;
+        font-size: 0.9rem;
+      }
+      .account-page .divider::before,
+      .account-page .divider::after {
+        content: "";
+        flex: 1;
+        border-top: 1px solid #e5e7eb;
+      }
+      .account-message {
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+      }
+      .account-message[data-kind="error"] {
+        background: #fef2f2;
+        border-color: #fecaca;
+      }
+      .account-message:empty {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    {% include "block-chords/header.njk" %}
+    <main class="account-page">
+      <h1>{{ title }}</h1>
+      <p class="account-message" data-account-message role="status"></p>
+{{ content | safe }}
+    </main>
+    {% include "block-chords/footer.njk" %}
+    <script src="/assets/js/account-forms.js" defer></script>
+  </body>
+</html>

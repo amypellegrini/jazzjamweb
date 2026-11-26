@@ -130,9 +130,30 @@
           font-size: 1.25rem;
         }
       }
+      /* Header: the logo home, and the account area. */
+      .site-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem 0;
+        color: var(--text-color);
+      }
+      .site-logo {
+        font-weight: 600;
+        font-size: 1.25rem;
+        color: var(--text-color);
+        text-decoration: none;
+      }
     </style>
   </head>
   <body>
+    <header class="site-header">
+      <a class="site-logo" href="/">JazzJam</a>
+      {% include "account-status.njk" %}
+    </header>
     <main class="markdown-content">
       {{ content | safe }}
     </main>

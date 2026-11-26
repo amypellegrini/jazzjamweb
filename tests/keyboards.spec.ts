@@ -11,7 +11,9 @@ import {
 } from "../scripts/keyboards/keyboard.js";
 
 const ASSETS = "src/assets/articles/block-chords";
-const CLI = "node_modules/.bin/piano-chord-charts";
+// Run the CLI's entry with node itself: the .bin shim is a shell script on Windows,
+// which execFileSync cannot spawn.
+const CLI = "node_modules/piano-chord-charts/dist/cli.js";
 
 const note = (step: string, octave: number, extra = "") =>
   `<note>${extra}<pitch><step>${step}</step><octave>${octave}</octave></pitch><duration>1</duration><staff>1</staff></note>`;
@@ -94,7 +96,8 @@ test.describe("keyboard charts for the sheet music examples", () => {
             const low = keyName(note).includes("#") ? note - 1 : note;
             let shift = 0; // white keys between the full keyboard's start and this note
             for (let m = startMidi; m < low; m++) if (!keyName(m).includes("#")) shift++;
-            execFileSync(CLI, [
+            execFileSync(process.execPath, [
+              CLI,
               "--format", "compact",
               "--size", String(size - shift),
               "--startFrom", WHITES.find((w) => w === keyName(low))!,

@@ -1,0 +1,26 @@
+---
+layout: account.njk
+title: Create an account
+description: Create a JazzJam account.
+permalink: /account/sign-up/
+---
+      <a class="button button-secondary" href="/auth/google" data-keep-next>Continue with Google</a>
+      <p class="divider">or</p>
+      <form method="post" action="/auth/sign-up">
+        <input type="hidden" name="next" value="" />
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="email" required />
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="new-password"
+          minlength="6"
+          aria-describedby="password-hint"
+          required
+        />
+        <p class="hint" id="password-hint">At least 6 characters.</p>
+        <button type="submit">Create account</button>
+      </form>
+      <p>Already have an account? <a href="/account/sign-in/" data-keep-next>Sign in</a></p>

@@ -1,0 +1,60 @@
+{# The header's account area, on every page. It starts in a neutral "loading" state;
+   /assets/js/account-status.js asks the Worker (GET /auth/session) who is signed in
+   and shows one of the two states. Without the Worker (e.g. `npm start`) it falls
+   back to signed out. Colours come from the header around it. #}
+<nav class="account-status" aria-label="Account" data-account-status data-state="loading">
+  <a class="account-sign-in" href="/account/sign-in/" data-signed-out>Sign in</a>
+  <span class="account-signed-in" data-signed-in>
+    <a class="account-email" href="/account/" data-account-email></a>
+    <form method="post" action="/auth/sign-out">
+      <input type="hidden" name="next" value="/" data-return-here />
+      <button type="submit">Sign out</button>
+    </form>
+  </span>
+</nav>
+<style>
+  .account-status {
+    display: flex;
+    align-items: center;
+    font:
+      500 0.95rem "Outfit",
+      system-ui,
+      sans-serif;
+  }
+  [data-account-status]:not([data-state="signed-out"]) [data-signed-out],
+  [data-account-status]:not([data-state="signed-in"]) [data-signed-in] {
+    display: none;
+  }
+  .account-signed-in {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .account-status a,
+  .account-status button {
+    color: inherit;
+    font: inherit;
+  }
+  .account-status .account-email {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 14rem;
+    text-decoration: none;
+  }
+  .account-status form {
+    margin: 0;
+  }
+  .account-status button,
+  .account-status .account-sign-in {
+    padding: 0.35rem 0.9rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+</style>
+<script src="/assets/js/account-status.js" defer></script>
